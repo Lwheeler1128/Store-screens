@@ -1,0 +1,34 @@
+{
+  "token": "(filled in by install.sh)",
+  "crop": "bec_group",
+  "goalSeconds": 270,
+  "pollSeconds": 5,
+  "port": 8787,
+  "stores": [
+    {
+      "code": "ZBBG10",
+      "name": "Charleston Shelby",
+      "num": "35402"
+    },
+    {
+      "code": "ZBBG11",
+      "name": "University",
+      "num": "35401"
+    },
+    {
+      "code": "ZBBG12",
+      "name": "Moncks Corner",
+      "num": "25901"
+    },
+    {
+      "code": "ZBBG2",
+      "name": "Dorchester",
+      "num": "35403"
+    },
+    {
+      "code": "ZBBG13",
+      "name": "N. Charleston Tanger",
+      "num": "55801"
+    }
+  ]
+}

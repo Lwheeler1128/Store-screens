@@ -1,0 +1,9 @@
+{
+  "name": "store-screens-feeder",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Reads Berry AI drive-thru dashboards and serves a live multi-store leaderboard.",
+  "main": "feeder.js",
+  "scripts": { "start": "node feeder.js" },
+  "dependencies": { "playwright-core": "1.56.0" }
+}
