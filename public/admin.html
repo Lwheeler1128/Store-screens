@@ -1,0 +1,375 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Store Screens</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;500;600;700&display=swap">
+<style>
+:root{
+  --bg:#F3F5F9;--surface:#FFFFFF;--surface-2:#E9EDF4;--line:#D5DCE7;
+  --ink:#13233F;--ink-2:#4A5A74;--ink-3:#7A889E;
+  --accent:#C8102E;--accent-ink:#FFFFFF;--accent-soft:#FBE7EA;
+  --good:#1F8A4C;--warn:#B7791F;--bad:#C8102E;--focus:#2F6FEB;
+}
+@media (prefers-color-scheme:dark){:root{
+  color-scheme:dark;--bg:#0D1628;--surface:#15213A;--surface-2:#1C2A47;--line:#2A3A5C;
+  --ink:#E8EDF6;--ink-2:#A9B6CC;--ink-3:#7686A2;--accent:#EF3D55;--accent-soft:#3A1824;
+  --good:#43C07A;--warn:#E3A93B;--bad:#F2576B;--focus:#7AA7FF}}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Barlow","Segoe UI",system-ui,sans-serif;font-size:15px;line-height:1.45}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.app{max-width:1280px;margin:0 auto;padding:18px 20px 60px;display:flex;flex-direction:column;gap:18px}
+header{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:12px}
+.mark{width:38px;height:38px;border-radius:9px;background:var(--accent);display:grid;place-items:center;color:#fff;font-family:"Barlow Condensed",sans-serif;font-weight:800;font-size:20px}
+h1{margin:0;font-family:"Barlow Condensed","Segoe UI",sans-serif;font-weight:700;font-size:26px;line-height:1}
+.brand p{margin:2px 0 0;color:var(--ink-3);font-size:13px}
+.pills{display:flex;gap:8px;flex-wrap:wrap}
+.pill{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;background:var(--surface-2);color:var(--ink-2);font-size:12.5px;font-weight:600}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--ink-3)}
+.dot.good{background:var(--good)}.dot.warn{background:var(--warn)}.dot.bad{background:var(--bad)}
+nav{display:flex;gap:4px;border-bottom:1px solid var(--line);overflow-x:auto}
+nav button{background:none;border:0;padding:10px 14px;font-weight:600;color:var(--ink-2);border-bottom:3px solid transparent;cursor:pointer;white-space:nowrap}
+nav button[aria-selected=true]{color:var(--ink);border-bottom-color:var(--accent)}
+.grid{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(0,1fr);gap:18px;align-items:start}
+@media (max-width:920px){.grid{grid-template-columns:minmax(0,1fr)}}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:12px}
+h2{margin:0;font-family:"Barlow Condensed","Segoe UI",sans-serif;font-weight:700;font-size:20px}
+.sub{margin:-6px 0 0;color:var(--ink-3);font-size:13px}
+.row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.sp{flex:1}
+label.f{display:flex;flex-direction:column;gap:4px;font-size:12px;font-weight:700;color:var(--ink-2);text-transform:uppercase;letter-spacing:.05em}
+input[type=text],input[type=number],input[type=password],select,textarea{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:14.5px;font-weight:500;text-transform:none;letter-spacing:0;color:var(--ink);min-width:0;width:100%}
+textarea{resize:vertical;min-height:70px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;border-radius:8px;border:1px solid var(--line);background:var(--surface);padding:8px 14px;font-weight:600;cursor:pointer;color:var(--ink);white-space:nowrap}
+.btn:hover{background:var(--surface-2)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.small{padding:4px 10px;font-size:13px}
+.btn.ghost{border-color:transparent;background:transparent}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+.muted{color:var(--ink-3);font-size:13px}
+.note{font-size:13px;color:var(--ink-2);background:var(--surface-2);border-radius:8px;padding:10px 12px}
+.list{display:flex;flex-direction:column;gap:8px}
+.item{border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+.item.off{opacity:.55}
+.item-main{display:grid;grid-template-columns:110px minmax(0,1fr) auto;gap:12px;align-items:center;padding:8px}
+.thumb{width:110px;aspect-ratio:16/9;border-radius:6px;overflow:hidden;background:var(--surface-2);display:grid;place-items:center;font-size:11px;color:var(--ink-3);font-weight:700;text-transform:uppercase;letter-spacing:.06em;text-align:center}
+.thumb img,.thumb video{width:100%;height:100%;object-fit:cover;display:block}
+.thumb.lb{background:#0B1426;color:#F6B221;font-family:"Barlow Condensed",sans-serif;font-size:11px}
+.thumb.ann-red{background:#C8102E;color:#fff}.thumb.ann-navy{background:#13233F;color:#fff}.thumb.ann-gold{background:#F6B221;color:#13233F}.thumb.ann-black{background:#111;color:#fff}
+.name{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.meta{font-size:12.5px;color:var(--ink-3);display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.chip{display:inline-block;padding:1px 8px;border-radius:999px;font-size:11.5px;font-weight:700;background:var(--surface-2);color:var(--ink-2)}
+.chip.red{background:var(--accent-soft);color:var(--accent)}
+.ctrls{display:flex;gap:4px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+.edit{border-top:1px solid var(--line);padding:12px;display:flex;flex-direction:column;gap:10px;background:var(--surface-2);border-radius:0 0 10px 10px}
+@media (max-width:600px){.item-main{grid-template-columns:80px minmax(0,1fr)}.thumb{width:80px}.ctrls{grid-column:1/-1;justify-content:flex-start}}
+.stores{display:flex;flex-wrap:wrap;gap:6px}
+.stores label{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:999px;padding:4px 10px;font-size:13px;font-weight:600;background:var(--surface);cursor:pointer;text-transform:none;letter-spacing:0;color:var(--ink)}
+.stores input{accent-color:var(--accent)}
+.drop{border:2px dashed var(--line);border-radius:10px;padding:26px;text-align:center;color:var(--ink-2);cursor:pointer;background:var(--surface-2)}
+.drop.hot{border-color:var(--accent)}
+.drop strong{color:var(--ink)}
+.bar{height:6px;background:var(--surface-2);border-radius:6px;overflow:hidden}.bar i{display:block;height:100%;width:0;background:var(--accent);transition:width .2s}
+.preview{position:relative;width:100%;aspect-ratio:16/9;border-radius:10px;overflow:hidden;background:#000;border:8px solid #0A0F1A}
+.preview iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th{text-align:left;font-size:11.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-3);font-weight:600;padding:6px 8px;border-bottom:1px solid var(--line)}
+td{padding:8px;border-bottom:1px solid var(--line);vertical-align:middle}
+code{font-family:Consolas,"Cascadia Mono",monospace;font-size:13px;background:var(--surface-2);padding:2px 6px;border-radius:5px;word-break:break-all}
+.tw{overflow-x:auto}
+.login{max-width:380px;margin:12vh auto;padding-inline:16px}
+.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:8px;font-weight:600;z-index:60;max-width:calc(100vw - 32px)}
+</style>
+</head>
+<body>
+
+<div class="login" id="login" hidden>
+  <div class="panel">
+    <div class="brand"><div class="mark">Z</div><div><h1>Store Screens</h1><p>Content dashboard</p></div></div>
+    <form id="loginForm" class="row" style="flex-direction:column;align-items:stretch">
+      <label class="f">Dashboard password<input type="password" id="pw" autocomplete="current-password" required></label>
+      <button class="btn primary" type="submit">Sign in</button>
+      <p class="muted" id="loginMsg">The password is shown in the black feeder window and saved in config.json.</p>
+    </form>
+  </div>
+</div>
+
+<div class="app" id="app" hidden>
+  <header>
+    <div class="brand"><div class="mark">Z</div><div><h1>Store Screens</h1><p>Post content to every store TV</p></div></div>
+    <div class="pills"><span class="pill" id="feedPill"><span class="dot"></span>Checking drive times…</span><span class="pill" id="keyPill" hidden></span></div>
+  </header>
+
+  <nav role="tablist">
+    <button role="tab" data-tab="playlist" aria-selected="true">Playlist</button>
+    <button role="tab" data-tab="add" aria-selected="false">Add content</button>
+    <button role="tab" data-tab="screens" aria-selected="false">TV links</button>
+    <button role="tab" data-tab="settings" aria-selected="false">Settings</button>
+  </nav>
+
+  <!-- PLAYLIST -->
+  <section data-view="playlist" class="grid">
+    <div class="panel">
+      <div class="row"><h2>Playlist</h2><span class="sp"></span><span class="muted" id="plSummary"></span></div>
+      <p class="sub">Every TV plays these top to bottom on a loop. Changes reach the TVs within 20 seconds.</p>
+      <div class="list" id="list"></div>
+    </div>
+    <div class="panel">
+      <div class="row"><h2>Preview</h2><span class="sp"></span><select id="pvStore" style="width:auto"></select></div>
+      <div class="preview"><iframe id="pv" title="TV preview"></iframe></div>
+      <p class="muted">This is the exact player the store TVs run, for the store you pick.</p>
+    </div>
+  </section>
+
+  <!-- ADD -->
+  <section data-view="add" class="grid" hidden>
+    <div class="panel">
+      <h2>Upload images or videos</h2>
+      <div class="drop" id="drop" tabindex="0" role="button" aria-label="Choose files to upload"><strong>Drop files here or click to choose</strong><br><span class="muted">JPG, PNG, WEBP, GIF, MP4, WEBM · landscape 1920×1080 looks best</span></div>
+      <input type="file" id="file" accept="image/jpeg,image/png,image/webp,image/gif,video/mp4,video/webm" multiple hidden>
+      <div class="bar" id="upBar" hidden><i></i></div>
+      <div class="row">
+        <label class="f" style="width:160px">Show for (seconds)<input type="number" id="upDur" min="3" max="600" value="10"></label>
+      </div>
+      <label class="f">Show at</label>
+      <div class="stores" id="upStores"></div>
+      <p class="muted">Videos play muted. Set the seconds to the video's length so it plays all the way through.</p>
+    </div>
+    <div class="panel">
+      <h2>Text announcement</h2>
+      <p class="sub">For shout-outs, promos and reminders. No design file needed.</p>
+      <label class="f">Headline<input type="text" id="aTitle" maxlength="60" placeholder="Shift Leader of the Week"></label>
+      <label class="f">Message<textarea id="aBody" maxlength="240" placeholder="Big thanks to the night crew for a sub-4:30 Friday rush!"></textarea></label>
+      <div class="row">
+        <label class="f" style="flex:1">Color<select id="aColor"><option value="red">Red</option><option value="navy">Navy</option><option value="gold">Gold</option><option value="black">Black</option></select></label>
+        <label class="f" style="flex:1">Seconds<input type="number" id="aDur" min="3" max="120" value="10"></label>
+      </div>
+      <label class="f">Show at</label>
+      <div class="stores" id="aStores"></div>
+      <div class="row"><button class="btn primary" id="aAdd">Add to playlist</button></div>
+    </div>
+  </section>
+
+  <!-- SCREENS -->
+  <section data-view="screens" class="grid" hidden>
+    <div class="panel">
+      <h2>TV links</h2>
+      <p class="sub">Open a store's link in the TV's browser, then double-click (or use the kiosk app) for full screen.</p>
+      <div class="row"><label class="f" style="flex:1">Address the TVs use<select id="hostSel"></select></label></div>
+      <div class="tw"><table id="linkTable"></table></div>
+    </div>
+    <div class="panel">
+      <h2>Setting up a store TV</h2>
+      <ol style="margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px">
+        <li>Plug a Fire TV Stick or Android TV box into the TV.</li>
+        <li>Install <b>Fully Kiosk Browser</b> (or any browser).</li>
+        <li>Enter that store's TV link as the start page.</li>
+      </ol>
+      <div class="note">Links that start with <code>192.168…</code> or similar only work on the same Wi-Fi as this computer. For TVs at other stores, run SHARE and paste its <code>trycloudflare.com</code> address into the box above, or move this to a cloud server for a permanent address.</div>
+      <label class="f">Share link from SHARE (optional)<input type="text" id="shareUrl" placeholder="https://something.trycloudflare.com"></label>
+    </div>
+  </section>
+
+  <!-- SETTINGS -->
+  <section data-view="settings" class="grid" hidden>
+    <div class="panel">
+      <h2>Drive-thru goal</h2>
+      <p class="sub">Average total time. Green is at or under the goal, yellow is up to 30 seconds over, red is more.</p>
+      <div class="row"><select id="goal" style="width:auto"></select><button class="btn primary" id="goalSave">Save goal</button></div>
+    </div>
+    <div class="panel">
+      <h2>Stores and Berry access</h2>
+      <p class="sub">Stores, Berry codes and the Berry access key live in config.json. Edit it in Notepad, then restart START.</p>
+      <div class="tw"><table id="storeTable"></table></div>
+      <div class="row"><button class="btn" id="signOut">Sign out of this dashboard</button></div>
+    </div>
+  </section>
+</div>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const fmt=s=>s==null?"--":Math.floor(s/60)+":"+String(Math.round(s)%60).padStart(2,"0");
+let toastT;function toast(m){const t=$("#toast");t.textContent=m;t.hidden=false;clearTimeout(toastT);toastT=setTimeout(()=>t.hidden=true,3000)}
+const store={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}},del(k){try{localStorage.removeItem(k)}catch(e){}}};
+let PW=store.get("ss_pw")||"";
+let S={items:[],stores:[],goalSeconds:270,info:null,live:null,open:null};
+
+async function call(method,url,body,headers={}){
+  const r=await fetch(url,{method,headers:{"X-Admin-Password":PW,...(body&&!(body instanceof Blob)?{"Content-Type":"application/json"}:{}),...headers},body:body instanceof Blob?body:body?JSON.stringify(body):undefined});
+  const d=await r.json().catch(()=>({}));
+  if(r.status===401){showLogin("That password didn't work. Check the black feeder window.");throw new Error("auth")}
+  if(!r.ok)throw new Error(d.error||("Error "+r.status));
+  return d;
+}
+
+/* ---------- login ---------- */
+function showLogin(msg){$("#app").hidden=true;$("#login").hidden=false;if(msg)$("#loginMsg").textContent=msg;$("#pw").focus()}
+$("#loginForm").addEventListener("submit",async e=>{e.preventDefault();PW=$("#pw").value.trim();
+  try{await call("POST","/api/login");store.set("ss_pw",PW);start()}catch(err){if(err.message!=="auth")$("#loginMsg").textContent=err.message}});
+$("#signOut").addEventListener("click",()=>{store.del("ss_pw");PW="";showLogin("Signed out.")});
+
+/* ---------- tabs ---------- */
+function tab(name){document.querySelectorAll("nav button").forEach(b=>b.setAttribute("aria-selected",b.dataset.tab===name));
+  document.querySelectorAll("[data-view]").forEach(v=>v.hidden=v.dataset.view!==name);store.set("ss_tab",name)}
+document.querySelectorAll("nav button").forEach(b=>b.addEventListener("click",()=>tab(b.dataset.tab)));
+
+/* ---------- data ---------- */
+async function load(){const d=await (await fetch("/api/content",{cache:"no-store"})).json();S.items=d.items;S.stores=d.stores;S.goalSeconds=d.goalSeconds;render()}
+async function loadLive(){try{S.live=await (await fetch("/api/live",{cache:"no-store"})).json();renderPills()}catch(e){}}
+function storeName(code){const s=S.stores.find(x=>x.code===code);return s?s.name:code}
+function target(it){return it.stores==="all"?"All stores":(it.stores||[]).map(storeName).join(", ")||"No stores"}
+
+/* ---------- store pickers ---------- */
+function storePicker(el,selected="all"){
+  const all=selected==="all";const sel=new Set(all?[]:selected);
+  el.innerHTML=`<label><input type="checkbox" data-all ${all?"checked":""}> All stores</label>`+S.stores.map(s=>`<label><input type="checkbox" value="${esc(s.code)}" ${all||sel.has(s.code)?"checked":""} ${all?"disabled":""}> ${esc(s.name)}</label>`).join("");
+  el.querySelector("[data-all]").addEventListener("change",e=>{el.querySelectorAll("input:not([data-all])").forEach(i=>{i.disabled=e.target.checked;i.checked=true})});
+}
+function pickerValue(el){if(el.querySelector("[data-all]").checked)return "all";return [...el.querySelectorAll("input:not([data-all]):checked")].map(i=>i.value)}
+
+/* ---------- playlist ---------- */
+function thumb(it){
+  if(it.type==="leaderboard")return `<div class="thumb lb">Leaderboard</div>`;
+  if(it.type==="announcement")return `<div class="thumb ann-${esc(it.color||"red")}">${esc((it.title||"Text").slice(0,24))}</div>`;
+  if(it.type==="video")return `<div class="thumb"><video src="/media/${encodeURIComponent(it.file)}#t=1" muted preload="metadata"></video></div>`;
+  return `<div class="thumb"><img src="/media/${encodeURIComponent(it.file)}" alt="" loading="lazy"></div>`;
+}
+function render(){
+  const items=S.items;const on=items.filter(i=>i.active);
+  $("#plSummary").textContent=`${on.length} of ${items.length} playing · ${on.reduce((a,i)=>a+(+i.duration||0),0)} sec loop`;
+  $("#list").innerHTML=items.map((it,i)=>`
+   <div class="item ${it.active?"":"off"}" data-id="${esc(it.id)}">
+     <div class="item-main">${thumb(it)}
+       <div style="min-width:0"><div class="name">${esc(it.name||it.title)}</div>
+         <div class="meta"><span class="chip ${it.type==="leaderboard"?"red":""}">${{leaderboard:"Live drive times",announcement:"Text",video:"Video",image:"Image"}[it.type]}</span><span>${it.duration}s</span><span>${esc(target(it))}</span>${it.active?"":"<span class='chip'>Paused</span>"}</div></div>
+       <div class="ctrls">
+         <button class="btn small ghost" data-act="up" ${i===0?"disabled":""} aria-label="Move up">▲</button>
+         <button class="btn small ghost" data-act="down" ${i===items.length-1?"disabled":""} aria-label="Move down">▼</button>
+         <button class="btn small" data-act="edit">${S.open===it.id?"Close":"Edit"}</button>
+         <button class="btn small" data-act="toggle">${it.active?"Pause":"Play"}</button>
+         ${it.type==="leaderboard"?"":`<button class="btn small" data-act="del">Remove</button>`}
+       </div></div>
+     ${S.open===it.id?editForm(it):""}
+   </div>`).join("")||`<p class="muted">Nothing here yet. Use Add content.</p>`;
+  if(S.open){const el=document.querySelector(`.item[data-id="${S.open}"] .stores`);const it=items.find(x=>x.id===S.open);if(el&&it)storePicker(el,it.stores)}
+  const pv=$("#pvStore"),v=pv.value;pv.innerHTML=`<option value="all">All stores</option>`+S.stores.map(s=>`<option value="${esc(s.code)}">${esc(s.name)}</option>`).join("");if(v)pv.value=v;
+  storePicker($("#upStores"),pickerValue0("#upStores"));storePicker($("#aStores"),pickerValue0("#aStores"));
+  renderLinks();renderSettings();
+}
+function pickerValue0(q){const el=$(q);return el.querySelector("[data-all]")?pickerValue(el):"all"}
+function editForm(it){
+  return `<div class="edit">
+    <div class="row">
+      <label class="f" style="flex:2">Name<input type="text" data-f="name" value="${esc(it.name||"")}" maxlength="60"></label>
+      <label class="f" style="flex:1">Seconds<input type="number" data-f="duration" value="${it.duration}" min="3" max="600"></label>
+    </div>
+    ${it.type==="announcement"?`
+      <label class="f">Headline<input type="text" data-f="title" value="${esc(it.title||"")}" maxlength="60"></label>
+      <label class="f">Message<textarea data-f="body" maxlength="240">${esc(it.body||"")}</textarea></label>
+      <label class="f" style="max-width:200px">Color<select data-f="color">${["red","navy","gold","black"].map(c=>`<option value="${c}" ${it.color===c?"selected":""}>${c[0].toUpperCase()+c.slice(1)}</option>`).join("")}</select></label>`:""}
+    <label class="f">Show at</label><div class="stores"></div>
+    <div class="row"><button class="btn primary small" data-act="save">Save changes</button></div>
+  </div>`;
+}
+$("#list").addEventListener("click",async e=>{
+  const b=e.target.closest("button[data-act]");if(!b)return;
+  const row=b.closest(".item");const id=row.dataset.id;const i=S.items.findIndex(x=>x.id===id);const it=S.items[i];const act=b.dataset.act;
+  try{
+    if(act==="edit"){S.open=S.open===id?null:id;return render()}
+    if(act==="toggle"){await call("PATCH","/api/content/"+id,{active:!it.active});toast(it.active?"Paused":"Playing");return load()}
+    if(act==="up"||act==="down"){const ids=S.items.map(x=>x.id);const j=act==="up"?i-1:i+1;[ids[i],ids[j]]=[ids[j],ids[i]];await call("POST","/api/order",{ids});return load()}
+    if(act==="del"){if(b.dataset.c!=="1"){b.dataset.c="1";b.textContent="Confirm remove";b.classList.add("primary");setTimeout(()=>{if(b.isConnected){b.dataset.c="";b.textContent="Remove";b.classList.remove("primary")}},4000);return}
+      await call("DELETE","/api/content/"+id);toast("Removed");return load()}
+    if(act==="save"){const body={};row.querySelectorAll("[data-f]").forEach(f=>body[f.dataset.f]=f.dataset.f==="duration"?+f.value:f.value);
+      body.stores=pickerValue(row.querySelector(".stores"));if(Array.isArray(body.stores)&&!body.stores.length){toast("Pick at least one store");return}
+      await call("PATCH","/api/content/"+id,body);S.open=null;toast("Saved");return load()}
+  }catch(err){if(err.message!=="auth")toast(err.message)}
+});
+
+/* ---------- uploads ---------- */
+const drop=$("#drop"),fileIn=$("#file");
+drop.addEventListener("click",()=>fileIn.click());
+drop.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();fileIn.click()}});
+["dragenter","dragover"].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.add("hot")}));
+["dragleave","drop"].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.remove("hot")}));
+drop.addEventListener("drop",e=>upload(e.dataTransfer.files));
+fileIn.addEventListener("change",()=>{upload(fileIn.files);fileIn.value=""});
+function putWithProgress(f){
+  return new Promise((resolve,reject)=>{const x=new XMLHttpRequest();x.open("PUT","/api/upload");x.setRequestHeader("X-Admin-Password",PW);x.setRequestHeader("Content-Type",f.type);
+    x.upload.onprogress=e=>{if(e.lengthComputable)$("#upBar i").style.width=(e.loaded/e.total*100)+"%"};
+    x.onload=()=>{let d={};try{d=JSON.parse(x.responseText)}catch(e){}x.status===200?resolve(d):reject(new Error(x.status===401?"Wrong dashboard password":d.error||("Upload failed ("+x.status+")")))};
+    x.onerror=()=>reject(new Error("Upload failed. Is the feeder still running?"));x.send(f)});
+}
+async function upload(files){
+  const list=[...files];if(!list.length)return;
+  const stores=pickerValue($("#upStores"));if(Array.isArray(stores)&&!stores.length){toast("Pick at least one store");return}
+  const dur=+$("#upDur").value||10;$("#upBar").hidden=false;
+  for(const f of list){
+    try{$("#upBar i").style.width="0";const r=await putWithProgress(f);
+      await call("POST","/api/content",{type:f.type.startsWith("video")?"video":"image",name:f.name.replace(/\.[^.]+$/,""),file:r.file,mime:r.mime,duration:dur,stores});
+      toast("Added "+f.name)}catch(err){toast(f.name+": "+err.message)}
+  }
+  $("#upBar").hidden=true;load();
+}
+$("#aAdd").addEventListener("click",async()=>{
+  const title=$("#aTitle").value.trim();if(!title){toast("Add a headline first");return}
+  const stores=pickerValue($("#aStores"));if(Array.isArray(stores)&&!stores.length){toast("Pick at least one store");return}
+  try{await call("POST","/api/content",{type:"announcement",name:title,title,body:$("#aBody").value.trim(),color:$("#aColor").value,duration:+$("#aDur").value||10,stores});
+    $("#aTitle").value="";$("#aBody").value="";toast("Announcement added");load();tab("playlist")}catch(err){if(err.message!=="auth")toast(err.message)}
+});
+
+/* ---------- preview ---------- */
+$("#pvStore").addEventListener("change",()=>{$("#pv").src="/tv?store="+encodeURIComponent($("#pvStore").value)});
+
+/* ---------- TV links ---------- */
+function hosts(){const port=S.info?S.info.port:location.port;const h=[];const share=($("#shareUrl").value||"").trim().replace(/\/+$/,"");
+  if(S.info&&S.info.publicUrl)h.push(S.info.publicUrl);if(share)h.push(share);(S.info?S.info.lan:[]).forEach(ip=>h.push(`http://${ip}:${port}`));h.push(location.origin);return [...new Set(h)]}
+function renderLinks(){
+  const sel=$("#hostSel"),v=sel.value;sel.innerHTML=hosts().map(h=>`<option>${esc(h)}</option>`).join("");if(v&&[...sel.options].some(o=>o.value===v))sel.value=v;
+  const base=sel.value;
+  const rows=[...S.stores.map(s=>({name:s.name,sub:"#"+s.num,url:`${base}/tv?store=${encodeURIComponent(s.code)}`})),{name:"All stores",sub:"shows content for every store",url:`${base}/tv?store=all`},{name:"Leaderboard only",sub:"no other content",url:`${base}/board`}];
+  $("#linkTable").innerHTML=`<thead><tr><th>Screen</th><th>Link</th><th></th></tr></thead><tbody>${rows.map(r=>`<tr><td><b>${esc(r.name)}</b><br><span class="muted">${esc(r.sub)}</span></td><td><code>${esc(r.url)}</code></td><td style="white-space:nowrap"><button class="btn small" data-copy="${esc(r.url)}">Copy</button> <a class="btn small" href="${esc(r.url)}" target="_blank" rel="noopener">Open</a></td></tr>`).join("")}</tbody>`;
+}
+$("#hostSel").addEventListener("change",renderLinks);
+$("#shareUrl").addEventListener("input",()=>{store.set("ss_share",$("#shareUrl").value);renderLinks()});
+$("#linkTable").addEventListener("click",async e=>{const b=e.target.closest("[data-copy]");if(!b)return;
+  try{await navigator.clipboard.writeText(b.dataset.copy);toast("Link copied")}catch(err){const c=b.closest("tr").querySelector("code");const r=document.createRange();r.selectNodeContents(c);getSelection().removeAllRanges();getSelection().addRange(r);toast("Press Ctrl+C to copy")}});
+
+/* ---------- settings ---------- */
+(function(){const g=$("#goal");for(let s=180;s<=420;s+=15){const o=document.createElement("option");o.value=s;o.textContent=fmt(s);g.appendChild(o)}})();
+function renderSettings(){
+  if(document.activeElement!==$("#goal"))$("#goal").value=String(S.goalSeconds);
+  const live=S.live?Object.fromEntries(S.live.stores.map(s=>[s.code,s])):{};
+  $("#storeTable").innerHTML=`<thead><tr><th>Store</th><th>Berry code</th><th>Status</th></tr></thead><tbody>${S.stores.map(s=>{const l=live[s.code]||{};return `<tr><td>${esc(s.name)} <span class="muted">#${esc(s.num)}</span></td><td><code>${esc(s.code)}</code></td><td>${l.status==="ok"?"<span style='color:var(--good);font-weight:600'>Live</span>":esc(l.status||"—")}</td></tr>`}).join("")}</tbody>`;
+}
+$("#goalSave").addEventListener("click",async()=>{try{const d=await call("POST","/api/settings",{goalSeconds:+$("#goal").value});S.goalSeconds=d.goalSeconds;toast("Goal set to "+fmt(d.goalSeconds))}catch(err){if(err.message!=="auth")toast(err.message)}});
+
+function renderPills(){
+  const L=S.live;if(!L)return;const ok=L.stores.filter(s=>s.status==="ok").length;
+  $("#feedPill").innerHTML=`<span class="dot ${ok===L.stores.length?"good":ok?"warn":"bad"}"></span>Drive times: ${ok} of ${L.stores.length} stores live`;
+  if(L.tokenExpires){const days=Math.round((Date.parse(L.tokenExpires)-Date.now())/864e5);const p=$("#keyPill");p.hidden=false;
+    p.innerHTML=`<span class="dot ${days>7?"good":days>0?"warn":"bad"}"></span>Berry key: ${days>0?days+" days left":"expired"}`}
+  renderSettings();
+}
+
+/* ---------- start ---------- */
+async function start(){
+  $("#login").hidden=true;$("#app").hidden=false;
+  $("#shareUrl").value=store.get("ss_share")||"";
+  try{S.info=await (await fetch("/api/info")).json()}catch(e){}
+  await load();loadLive();
+  $("#pv").src="/tv?store=all";
+  const t=store.get("ss_tab");if(t&&["playlist","add","screens","settings"].includes(t))tab(t);
+  setInterval(loadLive,15000);
+}
+(async()=>{ if(!PW)return showLogin();
+  try{await call("POST","/api/login");start()}catch(e){if(e.message!=="auth")showLogin("Can't reach the feeder. Is START running?")} })();
+</script>
+</body>
+</html>
