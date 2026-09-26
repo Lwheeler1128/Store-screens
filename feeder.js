@@ -184,7 +184,7 @@ function saveConfig() {
 }
 if (!cfg.adminPassword) { cfg.adminPassword = "zax-" + crypto.randomBytes(3).toString("hex"); saveConfig(); }
 
-const ITEM_FIELDS = ["type", "name", "title", "body", "color", "duration", "active", "stores", "file", "mime"];
+const ITEM_FIELDS = ["type", "name", "title", "body", "color", "duration", "active", "stores", "file", "mime", "url"];
 function cleanItem(src, base = {}) {
   const it = { ...base };
   for (const k of ITEM_FIELDS) if (k in src) it[k] = src[k];
@@ -192,6 +192,7 @@ function cleanItem(src, base = {}) {
   it.active = it.active !== false;
   if (it.stores !== "all" && !Array.isArray(it.stores)) it.stores = "all";
   ["name", "title", "body"].forEach(k => { if (it[k] != null) it[k] = String(it[k]).slice(0, 400); });
+  if (it.url != null) { it.url = String(it.url).trim().slice(0, 1000); if (!/^https?:\/\//i.test(it.url)) it.url = ""; }
   return it;
 }
 
@@ -267,7 +268,8 @@ async function api(req, res, url) {
   if (p === "/api/content" && m === "POST") {
     const body = JSON.parse((await readBody(req, 1e6)).toString() || "{}");
     const it = cleanItem(body, { id: newId(), createdAt: new Date().toISOString(), order: Math.max(0, ...content.items.map(i => i.order || 0)) + 1 });
-    if (!["image", "video", "announcement"].includes(it.type)) return sendJson(res, 400, { error: "Unknown item type." });
+    if (!["image", "video", "announcement", "webpage"].includes(it.type)) return sendJson(res, 400, { error: "Unknown item type." });
+    if (it.type === "webpage" && !it.url) return sendJson(res, 400, { error: "Enter a web address that starts with https://" });
     content.items.push(it); saveContent();
     log(`Dashboard: added "${it.name}"`);
     return sendJson(res, 200, it);
