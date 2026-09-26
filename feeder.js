@@ -213,7 +213,7 @@ function saveConfig() {
 }
 if (!cfg.adminPassword) { cfg.adminPassword = "zax-" + crypto.randomBytes(3).toString("hex"); saveConfig(); }
 
-const ITEM_FIELDS = ["type", "name", "title", "body", "color", "duration", "active", "stores", "file", "mime", "url"];
+const ITEM_FIELDS = ["type", "name", "title", "body", "color", "duration", "active", "stores", "file", "mime", "url", "zoom"];
 function cleanItem(src, base = {}) {
   const it = { ...base };
   for (const k of ITEM_FIELDS) if (k in src) it[k] = src[k];
@@ -221,6 +221,7 @@ function cleanItem(src, base = {}) {
   it.active = it.active !== false;
   if (it.stores !== "all" && !Array.isArray(it.stores)) it.stores = "all";
   ["name", "title", "body"].forEach(k => { if (it[k] != null) it[k] = String(it[k]).slice(0, 400); });
+  if (it.zoom != null) it.zoom = Math.max(25, Math.min(100, Math.round(+it.zoom) || 67));
   if (it.url != null) { it.url = String(it.url).trim().slice(0, 1000); if (!/^https?:\/\//i.test(it.url)) it.url = ""; }
   return it;
 }
