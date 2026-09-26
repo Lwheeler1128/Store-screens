@@ -160,6 +160,7 @@ code{font-family:Consolas,"Cascadia Mono",monospace;font-size:13px;background:va
       <div class="row">
         <label class="f" style="flex:2">Name<input type="text" id="wName" maxlength="60" placeholder="BEC Store Board"></label>
         <label class="f" style="flex:1">Seconds<input type="number" id="wDur" min="3" max="600" value="20"></label>
+        <label class="f" style="flex:1.4">Page size on TV<select id="wZoom"><option value="100">100% (actual size)</option><option value="85">85%</option><option value="75">75%</option><option value="67" selected>67% (fits BEC Store Board)</option><option value="50">50%</option></select></label>
       </div>
       <label class="f">Show at</label>
       <div class="stores" id="wStores"></div>
@@ -284,7 +285,8 @@ function editForm(it){
       <label class="f" style="flex:2">Name<input type="text" data-f="name" value="${esc(it.name||"")}" maxlength="60"></label>
       <label class="f" style="flex:1">Seconds<input type="number" data-f="duration" value="${it.duration}" min="3" max="600"></label>
     </div>
-    ${it.type==="webpage"?`<label class="f">Web address<input type="text" data-f="url" value="${esc(it.url||"")}"></label>`:""}
+    ${it.type==="webpage"?`<label class="f">Web address<input type="text" data-f="url" value="${esc(it.url||"")}"></label>
+      <label class="f" style="max-width:320px">Page size on TV (smaller fits more, no scrolling)<select data-f="zoom">${[[100, "100% (actual size)"], [85, "85%"], [75, "75%"], [67, "67% (fits BEC Store Board)"], [50, "50%"]].map(([v,t])=>`<option value="${v}" ${(+it.zoom||67)===v?"selected":""}>${t}</option>`).join("")}</select></label>`:""}
     ${it.type==="announcement"?`
       <label class="f">Headline<input type="text" data-f="title" value="${esc(it.title||"")}" maxlength="60"></label>
       <label class="f">Message<textarea data-f="body" maxlength="240">${esc(it.body||"")}</textarea></label>
@@ -302,7 +304,7 @@ $("#list").addEventListener("click",async e=>{
     if(act==="up"||act==="down"){const ids=S.items.map(x=>x.id);const j=act==="up"?i-1:i+1;[ids[i],ids[j]]=[ids[j],ids[i]];await call("POST","/api/order",{ids});return load()}
     if(act==="del"){if(b.dataset.c!=="1"){b.dataset.c="1";b.textContent="Confirm remove";b.classList.add("primary");setTimeout(()=>{if(b.isConnected){b.dataset.c="";b.textContent="Remove";b.classList.remove("primary")}},4000);return}
       await call("DELETE","/api/content/"+id);toast("Removed");return load()}
-    if(act==="save"){const body={};row.querySelectorAll("[data-f]").forEach(f=>body[f.dataset.f]=f.dataset.f==="duration"?+f.value:f.value);
+    if(act==="save"){const body={};row.querySelectorAll("[data-f]").forEach(f=>body[f.dataset.f]=["duration","zoom"].includes(f.dataset.f)?+f.value:f.value);
       body.stores=pickerValue(row.querySelector(".stores"));if(Array.isArray(body.stores)&&!body.stores.length){toast("Pick at least one store");return}
       await call("PATCH","/api/content/"+id,body);S.open=null;toast("Saved");return load()}
   }catch(err){if(err.message!=="auth")toast(err.message)}
@@ -346,7 +348,7 @@ $("#wAdd").addEventListener("click",async()=>{
   if(!url){toast("Enter a web address first");return}
   const stores=pickerValue($("#wStores"));if(Array.isArray(stores)&&!stores.length){toast("Pick at least one store");return}
   const name=$("#wName").value.trim()||url.replace(/^https?:\/\//,"").slice(0,60);
-  try{await call("POST","/api/content",{type:"webpage",name,url,duration:+$("#wDur").value||20,stores});
+  try{await call("POST","/api/content",{type:"webpage",name,url,duration:+$("#wDur").value||20,zoom:+$("#wZoom").value||67,stores});
     $("#wUrl").value="";$("#wName").value="";toast("Web page added");load();tab("playlist")}catch(err){if(err.message!=="auth")toast(err.message)}
 });
 
