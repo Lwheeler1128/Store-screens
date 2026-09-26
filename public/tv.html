@@ -61,6 +61,7 @@ function next(){
   else{
     const d=document.createElement("div");d.className="layer slide";
     if(it.type==="announcement")d.innerHTML=`<div class="ann ${esc(it.color||"red")}" style="position:absolute;inset:0"><div class="tag">Crew update</div><h1>${esc(it.title)}</h1>${it.body?`<p>${esc(it.body)}</p>`:""}</div>`;
+    else if(it.type==="webpage")d.innerHTML=`<iframe src="${esc(it.url)}" style="position:absolute;inset:0;width:100%;height:100%;border:0;background:#fff" referrerpolicy="no-referrer" title="${esc(it.name)}"></iframe>`;
     else if(it.type==="video")d.innerHTML=`<video src="/media/${encodeURIComponent(it.file)}" muted autoplay playsinline ${items.length===1?"loop":""}></video>`;
     else d.innerHTML=`<img src="/media/${encodeURIComponent(it.file)}" alt="">`;
     tv.insertBefore(d,prog);show(d);
