@@ -112,21 +112,23 @@ async function launchBrowser() {
   let pw;
   try { pw = require("playwright-core"); }
   catch { throw new Error("Missing parts. Close this window and double-click START.bat again so it can finish installing."); }
+  const args = ["--disable-dev-shm-usage", "--disable-gpu", "--mute-audio"];
+  const watch = b => { b.on("disconnected", () => { log("The hidden browser stopped unexpectedly. Restarting the feeder..."); process.exit(1); }); return b; };
   if (cfg.browserPath) {
-    const b = await pw.chromium.launch({ executablePath: cfg.browserPath, headless: !cfg.showBrowser });
+    const b = watch(await pw.chromium.launch({ executablePath: cfg.browserPath, headless: !cfg.showBrowser, args }));
     log(`Using browser at ${cfg.browserPath}`);
     return b;
   }
   const tries = cfg.browser ? [cfg.browser] : ["msedge", "chrome"];
   for (const channel of tries) {
     try {
-      const b = await pw.chromium.launch({ channel, headless: !cfg.showBrowser });
+      const b = watch(await pw.chromium.launch({ channel, headless: !cfg.showBrowser, args }));
       log(`Using ${channel === "msedge" ? "Microsoft Edge" : "Google Chrome"} in the background.`);
       return b;
     } catch (e) { /* try the next one */ }
   }
   try {
-    const b = await pw.chromium.launch({ headless: !cfg.showBrowser });
+    const b = watch(await pw.chromium.launch({ headless: !cfg.showBrowser, args }));
     log("Using the built-in Chromium browser.");
     return b;
   } catch (e) { /* fall through */ }
@@ -135,7 +137,14 @@ async function launchBrowser() {
 
 async function runStore(browser, s) {
   const ctx = await browser.newContext({ viewport: { width: 1440, height: 840 } });
+  // We only read the numbers, so skip the camera snapshots, video and fonts (saves most of the memory).
+  await ctx.route("**/*", route => {
+    const req = route.request(), t = req.resourceType();
+    if (t === "image" || t === "media" || t === "font" || /sentry\.io|\/streamings\//.test(req.url())) return route.abort();
+    return route.continue();
+  });
   const page = await ctx.newPage();
+  page.on("crash", () => { log(`${s.name}: dashboard tab crashed, reopening`); loadedAt = 0; });
   let loadedAt = 0, lastGood = 0, stuck = 0;
   const tokens = storeTokens(s);
   let ti = 0; // which Berry key this store is using; switches automatically if one doesn't work
@@ -149,7 +158,11 @@ async function runStore(browser, s) {
   const reloadEveryMs = (cfg.reloadMinutes || 30) * 60000;
   for (;;) {
     let r = null;
-    try { r = await page.evaluate(READER); } catch { r = null; }
+    try { r = await page.evaluate(READER); }
+    catch (e) {
+      r = null;
+      if (/closed|crash/i.test(String(e && e.message))) { log(`${s.name}: tab closed (${String(e.message).split("\n")[0]}), restarting feeder`); process.exit(1); }
+    }
     const now = Date.now();
     if (r && r.ready) {
       if (!lastGood && tokens.length > 1) log(`${s.name}: connected using Berry key #${ti + 1}`);

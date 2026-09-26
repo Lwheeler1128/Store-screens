@@ -92,7 +92,7 @@ Environment=NODE_ENV=production
 ExecStart=/usr/bin/node $APP/feeder.js
 Restart=always
 RestartSec=5
-MemoryMax=1700M
+MemoryMax=3300M
 
 [Install]
 WantedBy=multi-user.target
