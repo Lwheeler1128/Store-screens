@@ -8,30 +8,29 @@
   html,body{margin:0;height:100%;background:#000;overflow:hidden}
   body{display:flex;align-items:center;justify-content:center;font-family:"Barlow","Segoe UI",system-ui,sans-serif}
   .tv{width:min(100vw,177.78vh);aspect-ratio:16/9;container-type:inline-size;position:relative}
-  .lb{position:absolute;inset:0;background:radial-gradient(120% 90% at 100% 0%,#1B2F57 0%,#0B1426 60%);color:#F2F5FA;padding:3.2cqw 3.6cqw;display:flex;flex-direction:column;gap:1.6cqw}
-  .head{display:flex;align-items:flex-end;justify-content:space-between;gap:2cqw}
-  .title{font-family:"Barlow Condensed","Segoe UI",sans-serif;font-weight:800;font-size:5.4cqw;line-height:.9;text-transform:uppercase;letter-spacing:.01em}
+  .lb{--fs:2.6cqw;position:absolute;inset:0;background:radial-gradient(120% 90% at 100% 0%,#1B2F57 0%,#0B1426 60%);color:#F2F5FA;padding:3.2cqw 3.6cqw;display:flex;flex-direction:column;gap:1.6cqw}
+  .head{display:flex;align-items:center;justify-content:space-between;gap:2cqw}
+  .title{font-family:"Barlow Condensed","Segoe UI",sans-serif;font-weight:800;font-size:var(--title,5.4cqw);line-height:.9;text-transform:uppercase;letter-spacing:.01em}
   .title span{color:#F6B221}
   .meta{text-align:right;font-size:1.35cqw;color:#A8B6CF;line-height:1.35}
   .meta b{color:#fff;font-weight:600}
-  .cols,.row{display:grid;grid-template-columns:4cqw minmax(0,1fr) 9.5cqw 8cqw 10cqw 6.5cqw 7cqw 7.5cqw;gap:1.3cqw;align-items:center;gap:1.6cqw}
-  .cols{font-size:1.1cqw;text-transform:uppercase;letter-spacing:.12em;color:#7F8FAD;font-weight:600;padding:0 1.4cqw}
-  .rows{display:flex;flex-direction:column;gap:.8cqw;flex:1;min-height:0}
-  .row{background:rgba(255,255,255,.05);border-radius:.9cqw;padding:0 1.4cqw;flex:1;min-height:0;max-height:8.5cqw}
+  .cols,.row{display:grid;grid-template-columns:calc(var(--fs)*1.8) minmax(0,1fr) calc(var(--fs)*3.6) calc(var(--fs)*3.2) calc(var(--fs)*4) calc(var(--fs)*2.6) calc(var(--fs)*2.6) calc(var(--fs)*3.1);column-gap:calc(var(--fs)*.6);align-items:center}
+  .cols{font-size:max(.9cqw,calc(var(--fs)*.5));text-transform:uppercase;letter-spacing:.1em;color:#7F8FAD;font-weight:600;padding:0 calc(var(--fs)*.7)}
+  .cols span:nth-child(n+3){text-align:right}.cols span:nth-child(5){text-align:left}
+  .rows{display:flex;flex-direction:column;gap:calc(var(--fs)*.22);flex:1;min-height:0}
+  .row{background:rgba(255,255,255,.05);border-radius:calc(var(--fs)*.35);padding:0 calc(var(--fs)*.7);flex:1 1 0;min-height:0;max-height:calc(var(--fs)*3.2);overflow:hidden;line-height:1}
   .row.first{background:linear-gradient(90deg,rgba(246,178,33,.28),rgba(246,178,33,.06));box-shadow:inset 0 0 0 .15cqw rgba(246,178,33,.7)}
-  .row.stale{opacity:.45}
-  .rank{font-family:"Barlow Condensed","Segoe UI",sans-serif;font-weight:800;font-size:3.4cqw;color:#7F8FAD}
+  .row.stale{opacity:.5}
+  .rank{font-family:"Barlow Condensed","Segoe UI",sans-serif;font-weight:800;font-size:calc(var(--fs)*1.2);color:#7F8FAD;text-align:center}
   .first .rank{color:#F6B221}
-  .store{font-family:"Barlow Condensed","Segoe UI",sans-serif;font-weight:700;font-size:2.5cqw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.05}
-  .store small{display:block;font-family:"Segoe UI",sans-serif;font-weight:500;font-size:1.1cqw;color:#8E9CB6;letter-spacing:.04em}
-  .time{font-family:"Barlow Condensed","Segoe UI",sans-serif;font-weight:800;font-size:3.6cqw;font-variant-numeric:tabular-nums;text-align:right}
-  .dp{font-size:1.9cqw;font-weight:600;text-align:right;font-variant-numeric:tabular-nums;color:#C9D3E4}
-  .dp small,.cars small{display:block;font-size:.95cqw;color:#7F8FAD;letter-spacing:.1em;text-transform:uppercase}
-  .bar{position:relative;height:1.1cqw;background:rgba(255,255,255,.08);border-radius:1cqw}
+  .store{font-family:"Barlow Condensed","Segoe UI",sans-serif;font-weight:700;font-size:calc(var(--fs)*1.05);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .store small{font-family:"Segoe UI",sans-serif;font-weight:500;font-size:calc(var(--fs)*.55);color:#8E9CB6;letter-spacing:.03em;margin-left:calc(var(--fs)*.45)}
+  .time{font-family:"Barlow Condensed","Segoe UI",sans-serif;font-weight:800;font-size:calc(var(--fs)*1.25);font-variant-numeric:tabular-nums;text-align:right}
+  .dp,.cars,.live{font-size:calc(var(--fs)*.9);font-weight:600;text-align:right;font-variant-numeric:tabular-nums;color:#C9D3E4}
+  .live{color:#fff;font-weight:700}
+  .bar{position:relative;height:calc(var(--fs)*.42);background:rgba(255,255,255,.08);border-radius:1cqw}
   .bar i{position:absolute;left:0;top:0;bottom:0;border-radius:1cqw;transition:width .8s ease}
-  .bar .goal{position:absolute;top:-.6cqw;bottom:-.6cqw;width:.2cqw;background:#fff;opacity:.8}
-  .live{font-size:2.4cqw;font-weight:700;text-align:right;font-variant-numeric:tabular-nums;color:#fff}
-  .live small{display:block;font-size:.95cqw;color:#7F8FAD;letter-spacing:.1em;text-transform:uppercase;font-weight:600}
+  .bar .goal{position:absolute;top:calc(var(--fs)*-.22);bottom:calc(var(--fs)*-.22);width:.18cqw;background:#fff;opacity:.8}
   .flash{animation:flash 1.2s ease-out}
   @keyframes flash{0%{text-shadow:0 0 1.2cqw #F6B221;transform:scale(1.12)}100%{text-shadow:none;transform:scale(1)}}
   @media (prefers-reduced-motion:reduce){.flash{animation:none}}
@@ -71,17 +70,24 @@ function render(d){
   const max=Math.max(g+120,...stores.map(s=>s.todayAvg||0));
   const last=Math.max(0,...stores.filter(s=>s.updatedAt).map(s=>Date.parse(s.updatedAt)));
   const dp=(stores.find(s=>s.daypart)||{}).daypart||"";
-  document.getElementById("meta").innerHTML=`Avg total time (pull-forward) · today<br>${esc(dp)}<br>Goal <b>${fmt(g)}</b> · updated <b>${last?new Date(last).toLocaleTimeString([],{hour:"numeric",minute:"2-digit"}):"--"}</b>`;
+  document.getElementById("meta").innerHTML=`Avg total time today${dp?" · "+esc(dp.replace(/\s*\(.*\)/,"")):""}<br>Goal <b>${fmt(g)}</b> · updated <b>${last?new Date(last).toLocaleTimeString([],{hour:"numeric",minute:"2-digit"}):"--"}</b>`;
+  // size everything to fit the number of stores
+  const N=stores.length, lb=document.querySelector(".lb");
+  const compact=N>7;
+  lb.style.setProperty("--title",compact?"3.6cqw":"5.4cqw");
+  document.getElementById("title").innerHTML=compact?'Drive-Thru <span>Showdown</span>':'Drive-Thru<br><span>Showdown</span>';
+  const area=compact?37:31; // cqw of height left for the rows
+  lb.style.setProperty("--fs",Math.min(2.2,(area/N)/1.28).toFixed(3)+"cqw");
   document.getElementById("rows").innerHTML=stores.map((s,i)=>{const b=band(s.todayAvg);const stale=s.age>STALE;
     return `<div class="row ${i===0&&s.todayAvg!=null?"first":""} ${stale?"stale":""}">
       <div class="rank">${i+1}</div>
-      <div class="store">${esc(s.name)}<small>${s.num?"#"+esc(s.num):""}${stale?(s.updatedAt?" · no update in "+Math.round(s.age/60000)+" min":" · waiting for data"):""}&nbsp;</small></div>
+      <div class="store">${esc(s.name)}<small>${s.num?"#"+esc(s.num):""}${stale?(s.updatedAt?" · no update "+Math.round(s.age/60000)+"m":" · waiting"):""}</small></div>
       <div class="time ${b}" data-k="${esc(s.code)}-t">${fmt(s.todayAvg)}</div>
-      <div class="dp ${band(s.daypartAvg)}">${fmt(s.daypartAvg)}<small>daypart</small></div>
+      <div class="dp ${band(s.daypartAvg)}">${fmt(s.daypartAvg)}</div>
       <div class="bar">${s.todayAvg!=null?`<i class="b-${b}" style="width:${(s.todayAvg/max*100).toFixed(1)}%"></i>`:""}<span class="goal" style="left:${(g/max*100).toFixed(1)}%"></span></div>
-      <div class="cars" data-k="${esc(s.code)}-cars">${s.todayCars??"--"}<small>cars</small></div>
-      <div class="live" data-k="${esc(s.code)}-q">${s.queue??"--"}<small>in line</small></div>
-      <div class="live ${s.windowNow!=null&&s.windowGoal?(s.windowNow<=s.windowGoal?"good":s.windowNow<=s.windowGoal+30?"warn":"bad"):""}" data-k="${esc(s.code)}-w">${s.windowNow?fmt(s.windowNow):"--"}<small>window</small></div>
+      <div class="cars" data-k="${esc(s.code)}-cars">${s.todayCars??"--"}</div>
+      <div class="live" data-k="${esc(s.code)}-q">${s.queue??"--"}</div>
+      <div class="live ${s.windowNow!=null&&s.windowGoal?(s.windowNow<=s.windowGoal?"good":s.windowNow<=s.windowGoal+30?"warn":"bad"):""}" data-k="${esc(s.code)}-w">${s.windowNow?fmt(s.windowNow):"--"}</div>
     </div>`}).join("");
   // flash any number that changed since the last refresh
   document.querySelectorAll("[data-k]").forEach(el=>{const k=el.dataset.k,v=el.firstChild?el.firstChild.textContent:"";
