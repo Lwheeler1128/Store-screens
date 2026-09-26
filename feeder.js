@@ -35,7 +35,10 @@ function tokenExpiry(token) {
     return payload.exp ? new Date(payload.exp * 1000) : null;
   } catch { return null; }
 }
-const expires = tokenExpiry(cfg.token);
+// All Berry keys: the main one plus any extras ("tokens": [...]) for stores on other accounts.
+const ALL_TOKENS = [cfg.token, ...(Array.isArray(cfg.tokens) ? cfg.tokens : [])].filter((t, i, a) => t && a.indexOf(t) === i);
+const expiries = ALL_TOKENS.map(tokenExpiry).filter(Boolean).sort((a, b) => a - b);
+const expires = expiries[0] || null; // the soonest one to expire
 
 // ---------- the reader that runs inside each Berry dashboard ----------
 // It reads the visible text of the page, the same numbers a person sees.
@@ -82,10 +85,14 @@ const READER = () => {
 const live = {}; // code -> latest reading + status
 cfg.stores.forEach(s => { live[s.code] = { status: "starting" }; });
 
-function storeUrl(s) {
+function storeTokens(s) {
+  if (s.token) return [s.token];
+  return ALL_TOKENS;
+}
+function storeUrl(s, token) {
   if (s.url) return s.url; // lets you override per store
   const base = cfg.dashboardUrl || "https://drivethru-remote.berry-ai.com/";
-  return `${base}?branch_alias=${encodeURIComponent(s.code)}&crop=${encodeURIComponent(cfg.crop || "bec_group")}&berry_board_token=${encodeURIComponent(cfg.token)}`;
+  return `${base}?branch_alias=${encodeURIComponent(s.code)}&crop=${encodeURIComponent(cfg.crop || "bec_group")}&berry_board_token=${encodeURIComponent(token || cfg.token)}`;
 }
 
 // ---------- history log (one line per store per reading) ----------
@@ -129,10 +136,12 @@ async function launchBrowser() {
 async function runStore(browser, s) {
   const ctx = await browser.newContext({ viewport: { width: 1440, height: 840 } });
   const page = await ctx.newPage();
-  let loadedAt = 0, lastGood = 0;
+  let loadedAt = 0, lastGood = 0, stuck = 0;
+  const tokens = storeTokens(s);
+  let ti = 0; // which Berry key this store is using; switches automatically if one doesn't work
   const open = async () => {
-    live[s.code].status = "loading";
-    try { await page.goto(storeUrl(s), { waitUntil: "domcontentloaded", timeout: 45000 }); }
+    live[s.code].status = live[s.code].updatedAt ? "stale" : "loading";
+    try { await page.goto(storeUrl(s, tokens[ti]), { waitUntil: "domcontentloaded", timeout: 45000 }); }
     catch (e) { log(`${s.name}: couldn't open dashboard (${e.message.split("\n")[0]})`); }
     loadedAt = Date.now();
   };
@@ -143,14 +152,21 @@ async function runStore(browser, s) {
     try { r = await page.evaluate(READER); } catch { r = null; }
     const now = Date.now();
     if (r && r.ready) {
-      lastGood = now;
+      if (!lastGood && tokens.length > 1) log(`${s.name}: connected using Berry key #${ti + 1}`);
+      lastGood = now; stuck = 0;
       live[s.code] = { ...r, status: "ok", updatedAt: new Date().toISOString() };
       logHistory(s, r);
     } else {
       const prev = live[s.code];
       live[s.code] = { ...prev, status: prev && prev.updatedAt ? "stale" : "loading" };
       // Berry's page sometimes sticks on "Active Loading"; a reload fixes it.
-      if (now - loadedAt > 25000) { log(`${s.name}: dashboard stuck loading, reloading`); await open(); }
+      if (now - loadedAt > 25000) {
+        stuck++;
+        // After two tries with one key, try the next key (the store may belong to another Berry account).
+        if (stuck % 2 === 0 && tokens.length > 1) ti = (ti + 1) % tokens.length;
+        if (stuck <= 6 || stuck % 10 === 0) log(`${s.name}: dashboard not loading (store closed or wrong key?), retrying`);
+        await open();
+      }
     }
     if (now - loadedAt > reloadEveryMs && lastGood) { await open(); }
     await new Promise(res => setTimeout(res, cfg.pollSeconds * 1000));
@@ -337,8 +353,7 @@ function printSummary() {
 (async () => {
   console.log("\n  STORE SCREENS LIVE FEEDER\n  -------------------------");
   if (expires) {
-    const days = Math.round((expires - Date.now()) / 86400000);
-    console.log(`  Berry access key expires ${expires.toLocaleDateString()} (${days} days).${days < 7 ? "  ASK BERRY FOR A NEW ONE SOON." : ""}`);
+    expiries.forEach((d, i) => { const dd = Math.round((d - Date.now()) / 86400000); console.log(`  Berry key ${i + 1} expires ${d.toLocaleDateString()} (${dd} days).${dd < 7 ? "  ASK BERRY FOR A NEW ONE SOON." : ""}`); });
   }
   server.listen(cfg.port, cfg.host || undefined, () => {
     if (cfg.publicUrl) console.log(`\n  Dashboard: ${cfg.publicUrl}/admin   TV: ${cfg.publicUrl}/tv?store=CODE`);
