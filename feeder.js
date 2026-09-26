@@ -226,6 +226,9 @@ function cleanItem(src, base = {}) {
   return it;
 }
 
+// ---------- Google reviews ----------
+const reviews = require("./reviews")({ DATA_DIR, cfg, log });
+
 // ---------- web server ----------
 function payload() {
   return {
@@ -279,12 +282,19 @@ async function api(req, res, url) {
   if (p === "/api/content" && m === "GET") {
     return sendJson(res, 200, { items: [...content.items].sort((a, b) => a.order - b.order), stores: cfg.stores.map(s => ({ code: s.code, name: s.name, num: s.num || "" })), goalSeconds: cfg.goalSeconds });
   }
+  if (p === "/api/reviews" && m === "GET") return sendJson(res, 200, reviews.publicView(url.searchParams.get("store")));
   if (p === "/api/info" && m === "GET") {
     return sendJson(res, 200, { port: cfg.port, lan: cfg.publicUrl ? [] : lanAddresses(), publicUrl: cfg.publicUrl || null, tokenExpires: expires ? expires.toISOString() : null });
   }
   // everything below changes things, so it needs the dashboard password
   if (!isAdmin(req)) return sendJson(res, 401, { error: "Wrong or missing dashboard password." });
   if (p === "/api/login") return sendJson(res, 200, { ok: true });
+  if (p === "/api/reviews/admin" && m === "GET") return sendJson(res, 200, reviews.adminView());
+  if (p.startsWith("/api/reviews/") && m === "POST") {
+    const body = JSON.parse((await readBody(req, 1e5)).toString() || "{}");
+    try { const out = await reviews.adminAction(p, body); if (out) return sendJson(res, 200, out); }
+    catch (e) { return sendJson(res, 400, { error: e.message }); }
+  }
   if (p === "/api/upload" && m === "PUT") {
     const mime = String(req.headers["content-type"] || "").split(";")[0].trim().toLowerCase();
     const ext = EXT_FOR[mime];
@@ -298,7 +308,7 @@ async function api(req, res, url) {
   if (p === "/api/content" && m === "POST") {
     const body = JSON.parse((await readBody(req, 1e6)).toString() || "{}");
     const it = cleanItem(body, { id: newId(), createdAt: new Date().toISOString(), order: Math.max(0, ...content.items.map(i => i.order || 0)) + 1 });
-    if (!["image", "video", "announcement", "webpage"].includes(it.type)) return sendJson(res, 400, { error: "Unknown item type." });
+    if (!["image", "video", "announcement", "webpage", "reviews"].includes(it.type)) return sendJson(res, 400, { error: "Unknown item type." });
     if (it.type === "webpage" && !it.url) return sendJson(res, 400, { error: "Enter a web address that starts with https://" });
     content.items.push(it); saveContent();
     log(`Dashboard: added "${it.name}"`);
