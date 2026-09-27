@@ -18,11 +18,15 @@ module.exports = function setupReviews({ DATA_DIR, cfg, log }) {
 
   let db = { mode: null, stores: {}, usage: {}, lastDaily: null, minStars: 4 };
   try { db = { ...db, ...JSON.parse(fs.readFileSync(FILE, "utf8")) }; } catch {}
-  let apiKey = "";
-  try { apiKey = JSON.parse(fs.readFileSync(KEY_FILE, "utf8")).apiKey || ""; } catch {}
+  let apiKey = "", serpKey = "";
+  try { const k = JSON.parse(fs.readFileSync(KEY_FILE, "utf8")); apiKey = k.apiKey || ""; serpKey = k.serpKey || ""; } catch {}
+  // SerpApi (optional) gives the true newest reviews. Free plan = 250 lookups/month,
+  // so by default we check every other day and stop at 240.
+  const SERP_CAP = cfg.serpMonthlyCap || 240;
+  const SERP_EVERY_DAYS = cfg.serpEveryDays || 2;
 
   const save = () => { const t = FILE + ".tmp"; fs.writeFileSync(t, JSON.stringify(db, null, 1)); fs.renameSync(t, FILE); };
-  const saveKey = () => { fs.writeFileSync(KEY_FILE, JSON.stringify({ apiKey }), { mode: 0o600 }); };
+  const saveKey = () => { fs.writeFileSync(KEY_FILE, JSON.stringify({ apiKey, serpKey }), { mode: 0o600 }); };
 
   // ---- local date/time in Eastern ----
   function nowParts() {
@@ -31,11 +35,12 @@ module.exports = function setupReviews({ DATA_DIR, cfg, log }) {
   }
   function usage() {
     const { month } = nowParts();
-    if (db.usage.month !== month) db.usage = { month, details: 0, search: 0 };
+    if (db.usage.month !== month) db.usage = { month, details: 0, search: 0, serp: 0 };
+    db.usage.serp = db.usage.serp || 0;
     return db.usage;
   }
   function spend(kind) {
-    const u = usage(); const cap = kind === "details" ? DETAILS_CAP : SEARCH_CAP;
+    const u = usage(); const cap = kind === "details" ? DETAILS_CAP : kind === "serp" ? SERP_CAP : SEARCH_CAP;
     if (u[kind] >= cap) throw new Error(`Monthly free limit reached (${u[kind]} of ${cap}). It resets on the 1st.`);
     u[kind]++; save();
   }
@@ -68,6 +73,15 @@ module.exports = function setupReviews({ DATA_DIR, cfg, log }) {
     if (!r.ok) throw new Error(googleError(d, r.status));
     return { rating: d.rating ?? null, total: d.userRatingCount ?? null, reviews: (d.reviews || []).map(v => ({ author: v.authorAttribution?.displayName || "Google user", rating: v.rating, text: v.originalText?.text || v.text?.text || "", time: v.publishTime || null })) };
   }
+  async function fetchSerp(placeId) {
+    spend("serp");
+    const u = new URL("https://serpapi.com/search.json");
+    u.search = new URLSearchParams({ engine: "google_maps_reviews", place_id: placeId, sort_by: "newestFirst", hl: "en", api_key: serpKey });
+    const d = await (await fetch(u)).json().catch(() => ({}));
+    if (d.error) throw new Error("SerpApi: " + d.error);
+    const pi = d.place_info || {};
+    return { rating: pi.rating ?? null, total: pi.reviews ?? null, reviews: (d.reviews || []).map(v => ({ author: v.user?.name || "Google user", rating: v.rating, text: v.extracted_snippet?.original || v.snippet || "", time: v.iso_date || null })) };
+  }
   // The older Google lookup can sort by newest; newer Google accounts may only have the new one.
   async function fetchDetails(placeId) {
     if (db.mode !== "new") {
@@ -92,8 +106,11 @@ module.exports = function setupReviews({ DATA_DIR, cfg, log }) {
   async function refreshStore(code) {
     const s = db.stores[code]; if (!s?.placeId) return;
     try {
-      const x = await fetchDetails(s.placeId);
-      const byNewest = x.reviews.filter(v => v.text || v.rating).sort((a, b) => Date.parse(b.time || 0) - Date.parse(a.time || 0)).slice(0, 5);
+      const viaSerp = !!serpKey;
+      const x = viaSerp ? await fetchSerp(s.placeId) : await fetchDetails(s.placeId);
+      if (viaSerp && x.rating == null && s.rating != null) { x.rating = s.rating; x.total = s.total; }
+      const byNewest = x.reviews.filter(v => v.text || v.rating).sort((a, b) => Date.parse(b.time || 0) - Date.parse(a.time || 0)).slice(0, viaSerp ? 8 : 5);
+      if (viaSerp) { Object.assign(s, { rating: x.rating, total: x.total, reviews: byNewest, source: "serpapi", fetchedAt: new Date().toISOString(), error: null }); save(); return; }
       // keep what we've already seen so the TV has more than 5 to pick from over time
       const seen = new Map((s.reviews || []).map(v => [v.author + "|" + v.time, v]));
       byNewest.forEach(v => seen.set(v.author + "|" + v.time, v));
@@ -108,7 +125,8 @@ module.exports = function setupReviews({ DATA_DIR, cfg, log }) {
   // once a day, after 6 AM Eastern
   setInterval(() => {
     const { day, hour } = nowParts();
-    if (!apiKey || db.lastDaily === day || hour < DAILY_HOUR) return;
+    if ((!apiKey && !serpKey) || db.lastDaily === day || hour < DAILY_HOUR) return;
+    if (serpKey && db.lastDaily && (Date.parse(day) - Date.parse(db.lastDaily)) / 864e5 < SERP_EVERY_DAYS) return;
     db.lastDaily = day; save(); log("Google reviews: daily check");
     refreshAll().catch(e => log("Google reviews: " + e.message));
   }, 5 * 60 * 1000);
@@ -133,7 +151,7 @@ module.exports = function setupReviews({ DATA_DIR, cfg, log }) {
   }
   function adminView() {
     const u = usage();
-    return { hasKey: !!apiKey, keyHint: apiKey ? "…" + apiKey.slice(-4) : "", usage: { ...u, detailsCap: DETAILS_CAP, searchCap: SEARCH_CAP }, minStars: db.minStars, lastDaily: db.lastDaily, dailyHour: DAILY_HOUR,
+    return { hasKey: !!apiKey, keyHint: apiKey ? "…" + apiKey.slice(-4) : "", hasSerp: !!serpKey, serpHint: serpKey ? "…" + serpKey.slice(-4) : "", serpEveryDays: SERP_EVERY_DAYS, usage: { ...u, detailsCap: DETAILS_CAP, searchCap: SEARCH_CAP, serpCap: SERP_CAP }, minStars: db.minStars, lastDaily: db.lastDaily, dailyHour: DAILY_HOUR,
       stores: cfg.stores.map(st => { const s = db.stores[st.code] || {}; return { code: st.code, name: st.name, num: st.num || "", placeId: s.placeId || null, placeName: s.placeName || "", address: s.address || "", rating: s.rating ?? null, total: s.total ?? null, count: (s.reviews || []).length, fetchedAt: s.fetchedAt || null, error: s.error || null }; }) };
   }
 
@@ -142,6 +160,12 @@ module.exports = function setupReviews({ DATA_DIR, cfg, log }) {
     if (p === "/api/reviews/key") {
       apiKey = String(body.apiKey || "").trim().slice(0, 200); saveKey();
       log(apiKey ? "Google reviews: API key saved" : "Google reviews: API key removed");
+      return adminView();
+    }
+    if (p === "/api/reviews/serpkey") {
+      serpKey = String(body.serpKey || "").trim().slice(0, 200); saveKey();
+      log(serpKey ? "Reviews: SerpApi key saved (newest-first reviews)" : "Reviews: SerpApi key removed");
+      if (serpKey && body.refresh) await refreshAll();
       return adminView();
     }
     if (p === "/api/reviews/settings") { if (body.minStars) db.minStars = Math.max(1, Math.min(5, +body.minStars)); save(); return adminView(); }
