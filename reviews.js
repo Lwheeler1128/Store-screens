@@ -139,6 +139,8 @@ module.exports = function setupReviews({ DATA_DIR, cfg, log }) {
   function publicView(storeParam) {
     const min = db.minStars || 1;
     const code = String(storeParam || "all").toUpperCase();
+    // a store screen only ever gets that store's own reviews, never a mix
+    if (code !== "ALL" && !db.stores[code]) return { scope: "store", store: nameOf(code), rating: null, total: null, fetchedAt: null, reviews: [] };
     if (code !== "ALL" && db.stores[code]) {
       const s = db.stores[code];
       return { scope: "store", store: nameOf(code), rating: s.rating, total: s.total, fetchedAt: s.fetchedAt, reviews: (s.reviews || []).filter(v => v.rating >= min).slice(0, 5).map(pub) };
