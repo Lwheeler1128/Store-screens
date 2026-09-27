@@ -221,6 +221,11 @@ code{font-family:Consolas,"Cascadia Mono",monospace;font-size:13px;background:va
         <button class="btn primary" id="rvKeySave">Save key</button>
         <label class="f" style="width:170px">Show reviews with<select id="rvMin"><option value="1">Any rating</option><option value="3">3 stars and up</option><option value="4">4 stars and up</option><option value="5">5 stars only</option></select></label>
       </div>
+      <div class="row" style="align-items:flex-end">
+        <label class="f" style="flex:1;min-width:240px">SerpApi key for newest-first reviews <span id="rvSerpState" style="text-transform:none;letter-spacing:0;font-weight:600"></span><input type="password" id="rvSerp" autocomplete="off" placeholder="Paste your SerpApi key"></label>
+        <button class="btn primary" id="rvSerpSave">Save and load newest</button>
+      </div>
+      <p class="muted" id="rvSerpNote" style="margin:-4px 0 0"></p>
       <div class="tw"><table id="rvTable"></table></div>
       <div class="row"><button class="btn" id="rvCheckAll">Check all stores now</button><span class="muted" id="rvCheckNote"></span></div>
     </div>
@@ -394,10 +399,12 @@ function renderReviews(){
   if(!RV)return;const u=RV.usage;
   $("#rvUsage").innerHTML=`<span class="dot ${u.details<u.detailsCap*.8?"good":"warn"}"></span>This month: ${u.details} of ${u.detailsCap} free checks used`;
   $("#rvKeyState").textContent=RV.hasKey?`(saved ${RV.keyHint})`:"(not set yet)";
+  $("#rvSerpState").textContent=RV.hasSerp?`(saved ${RV.serpHint})`:"(not set yet)";
+  $("#rvSerpNote").textContent=RV.hasSerp?`Using SerpApi: the 5 newest reviews per store, checked every ${RV.serpEveryDays} days at 6 AM. This month: ${u.serp||0} of ${u.serpCap} free SerpApi lookups used.`:"Optional. With a SerpApi key the slide shows each store's true newest reviews (any rating) instead of the 5 Google picks.";
   if(document.activeElement!==$("#rvMin"))$("#rvMin").value=String(RV.minStars||4);
   const linked=RV.stores.filter(s=>s.placeId).length;
   $("#rvAddNote").hidden=RV.hasKey&&linked>0;
-  $("#rvCheckNote").textContent=`Uses ${linked} of the monthly checks. The daily 6 AM check runs on its own.`;
+  $("#rvCheckNote").textContent=`Uses ${linked} of the monthly ${RV.hasSerp?"SerpApi lookups":"checks"}. The scheduled 6 AM check runs on its own.`;
   $("#rvTable").innerHTML=`<thead><tr><th>Store</th><th>Google listing</th><th>Rating</th><th>Last checked</th><th></th></tr></thead><tbody>${RV.stores.map(s=>`
     <tr><td><b>${esc(s.name)}</b><br><span class="muted">#${esc(s.num)}</span></td>
       <td>${s.placeId?`${esc(s.placeName)}<br><span class="muted">${esc(s.address)}</span>`:`<span class="muted">Not linked yet</span>`}${s.error?`<br><span style="color:var(--bad);font-size:13px">${esc(s.error)}</span>`:""}
@@ -418,6 +425,9 @@ $("#rvTable").addEventListener("click",async e=>{
 });
 $("#rvKeySave").addEventListener("click",async()=>{const k=$("#rvKey").value.trim();if(!k){toast("Paste the key first");return}
   try{RV=await call("POST","/api/reviews/key",{apiKey:k});$("#rvKey").value="";toast("Key saved");renderReviews()}catch(err){if(err.message!=="auth")toast(err.message)}});
+$("#rvSerpSave").addEventListener("click",async e=>{const k=$("#rvSerp").value.trim();if(!k){toast("Paste the SerpApi key first");return}const b=e.currentTarget;b.disabled=true;b.textContent="Loading newest reviews…";
+  try{RV=await call("POST","/api/reviews/serpkey",{serpKey:k,refresh:true});$("#rvSerp").value="";const bad=RV.stores.filter(s=>s.error);toast(bad.length?bad[0].error:"Newest reviews loaded");renderReviews()}catch(err){if(err.message!=="auth")toast(err.message)}
+  b.disabled=false;b.textContent="Save and load newest"});
 $("#rvMin").addEventListener("change",async()=>{try{RV=await call("POST","/api/reviews/settings",{minStars:+$("#rvMin").value});toast("Saved");renderReviews()}catch(err){if(err.message!=="auth")toast(err.message)}});
 $("#rvCheckAll").addEventListener("click",async e=>{const b=e.currentTarget;b.disabled=true;b.textContent="Checking…";
   try{RV=await call("POST","/api/reviews/refresh",{});toast("Reviews updated")}catch(err){if(err.message!=="auth")toast(err.message)}
