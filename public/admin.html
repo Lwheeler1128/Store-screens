@@ -59,6 +59,10 @@ textarea{resize:vertical;min-height:70px}
 .thumb{width:110px;aspect-ratio:16/9;border-radius:6px;overflow:hidden;background:var(--surface-2);display:grid;place-items:center;font-size:11px;color:var(--ink-3);font-weight:700;text-transform:uppercase;letter-spacing:.06em;text-align:center}
 .thumb img,.thumb video{width:100%;height:100%;object-fit:cover;display:block}
 .thumb.web{background:#2F6FEB;color:#fff}
+.thumb.rv{background:#0B1426;color:#F6B221;font-size:13px}
+.rvres{display:flex;flex-direction:column;gap:6px;margin-top:6px}
+.rvres div{display:flex;gap:8px;align-items:center;justify-content:space-between;border:1px solid var(--line);border-radius:8px;padding:6px 8px;background:var(--surface)}
+.stat{font-weight:700}
 .thumb.lb{background:#0B1426;color:#F6B221;font-family:"Barlow Condensed",sans-serif;font-size:11px}
 .thumb.ann-red{background:#C8102E;color:#fff}.thumb.ann-navy{background:#13233F;color:#fff}.thumb.ann-gold{background:#F6B221;color:#13233F}.thumb.ann-black{background:#111;color:#fff}
 .name{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -167,6 +171,19 @@ code{font-family:Consolas,"Cascadia Mono",monospace;font-size:13px;background:va
       <div class="row"><button class="btn primary" id="wAdd">Add to playlist</button><a class="btn" id="wTest" href="#" target="_blank" rel="noopener">Open to check</a></div>
       <p class="muted">If the page shows up blank on the TV, that website doesn't allow being shown inside other pages.</p>
     </div>
+
+    <div class="panel">
+      <h2>Google reviews</h2>
+      <p class="sub">Shows the newest Google reviews. Each store's TV shows its own reviews; the "All stores" screen shows the newest from every store.</p>
+      <div class="note" id="rvAddNote">Set up Google reviews in <b>Settings</b> first (one-time API key and store lookup).</div>
+      <div class="row">
+        <label class="f" style="flex:2">Name<input type="text" id="rName" maxlength="60" value="Google Reviews"></label>
+        <label class="f" style="flex:1">Seconds<input type="number" id="rDur" min="5" max="120" value="15"></label>
+      </div>
+      <label class="f">Show at</label>
+      <div class="stores" id="rStores"></div>
+      <div class="row"><button class="btn primary" id="rAdd">Add to playlist</button></div>
+    </div>
   </section>
 
   <!-- SCREENS -->
@@ -195,6 +212,17 @@ code{font-family:Consolas,"Cascadia Mono",monospace;font-size:13px;background:va
       <h2>Drive-thru goal</h2>
       <p class="sub">Average total time. Green is at or under the goal, yellow is up to 30 seconds over, red is more.</p>
       <div class="row"><select id="goal" style="width:auto"></select><button class="btn primary" id="goalSave">Save goal</button></div>
+    </div>
+    <div class="panel" style="grid-column:1/-1">
+      <div class="row"><h2>Google reviews</h2><span class="sp"></span><span class="pill" id="rvUsage"></span></div>
+      <p class="sub">Checks each store's newest Google reviews once a day at 6 AM. A built-in monthly limit keeps this inside Google's free allowance, so it never costs anything.</p>
+      <div class="row" style="align-items:flex-end">
+        <label class="f" style="flex:1;min-width:240px">Google API key <span id="rvKeyState" style="text-transform:none;letter-spacing:0;font-weight:600"></span><input type="password" id="rvKey" autocomplete="off" placeholder="Paste your Places API key"></label>
+        <button class="btn primary" id="rvKeySave">Save key</button>
+        <label class="f" style="width:170px">Show reviews with<select id="rvMin"><option value="1">Any rating</option><option value="3">3 stars and up</option><option value="4">4 stars and up</option><option value="5">5 stars only</option></select></label>
+      </div>
+      <div class="tw"><table id="rvTable"></table></div>
+      <div class="row"><button class="btn" id="rvCheckAll">Check all stores now</button><span class="muted" id="rvCheckNote"></span></div>
     </div>
     <div class="panel">
       <h2>Stores and Berry access</h2>
@@ -253,6 +281,7 @@ function thumb(it){
   if(it.type==="leaderboard")return `<div class="thumb lb">Leaderboard</div>`;
   if(it.type==="announcement")return `<div class="thumb ann-${esc(it.color||"red")}">${esc((it.title||"Text").slice(0,24))}</div>`;
   if(it.type==="webpage")return `<div class="thumb web">Web page</div>`;
+  if(it.type==="reviews")return `<div class="thumb rv">★★★★★</div>`;
   if(it.type==="video")return `<div class="thumb"><video src="/media/${encodeURIComponent(it.file)}#t=1" muted preload="metadata"></video></div>`;
   return `<div class="thumb"><img src="/media/${encodeURIComponent(it.file)}" alt="" loading="lazy"></div>`;
 }
@@ -263,7 +292,7 @@ function render(){
    <div class="item ${it.active?"":"off"}" data-id="${esc(it.id)}">
      <div class="item-main">${thumb(it)}
        <div style="min-width:0"><div class="name">${esc(it.name||it.title)}</div>
-         <div class="meta"><span class="chip ${it.type==="leaderboard"?"red":""}">${{leaderboard:"Live drive times",announcement:"Text",video:"Video",image:"Image",webpage:"Web page"}[it.type]}</span><span>${it.duration}s</span><span>${esc(target(it))}</span>${it.active?"":"<span class='chip'>Paused</span>"}</div></div>
+         <div class="meta"><span class="chip ${it.type==="leaderboard"?"red":""}">${{leaderboard:"Live drive times",announcement:"Text",video:"Video",image:"Image",webpage:"Web page",reviews:"Google reviews"}[it.type]}</span><span>${it.duration}s</span><span>${esc(target(it))}</span>${it.active?"":"<span class='chip'>Paused</span>"}</div></div>
        <div class="ctrls">
          <button class="btn small ghost" data-act="up" ${i===0?"disabled":""} aria-label="Move up">▲</button>
          <button class="btn small ghost" data-act="down" ${i===items.length-1?"disabled":""} aria-label="Move down">▼</button>
@@ -275,7 +304,7 @@ function render(){
    </div>`).join("")||`<p class="muted">Nothing here yet. Use Add content.</p>`;
   if(S.open){const el=document.querySelector(`.item[data-id="${S.open}"] .stores`);const it=items.find(x=>x.id===S.open);if(el&&it)storePicker(el,it.stores)}
   const pv=$("#pvStore"),v=pv.value;pv.innerHTML=`<option value="all">All stores</option>`+S.stores.map(s=>`<option value="${esc(s.code)}">${esc(s.name)}</option>`).join("");if(v)pv.value=v;
-  storePicker($("#upStores"),pickerValue0("#upStores"));storePicker($("#aStores"),pickerValue0("#aStores"));storePicker($("#wStores"),pickerValue0("#wStores"));
+  storePicker($("#upStores"),pickerValue0("#upStores"));storePicker($("#aStores"),pickerValue0("#aStores"));storePicker($("#wStores"),pickerValue0("#wStores"));storePicker($("#rStores"),pickerValue0("#rStores"));
   renderLinks();renderSettings();
 }
 function pickerValue0(q){const el=$(q);return el.querySelector("[data-all]")?pickerValue(el):"all"}
@@ -352,6 +381,48 @@ $("#wAdd").addEventListener("click",async()=>{
     $("#wUrl").value="";$("#wName").value="";toast("Web page added");load();tab("playlist")}catch(err){if(err.message!=="auth")toast(err.message)}
 });
 
+$("#rAdd").addEventListener("click",async()=>{
+  const stores=pickerValue($("#rStores"));if(Array.isArray(stores)&&!stores.length){toast("Pick at least one store");return}
+  try{await call("POST","/api/content",{type:"reviews",name:$("#rName").value.trim()||"Google Reviews",duration:+$("#rDur").value||15,stores});
+    toast("Reviews slide added");load();tab("playlist")}catch(err){if(err.message!=="auth")toast(err.message)}
+});
+
+/* ---------- Google reviews settings ---------- */
+let RV=null,rvOpen=null,rvResults={};
+async function loadReviews(){try{RV=await call("GET","/api/reviews/admin");renderReviews()}catch(e){}}
+function renderReviews(){
+  if(!RV)return;const u=RV.usage;
+  $("#rvUsage").innerHTML=`<span class="dot ${u.details<u.detailsCap*.8?"good":"warn"}"></span>This month: ${u.details} of ${u.detailsCap} free checks used`;
+  $("#rvKeyState").textContent=RV.hasKey?`(saved ${RV.keyHint})`:"(not set yet)";
+  if(document.activeElement!==$("#rvMin"))$("#rvMin").value=String(RV.minStars||4);
+  const linked=RV.stores.filter(s=>s.placeId).length;
+  $("#rvAddNote").hidden=RV.hasKey&&linked>0;
+  $("#rvCheckNote").textContent=`Uses ${linked} of the monthly checks. The daily 6 AM check runs on its own.`;
+  $("#rvTable").innerHTML=`<thead><tr><th>Store</th><th>Google listing</th><th>Rating</th><th>Last checked</th><th></th></tr></thead><tbody>${RV.stores.map(s=>`
+    <tr><td><b>${esc(s.name)}</b><br><span class="muted">#${esc(s.num)}</span></td>
+      <td>${s.placeId?`${esc(s.placeName)}<br><span class="muted">${esc(s.address)}</span>`:`<span class="muted">Not linked yet</span>`}${s.error?`<br><span style="color:var(--bad);font-size:13px">${esc(s.error)}</span>`:""}
+        ${rvOpen===s.code?`<div class="row" style="margin-top:6px"><input type="text" id="rvQ" value="${esc(rvQuery(s))}" style="flex:1"><button class="btn small primary" data-rv="search" data-code="${esc(s.code)}">Search</button></div>
+          <div class="rvres">${(rvResults[s.code]||[]).map((r,i)=>`<div><span><b>${esc(r.name)}</b><br><span class="muted">${esc(r.address)}${r.rating!=null?` · ${r.rating}★ (${r.total})`:""}</span></span><button class="btn small" data-rv="use" data-code="${esc(s.code)}" data-i="${i}">Use this</button></div>`).join("")}</div>`:""}</td>
+      <td>${s.rating!=null?`<span class="stat">${s.rating.toFixed(1)}★</span> <span class="muted">(${s.total})</span>`:"--"}</td>
+      <td>${s.fetchedAt?new Date(s.fetchedAt).toLocaleString([], {month:"short",day:"numeric",hour:"numeric",minute:"2-digit"}):"--"}</td>
+      <td style="white-space:nowrap"><button class="btn small" data-rv="find" data-code="${esc(s.code)}" ${RV.hasKey?"":"disabled"}>${rvOpen===s.code?"Close":s.placeId?"Change":"Find on Google"}</button></td></tr>`).join("")}</tbody>`;
+}
+function rvQuery(s){return `Zaxby's ${s.name}`}
+$("#rvTable").addEventListener("click",async e=>{
+  const b=e.target.closest("[data-rv]");if(!b)return;const code=b.dataset.code;
+  try{
+    if(b.dataset.rv==="find"){rvOpen=rvOpen===code?null:code;return renderReviews()}
+    if(b.dataset.rv==="search"){b.disabled=true;b.textContent="Searching…";const d=await call("POST","/api/reviews/search",{query:$("#rvQ").value});rvResults[code]=d.results;if(!d.results.length)toast("No matches. Try adding the city or street.");return renderReviews()}
+    if(b.dataset.rv==="use"){const r=rvResults[code][+b.dataset.i];b.disabled=true;b.textContent="Loading reviews…";RV=await call("POST","/api/reviews/place",{code,...r});rvOpen=null;toast("Linked. Reviews loaded.");return renderReviews()}
+  }catch(err){if(err.message!=="auth")toast(err.message);renderReviews()}
+});
+$("#rvKeySave").addEventListener("click",async()=>{const k=$("#rvKey").value.trim();if(!k){toast("Paste the key first");return}
+  try{RV=await call("POST","/api/reviews/key",{apiKey:k});$("#rvKey").value="";toast("Key saved");renderReviews()}catch(err){if(err.message!=="auth")toast(err.message)}});
+$("#rvMin").addEventListener("change",async()=>{try{RV=await call("POST","/api/reviews/settings",{minStars:+$("#rvMin").value});toast("Saved");renderReviews()}catch(err){if(err.message!=="auth")toast(err.message)}});
+$("#rvCheckAll").addEventListener("click",async e=>{const b=e.currentTarget;b.disabled=true;b.textContent="Checking…";
+  try{RV=await call("POST","/api/reviews/refresh",{});toast("Reviews updated")}catch(err){if(err.message!=="auth")toast(err.message)}
+  b.disabled=false;b.textContent="Check all stores now";renderReviews()});
+
 /* ---------- preview ---------- */
 $("#pvStore").addEventListener("change",()=>{$("#pv").src="/tv?store="+encodeURIComponent($("#pvStore").value)});
 
@@ -391,7 +462,7 @@ async function start(){
   $("#login").hidden=true;$("#app").hidden=false;
   $("#shareUrl").value=store.get("ss_share")||"";
   try{S.info=await (await fetch("/api/info")).json()}catch(e){}
-  await load();loadLive();
+  await load();loadLive();loadReviews();
   $("#pv").src="/tv?store=all";
   const t=store.get("ss_tab");if(t&&["playlist","add","screens","settings"].includes(t))tab(t);
   setInterval(loadLive,15000);
