@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Drive-Thru Speed Contest</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Archivo:wght@400;500;600&display=swap">
+<style>
+:root{
+  --bg:#f3f5f8; --panel:#ffffff; --fg:#14202e; --muted:#5d6b7c; --line:#dde3ea;
+  --accent:#d98a00; --accent-ink:#7a4d00; --accent-soft:#fdf1dc;
+  --gold:#c99a1e; --silver:#8e9aa8; --bronze:#b06b3a; --dim:#9aa5b2; --good-bg:#dcefe0; --bad-bg:#f6dcd8;
+  --display:"Barlow Condensed","Arial Narrow",system-ui,sans-serif;
+  --body:"Archivo",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme:dark){:root{
+  --bg:#0e151d; --panel:#16202b; --fg:#e8edf3; --muted:#9aa8b8; --line:#26323f;
+  --accent:#f0a823; --accent-ink:#f6c46a; --accent-soft:#2a2114;
+  --gold:#e0b440; --silver:#a9b5c2; --bronze:#cf8a57; --dim:#6b7887; --good-bg:#183526; --bad-bg:#3a1f1d; color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--body);font-size:15px;line-height:1.5}
+.wrap{max-width:960px;margin:0 auto;padding-inline:16px;padding-block:28px 48px;display:grid;gap:22px}
+header{display:grid;gap:6px}
+.eyebrow{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:600}
+h1{font-family:var(--display);font-weight:800;font-size:clamp(34px,6vw,52px);line-height:1;margin:0;text-wrap:balance}
+h1 span{color:var(--accent)}
+.sub{color:var(--muted);margin:0;max-width:65ch}
+.weeks{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.wk{border:1px solid var(--line);background:var(--panel);border-radius:8px;padding:10px 12px;display:grid;gap:2px}
+.wk b{font-family:var(--display);font-size:20px;font-weight:700}
+.wk small{color:var(--muted);font-size:12px}
+.wk.done{border-color:var(--accent);background:var(--accent-soft)}
+.wk.done small{color:var(--accent-ink)}
+.controls{display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;align-items:center}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:999px;background:var(--panel);padding:3px;flex-wrap:wrap}
+.seg button{font:inherit;font-weight:600;font-size:14px;border:0;background:transparent;color:var(--muted);padding:6px 14px;border-radius:999px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--fg);color:var(--bg)}
+.seg button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.podium{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.pod{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;display:grid;gap:2px;min-width:0}
+.pod .place{font-family:var(--display);font-weight:800;font-size:15px;letter-spacing:.06em;text-transform:uppercase}
+.pod.p1{border-top:4px solid var(--gold)} .pod.p1 .place{color:var(--gold)}
+.pod.p2{border-top:4px solid var(--silver)} .pod.p2 .place{color:var(--silver)}
+.pod.p3{border-top:4px solid var(--bronze)} .pod.p3 .place{color:var(--bronze)}
+.pod .name{font-family:var(--display);font-weight:700;font-size:24px;line-height:1.1;overflow-wrap:anywhere}
+.pod .time{font-family:var(--display);font-weight:800;font-size:40px;line-height:1;font-variant-numeric:tabular-nums}
+.pod .meta{color:var(--muted);font-size:13px}
+.board{background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
+th{text-align:left;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:600;padding:10px 12px;border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:9px 12px;border-bottom:1px solid var(--line);white-space:nowrap}
+tr:last-child td{border-bottom:0}
+td.pl{font-family:var(--display);font-weight:800;font-size:18px;width:44px}
+td.t{font-family:var(--display);font-weight:700;font-size:20px;text-align:right}
+th.r,td.r{text-align:right}
+td.who{font-weight:600}
+td.store{color:var(--muted)}
+tr.gap td{color:var(--dim)}
+.tag{display:inline-block;font-size:11px;font-weight:600;letter-spacing:.04em;padding:2px 8px;border-radius:999px;border:1px solid var(--line);color:var(--muted)}
+.rules{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}
+.rule{border-left:3px solid var(--accent);padding:4px 0 4px 12px;color:var(--muted);font-size:14px}
+.rule b{display:block;color:var(--fg);font-weight:600}
+td.g{color:var(--muted)}
+td.good{background:var(--good-bg);font-weight:700}
+td.bad{background:var(--bad-bg)}
+.how{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 16px;display:grid;gap:8px}
+.how dl{margin:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.how dt{font-weight:600}
+.how dd{margin:0;color:var(--muted);font-size:14px}
+h2{font-family:var(--display);font-weight:700;font-size:22px;margin:0}
+@media (max-width:560px){.podium{grid-template-columns:1fr}.pod .time{font-size:34px}.weeks{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">5-store SOS speed contest · Col O, car-weighted</div>
+    <h1>Drive-Thru <span>Speed</span> Contest</h1>
+    <p class="sub">Fastest drive-thru time wins. Times are Col O (Lane Total with Pull Forward) from each store's weekly SOS by Shift report. Lower is better.</p>
+  </header>
+
+  <div class="weeks" id="weeks"></div>
+
+  <div class="controls">
+    <div class="seg" role="group" aria-label="Board">
+      <button id="b-mgr" aria-pressed="true">Managers</button>
+      <button id="b-store" aria-pressed="false">Stores</button>
+    </div>
+    <div class="seg" role="group" aria-label="Period" id="periods"></div>
+  </div>
+
+  <div class="podium" id="podium"></div>
+  <div class="board"><table><thead id="thead"></thead><tbody id="tbody"></tbody></table></div>
+
+  <section class="how">
+    <h2>How to read this</h2>
+    <dl>
+      <div><dt>Col O</dt><dd>Total drive-thru time per car, from pulling into the lane to leaving the window, pull-forwards included. Lower is better.</dd></div>
+      <div><dt>Days</dt><dd>Days you were credited as the manager on shift, meaning you covered at least half of a daypart. You need 4 days every week to place.</dd></div>
+      <div><dt>Cars</dt><dd>Drive-thru cars served on your credited dayparts. Busy shifts count more than slow ones, so a strong dinner rush moves your number more than a slow open.</dd></div>
+      <div><dt>Behind 1st / Behind next</dt><dd>How much time per car you need to cut to catch the leader, or to pass the person one spot ahead.</dd></div>
+    </dl>
+  </section>
+
+  <section style="display:grid;gap:10px">
+    <h2>Where your time goes</h2>
+    <p class="sub"><b style="color:var(--fg)">Lane Queue is where the race is won.</b> Menu Time barely moves between managers, but Lane Queue swings the most from first place to last. Keeping the line moving between the menu board and the window explains most of the gap. Green marks the 3 fastest in the group for each step, red the 3 slowest.</p>
+    <div class="board"><table><thead><tr><th>Place</th><th>Manager</th><th class="r">Pre-Menu Queue</th><th class="r">Menu Time</th><th class="r">Lane Queue</th><th class="r">Window Time</th></tr></thead><tbody id="parts"></tbody></table></div>
+  </section>
+
+  <section style="display:grid;gap:10px">
+    <h2>Contest rules</h2>
+    <div class="rules">
+      <div class="rule"><b>Raw time wins</b>Everyone is ranked on fastest Col O across all 5 stores, not against their store's goal.</div>
+      <div class="rule"><b>4-day minimum</b>A manager needs at least 4 days credited in every week to hold a place. Short weeks show as not qualified.</div>
+      <div class="rule"><b>Car-weighted average</b>The 4-week time is weighted by cars served, so a busy week counts more than a light one.</div>
+      <div class="rule"><b>Roster</b>District manager, managers in training and new hires not yet running shifts are left off. Managers who cover other stores are combined into one entry.</div>
+    </div>
+  </section>
+</div>
+
+<script src="/contest-data.js"></script>
+<script>
+const C = window.CONTEST, WEEKS = C.WEEKS, fmt = C.fmt;
+let board = "mgr", period = "all";
+
+function render(){
+  const {mgrs, stores} = C.combine(period);
+  const rows = board === "mgr" ? mgrs : stores;
+  const ranked = rows.filter(r => r.ok);
+  const placeTxt = ["1st place","2nd place","3rd place"];
+  document.getElementById("podium").innerHTML = ranked.slice(0,3).map((r,i) => `
+    <div class="pod p${i+1}"><div class="place">${placeTxt[i]}</div>
+      <div class="name">${r.name}</div><div class="time">${fmt(r.time)}</div>
+      <div class="meta">${board==="mgr" ? r.store + " · " + r.days + " days" : r.cars.toLocaleString() + " cars"}</div></div>`).join("");
+  document.getElementById("thead").innerHTML = board === "mgr"
+    ? `<tr><th>Place</th><th>Manager</th><th>Store</th><th class="r">Days</th><th class="r">Cars</th><th class="r">Col O</th><th class="r">Behind 1st</th><th class="r">Behind next</th></tr>`
+    : `<tr><th>Place</th><th>Store</th><th class="r">Cars</th><th class="r">Col O</th></tr>`;
+  let place = 0; const lead = ranked[0] ? ranked[0].time : 0;
+  const gap = x => Math.round(x) <= 0 ? "—" : "+" + fmt(x);
+  document.getElementById("tbody").innerHTML = rows.map(r => {
+    const pl = r.ok ? ++place : "—";
+    const b1 = r.ok ? gap(r.time - lead) : "", bn = r.ok && place > 1 ? gap(r.time - ranked[place-2].time) : (r.ok ? "—" : "");
+    if (board === "mgr") return `<tr class="${r.ok?"":"gap"}"><td class="pl">${pl}</td><td class="who">${r.name}${r.ok?"":' <span class="tag">Not qualified · under 4 days</span>'}</td>
+      <td class="store">${r.store}</td><td class="r">${r.days}</td><td class="r">${r.cars.toLocaleString()}</td><td class="t">${fmt(r.time)}</td><td class="r g">${b1}</td><td class="r g">${bn}</td></tr>`;
+    return `<tr><td class="pl">${pl}</td><td class="who">${r.name}</td><td class="r">${r.cars.toLocaleString()}</td><td class="t">${fmt(r.time)}</td></tr>`;
+  }).join("");
+  const q = mgrs.filter(r => r.ok && r.parts);
+  const cols = [0,1,2,3].map(i => q.map(r => r.parts[i]).sort((a,b)=>a-b));
+  document.getElementById("parts").innerHTML = q.map((r,k) => `<tr><td class="pl">${k+1}</td><td class="who">${r.name}</td>` +
+    r.parts.map((v,i) => { const c = v <= cols[i][2] ? "good" : v >= cols[i][cols[i].length-3] ? "bad" : ""; return `<td class="r ${c}">${fmt(v)}</td>`; }).join("") + `</tr>`).join("");
+}
+
+function buildChrome(){
+  document.getElementById("weeks").innerHTML = Array.from({length:C.totalWeeks},(_,i)=> {
+    const w = WEEKS[i];
+    return `<div class="wk ${w?"done":""}"><b>Week ${i+1}</b><small>${w ? w.dates : "Waiting on reports"}</small></div>`;
+  }).join("");
+  const p = document.getElementById("periods");
+  p.innerHTML = `<button data-p="all" aria-pressed="true">${WEEKS.length>1?WEEKS.length+"-week average":"Contest to date"}</button>` +
+    WEEKS.map((w,i)=>`<button data-p="${i}" aria-pressed="false">${w.label}</button>`).join("");
+  p.querySelectorAll("button").forEach(b => b.onclick = () => {
+    period = b.dataset.p === "all" ? "all" : +b.dataset.p;
+    p.querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", x===b));
+    render();
+  });
+  const bm = document.getElementById("b-mgr"), bs = document.getElementById("b-store");
+  bm.onclick = () => { board="mgr"; bm.setAttribute("aria-pressed",true); bs.setAttribute("aria-pressed",false); render(); };
+  bs.onclick = () => { board="store"; bs.setAttribute("aria-pressed",true); bm.setAttribute("aria-pressed",false); render(); };
+}
+buildChrome(); render();
+</script>
+</body>
+</html>
