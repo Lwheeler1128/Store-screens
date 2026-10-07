@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Guest Shout-Outs (TV)</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@500;600;700&display=swap">
+<style>
+  html,body{margin:0;height:100%;background:#000;overflow:hidden}
+  body{display:flex;align-items:center;justify-content:center;font-family:"Barlow","Segoe UI",system-ui,sans-serif}
+  .tv{width:min(100vw,177.78vh);aspect-ratio:16/9;container-type:inline-size;position:relative;box-sizing:border-box;
+      background:radial-gradient(120% 90% at 100% 0%,#1B2F57 0%,#0B1426 60%);color:#F2F5FA;padding:2.6cqw 3.2cqw 2cqw;display:flex;flex-direction:column;gap:1.4cqw}
+  .head{display:flex;align-items:flex-end;justify-content:space-between;gap:2cqw}
+  .kicker{font-size:1.15cqw;letter-spacing:.2em;text-transform:uppercase;color:#A8B6CF;font-weight:700;margin-bottom:.4cqw}
+  h1{margin:0;font-family:"Barlow Condensed",sans-serif;font-weight:800;font-size:4.2cqw;line-height:.9;text-transform:uppercase}
+  h1 span{color:#F6B221}
+  .figs{display:flex;gap:.8cqw}
+  .fig{border:.12cqw solid rgba(255,255,255,.15);border-radius:.7cqw;padding:.5cqw 1.1cqw;min-width:8cqw;text-align:center}
+  .fig b{display:block;font-family:"Barlow Condensed",sans-serif;font-size:2.6cqw;line-height:1;color:#F6B221;font-variant-numeric:tabular-nums}
+  .fig small{font-size:.95cqw;color:#A8B6CF}
+  .main{flex:1;min-height:0;display:grid;grid-template-columns:1.1fr 1fr;gap:2cqw}
+  .col{display:flex;flex-direction:column;gap:.9cqw;min-height:0}
+  .sec{font-size:1.05cqw;letter-spacing:.16em;text-transform:uppercase;color:#7F8FAD;font-weight:700}
+  .rank{display:flex;flex-direction:column;gap:.5cqw;flex:1;min-height:0}
+  .r{flex:1 1 0;min-height:0;max-height:4.4cqw;display:grid;grid-template-columns:2.6cqw minmax(0,1fr) 3.4cqw;align-items:center;gap:1cqw;background:rgba(255,255,255,.05);border-radius:.7cqw;padding:0 1.2cqw}
+  .r .n{font-family:"Barlow Condensed",sans-serif;font-weight:800;font-size:1.9cqw;color:#7F8FAD;text-align:center}
+  .r .who{min-width:0;display:flex;flex-direction:column;gap:.35cqw}
+  .r .who div{display:flex;align-items:baseline;gap:.8cqw;white-space:nowrap;overflow:hidden}
+  .r .who b{font-family:"Barlow Condensed",sans-serif;font-weight:700;font-size:1.9cqw;line-height:1;overflow:hidden;text-overflow:ellipsis}
+  .r .who small{font-size:1.05cqw;color:#A8B6CF}
+  .r .bar{height:.4cqw;border-radius:.2cqw;background:rgba(255,255,255,.08);overflow:hidden}
+  .r .bar i{display:block;height:100%;background:#7D9CCF;border-radius:.2cqw}
+  .r .c{font-family:"Barlow Condensed",sans-serif;font-weight:800;font-size:2.4cqw;text-align:right;font-variant-numeric:tabular-nums}
+  .r.top{background:rgba(246,178,33,.14)} .r.top .n{color:#F6B221} .r.top .bar i{background:#F6B221}
+  .quote{position:relative;background:rgba(246,178,33,.1);border:.12cqw solid rgba(246,178,33,.35);border-radius:1cqw;padding:1.6cqw 2cqw 1.4cqw 2cqw;display:flex;flex-direction:column;gap:.9cqw;flex:1.25;min-height:0;overflow:hidden}
+  .quote .mark{font-family:Georgia,serif;font-size:6cqw;line-height:.6;color:#F6B221;height:2.6cqw}
+  .quote p{margin:0;font-size:var(--qs,1.7cqw);line-height:1.35;color:#F2F5FA;overflow:hidden}
+  .quote .by{margin-top:auto;display:flex;align-items:baseline;gap:1cqw;flex-wrap:wrap}
+  .quote .by b{font-family:"Barlow Condensed",sans-serif;font-weight:700;font-size:2.2cqw;color:#F6B221}
+  .quote .by span{font-size:1.15cqw;color:#A8B6CF}
+  .stores{display:flex;flex-direction:column;gap:.45cqw;flex:1;min-height:0}
+  .s{flex:1 1 0;min-height:0;max-height:3.2cqw;display:grid;grid-template-columns:11cqw 1fr 2.6cqw;align-items:center;gap:1cqw;font-size:1.4cqw}
+  .s b{font-family:"Barlow Condensed",sans-serif;font-weight:700;font-size:1.6cqw;white-space:nowrap}
+  .s .track{height:1.3cqw;border-radius:.4cqw;background:rgba(255,255,255,.07);overflow:hidden}
+  .s .track i{display:block;height:100%;background:#7D9CCF;border-radius:.4cqw}
+  .s.lead .track i{background:#F6B221}
+  .s .c{font-family:"Barlow Condensed",sans-serif;font-weight:800;font-size:1.8cqw;text-align:right;font-variant-numeric:tabular-nums}
+  .empty{flex:1;display:flex;align-items:center;justify-content:center;color:#A8B6CF;font-size:1.6cqw;text-align:center}
+  .foot{display:flex;justify-content:space-between;font-size:1.05cqw;color:#7F8FAD}
+</style>
+</head>
+<body>
+<div class="tv">
+  <div class="head">
+    <div><div class="kicker" id="kicker">SMG celebration alerts · SC stores</div><h1>Guest <span>Shout-Outs</span></h1></div>
+    <div class="figs" id="figs"></div>
+  </div>
+  <div class="main" id="main">
+    <div class="col">
+      <div class="sec" id="rankLabel">Most recognized team members</div>
+      <div class="rank" id="rank"></div>
+    </div>
+    <div class="col">
+      <div class="sec">Latest shout-out</div>
+      <div class="quote" id="quote"></div>
+      <div class="sec">Shout-outs by store</div>
+      <div class="stores" id="stores"></div>
+    </div>
+  </div>
+  <div class="foot"><span>Every time a guest names you in an SMG survey, you get a shout-out. Keep it up!</span><span id="note"></span></div>
+</div>
+<script>
+const STORES = [
+  { num: "35401", name: "University" }, { num: "35402", name: "Shelby" }, { num: "35403", name: "Dorchester" },
+  { num: "25901", name: "Moncks Corner" }, { num: "55801", name: "Tanger" }];
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const storeName = n => (STORES.find(s => s.num === n) || { name: "#" + n }).name;
+const MON = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+const day = s => MON[+s.slice(5, 7) - 1].slice(0, 3) + " " + (+s.slice(8, 10));
+const firstName = n => n.replace(/^(ms|mrs|mr|miss)\.?\s+/i, "").split(/\s+/)[0].toLowerCase();
+
+function tally(list) {
+  const t = {};
+  for (const a of list) {
+    if (!a.member) continue;
+    const k = firstName(a.member) + "|" + a.store;
+    const r = t[k] ??= { name: a.member, store: a.store, n: 0, last: "" };
+    r.n++; if (a.member.length > r.name.length) r.name = a.member; if (a.received > r.last) r.last = a.received;
+  }
+  return Object.values(t).sort((x, y) => y.n - x.n || y.last.localeCompare(x.last) || x.name.localeCompare(y.name));
+}
+
+function render(data) {
+  const all = (data.alerts || []).filter(a => STORES.some(s => s.num === a.store));
+  const now = new Date(), ym = now.getFullYear() + "-" + String(now.getMonth() + 1).padStart(2, "0");
+  let list = all.filter(a => a.received.startsWith(ym)), label = MON[now.getMonth()];
+  if (list.length < 3) { // early in the month: show the last 30 days instead of an empty board
+    const from = new Date(now - 30 * 864e5).toISOString().slice(0, 10);
+    list = all.filter(a => a.received.slice(0, 10) >= from); label = "Last 30 days";
+  }
+  document.getElementById("kicker").textContent = "SMG celebration alerts · SC stores · " + label;
+  const members = tally(list);
+  document.getElementById("figs").innerHTML =
+    `<div class="fig"><b>${list.length}</b><small>Shout-outs</small></div><div class="fig"><b>${members.length}</b><small>Team members named</small></div>`;
+
+  const top = members.slice(0, 7), max = top.length ? top[0].n : 1;
+  let pos = 0, prev = null;
+  document.getElementById("rank").innerHTML = top.length ? top.map((m, i) => {
+    if (m.n !== prev) { pos = i + 1; prev = m.n; }
+    return `<div class="r ${pos <= 3 ? "top" : ""}"><span class="n">${pos}</span><div class="who"><div><b>${esc(m.name)}</b><small>${esc(storeName(m.store))}</small></div><div class="bar"><i style="width:${m.n / max * 100}%"></i></div></div><span class="c">${m.n}</span></div>`;
+  }).join("") : `<div class="empty">No named team members yet ${label === "Last 30 days" ? "in the last 30 days" : "this month"}.</div>`;
+
+  const q = list.filter(a => a.member && !a.excerpt && a.comment.length >= 40)[0] || all.filter(a => a.member && !a.excerpt && a.comment.length >= 40)[0];
+  const qEl = document.getElementById("quote");
+  if (q) {
+    const text = q.comment.length > 330 ? q.comment.slice(0, 320).replace(/\s+\S*$/, "") + "…" : q.comment;
+    qEl.style.setProperty("--qs", (text.length > 220 ? 1.45 : text.length > 140 ? 1.65 : 1.9) + "cqw");
+    qEl.innerHTML = `<div class="mark">“</div><p>${esc(text)}</p><div class="by"><b>${esc(q.member)}</b><span>${esc(storeName(q.store))} · ${day(q.received)}</span></div>`;
+  } else qEl.innerHTML = `<div class="empty">The newest guest shout-out will show here.</div>`;
+
+  const counts = STORES.map(s => ({ s, n: list.filter(a => a.store === s.num).length })).sort((a, b) => b.n - a.n);
+  const sMax = Math.max(1, ...counts.map(c => c.n));
+  document.getElementById("stores").innerHTML = counts.map((c, i) =>
+    `<div class="s ${i === 0 && c.n ? "lead" : ""}"><b>${esc(c.s.name)}</b><div class="track"><i style="width:${c.n / sMax * 100}%"></i></div><span class="c">${c.n}</span></div>`).join("");
+
+  document.getElementById("note").textContent = data.updatedAt ? "Updated " + day(new Date(data.updatedAt).toLocaleDateString("en-CA")) : "";
+}
+
+async function load() {
+  try { render(await fetch("/api/celebrations", { cache: "no-store" }).then(r => r.json())); } catch (e) {}
+}
+load(); setInterval(load, 5 * 60 * 1000);
+</script>
+</body>
+</html>
