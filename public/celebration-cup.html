@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SC Celebration Cup</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@500;600;700&display=swap">
+<style>
+/* Layout: one 16:9 TV stage in the Store Screens look; store race on the left, top crew + newest shout-out on the right. Single dark look on purpose. */
+:root{
+  color-scheme:dark;
+  --bg:#0B1426; --bg-hi:#1B2F57; --panel:rgba(255,255,255,.06); --panel-line:rgba(255,255,255,.10);
+  --ink:#F2F5FA; --ink-2:#A8B6CF; --ink-3:#7F8FAD;
+  --gold:#F6B221; --gold-soft:rgba(246,178,33,.22); --red:#C8102E;
+  --display:"Barlow Condensed","Arial Narrow",system-ui,sans-serif;
+  --body:"Barlow",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);overflow:hidden}
+.wrap{height:100%;display:grid;place-items:center;padding-inline:0}
+.stage{position:relative;width:min(100vw,177.78vh);aspect-ratio:16/9;max-width:100%;container-type:inline-size;
+  background:radial-gradient(120% 90% at 100% 0%,var(--bg-hi) 0%,var(--bg) 60%);overflow:hidden;
+  padding:3cqw 3.4cqw;display:grid;grid-template-rows:auto 1fr auto;gap:1.8cqw;box-sizing:border-box}
+.num{font-variant-numeric:tabular-nums}
+
+header{display:flex;align-items:flex-end;justify-content:space-between;gap:2cqw}
+h1{margin:0;font-family:var(--display);font-weight:800;font-size:5.2cqw;line-height:.9;text-transform:uppercase;letter-spacing:.01em}
+h1 span{color:var(--gold)}
+.meta{text-align:right;font-size:1.35cqw;color:var(--ink-2);line-height:1.35}
+.meta b{color:var(--ink);font-weight:600}
+
+main{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:2.4cqw;min-height:0}
+.col{display:flex;flex-direction:column;gap:1cqw;min-height:0;min-width:0}
+.label{font-size:1.1cqw;text-transform:uppercase;letter-spacing:.14em;color:var(--ink-3);font-weight:600}
+
+.stores{display:flex;flex-direction:column;gap:.8cqw;flex:1;min-height:0}
+.st{display:grid;grid-template-columns:4cqw minmax(0,1fr) 7cqw;align-items:center;gap:1.4cqw;
+  background:var(--panel);border-radius:.9cqw;padding:0 1.4cqw;flex:1;max-height:7.6cqw;min-height:0}
+.st.lead{background:linear-gradient(90deg,var(--gold-soft),rgba(246,178,33,.05));box-shadow:inset 0 0 0 .15cqw rgba(246,178,33,.7)}
+.rank{font-family:var(--display);font-weight:800;font-size:3.2cqw;color:var(--ink-3)}
+.st.lead .rank{color:var(--gold)}
+.sname{font-family:var(--display);font-weight:700;font-size:2.6cqw;line-height:1.05;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sname small{display:block;font-family:var(--body);font-weight:500;font-size:1.05cqw;color:var(--ink-3);letter-spacing:.04em}
+.bar{height:.9cqw;background:rgba(255,255,255,.08);border-radius:1cqw;margin-top:.6cqw;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--gold);border-radius:1cqw}
+.count{font-family:var(--display);font-weight:800;font-size:4cqw;text-align:right;line-height:1}
+.count small{display:block;font-family:var(--body);font-size:.95cqw;font-weight:600;color:var(--ink-3);letter-spacing:.1em;text-transform:uppercase}
+
+.crew{display:grid;grid-template-columns:1fr 1fr;gap:.7cqw}
+.cm{display:flex;align-items:center;gap:1cqw;background:var(--panel);border-radius:.8cqw;padding:.8cqw 1.1cqw;min-width:0}
+.cm b{font-family:var(--display);font-weight:800;font-size:2.4cqw;color:var(--gold);min-width:2.6cqw;text-align:center}
+.cm div{min-width:0}
+.cm .n{font-weight:700;font-size:1.6cqw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cm .s{font-size:1cqw;color:var(--ink-3);letter-spacing:.04em}
+
+.quote{flex:1;min-height:0;background:var(--red);border-radius:1cqw;padding:1.6cqw 1.9cqw;display:flex;flex-direction:column;gap:.8cqw;position:relative;overflow:hidden}
+.quote .label{color:rgba(255,255,255,.75)}
+.quote p{margin:0;font-size:1.75cqw;line-height:1.32;font-weight:500;display:-webkit-box;-webkit-line-clamp:5;-webkit-box-orient:vertical;overflow:hidden;transition:opacity .5s ease}
+.quote .who{margin-top:auto;font-family:var(--display);font-weight:700;font-size:2cqw;text-transform:uppercase;letter-spacing:.02em}
+.quote .who span{font-family:var(--body);font-weight:500;font-size:1.15cqw;text-transform:none;letter-spacing:0;opacity:.85;margin-left:.6cqw}
+.fade{opacity:0}
+
+footer{display:flex;gap:2.4cqw;font-size:1.15cqw;color:var(--ink-3);justify-content:space-between}
+.empty{color:var(--ink-2);font-size:1.4cqw}
+@media (prefers-reduced-motion:reduce){.quote p{transition:none}}
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <div class="stage" id="stage">
+    <header>
+      <h1>SC Celebration <span>Cup</span></h1>
+      <div class="meta"><span id="period">This month</span> · guest celebration alerts<br>Updated <b id="updated">—</b></div>
+    </header>
+    <main>
+      <section class="col" aria-label="Store standings">
+        <div class="label">Store standings</div>
+        <div class="stores" id="stores"></div>
+      </section>
+      <section class="col" aria-label="Team members and latest shout-out">
+        <div class="label">Most celebrated crew</div>
+        <div class="crew" id="crew"></div>
+        <div class="quote" id="quote">
+          <div class="label" id="qlabel">Latest shout-out</div>
+          <p id="qtext"></p>
+          <div class="who" id="qwho"></div>
+        </div>
+      </section>
+    </main>
+    <footer><span>Every SMG Celebration Alert counts for the store. Named team members get credit too.</span><span id="total"></span></footer>
+  </div>
+</div>
+
+<script>
+(function(){
+const STORES={"35401":"University","35402":"Shelby","35403":"Dorchester","25901":"Moncks Corner","55801":"Tanger"};
+const MONTHS=["January","February","March","April","May","June","July","August","September","October","November","December"];
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+function render(D){
+
+// Month being raced = month of the newest data refresh (Eastern), so the board doesn't blank at midnight on the 1st before new data lands.
+const loc=d=>{const t=new Date(d);return t.getFullYear()+"-"+String(t.getMonth()+1).padStart(2,"0")};
+const ref=loc(D.updated||Date.now());
+const [ry,rm]=ref.split("-").map(Number);
+const inMonth=D.alerts.filter(a=>(a.expDate||a.received||"").slice(0,7)===ref);
+document.getElementById("period").textContent=MONTHS[rm-1]+" "+ry;
+if(D.updated){const t=new Date(D.updated);document.getElementById("updated").textContent=t.toLocaleDateString([], {weekday:"short",month:"short",day:"numeric"})+" · "+t.toLocaleTimeString([], {hour:"numeric",minute:"2-digit"})}
+
+// Store race
+const counts={};Object.keys(STORES).forEach(k=>counts[k]=0);
+inMonth.forEach(a=>{counts[a.store]=(counts[a.store]||0)+1});
+const order=Object.keys(counts).sort((a,b)=>counts[b]-counts[a]||(STORES[a]||a).localeCompare(STORES[b]||b));
+const max=Math.max(1,...order.map(k=>counts[k]));
+let prev=null,rank=0;
+document.getElementById("stores").innerHTML=order.map((k,i)=>{
+  if(counts[k]!==prev){rank=i+1;prev=counts[k]}
+  const lead=rank===1&&counts[k]>0;
+  return `<div class="st ${lead?"lead":""}"><div class="rank">${rank}</div>
+    <div style="min-width:0"><div class="sname">${esc(STORES[k]||("Store "+k))}<small>#${esc(k)}</small></div><div class="bar"><i style="width:${(counts[k]/max*100).toFixed(1)}%"></i></div></div>
+    <div class="count num">${counts[k]}<small>${counts[k]===1?"alert":"alerts"}</small></div></div>`}).join("");
+document.getElementById("total").textContent=`${inMonth.length} alert${inMonth.length===1?"":"s"} across ${Object.keys(STORES).length} stores`;
+
+// Crew: split shared awards, drop titles, match by first name within a store
+const TITLES=/^(ms|mr|mrs|miss|mx)\.?$/i;
+const people={};
+inMonth.forEach(a=>{
+  (a.member||"").split(/\s*(?:,|&|\band\b)\s*/i).map(s=>s.trim()).filter(Boolean).forEach(n=>{
+    const parts=n.split(/\s+/).filter(p=>!TITLES.test(p));if(!parts.length)return;
+    const first=parts[0].charAt(0).toUpperCase()+parts[0].slice(1).toLowerCase();
+    if(/^team$/i.test(first))return;
+    const key=a.store+"|"+first;people[key]=people[key]||{name:first,store:a.store,n:0};people[key].n++;
+  })});
+const top=Object.values(people).sort((a,b)=>b.n-a.n||a.name.localeCompare(b.name)).slice(0,6);
+document.getElementById("crew").innerHTML=top.length?top.map(p=>`<div class="cm"><b class="num">${p.n}</b><div><div class="n">${esc(p.name)}</div><div class="s">${esc(STORES[p.store]||p.store)}</div></div></div>`).join("")
+  :`<div class="empty">No named shout-outs yet this month.</div>`;
+
+// Newest full shout-outs, rotating
+const recent=[...D.alerts].filter(a=>a.comment&&!a.excerpt&&!/…$/.test(a.comment)).sort((a,b)=>(b.received||"").localeCompare(a.received||"")).slice(0,4);
+const qt=document.getElementById("qtext"),qw=document.getElementById("qwho");
+function show(i){const a=recent[i];if(!a){qt.textContent="New shout-outs will show here as guests send them.";qw.textContent="";return}
+  qt.textContent="“"+a.comment+"”";
+  qw.innerHTML=`${esc(a.member||"The whole team")}<span>${esc(STORES[a.store]||a.store)}</span>`;}
+let qi=0;show(0);clearInterval(window.__rot);
+if(recent.length>1){const still=matchMedia("(prefers-reduced-motion: reduce)").matches;
+  window.__rot=setInterval(()=>{qi=(qi+1)%recent.length;
+    if(still){show(qi);return}
+    qt.classList.add("fade");qw.classList.add("fade");setTimeout(()=>{show(qi);qt.classList.remove("fade");qw.classList.remove("fade")},500)},7000)}
+}
+// live data from the Store Screens server (same alerts as the SC Celebration Board), refreshed every 5 minutes
+async function load(){try{const d=await fetch("/api/celebrations",{cache:"no-store"}).then(r=>r.json());render({updated:d.updatedAt,alerts:d.alerts||[]})}catch(e){}}
+load();setInterval(load,5*60*1000);
+// pick up new versions of this page on their own
+(()=>{let base=null;const sig=async()=>{const t=await fetch(location.pathname,{cache:"no-store"}).then(r=>r.ok?r.text():"");return t?t.length+":"+[...t].reduce((h,c)=>(h*31+c.charCodeAt(0))|0,0):null};
+sig().then(s=>{base=s}).catch(()=>{});setInterval(async()=>{try{const s=await sig();if(!s)return;if(base===null)base=s;else if(s!==base)location.reload()}catch(e){}},5*60*1000)})();
+try{navigator.wakeLock&&navigator.wakeLock.request("screen").catch(()=>{})}catch(e){}
+})();
+</script>
+
+</body>
+</html>
