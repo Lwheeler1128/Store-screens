@@ -82,6 +82,12 @@ function next(){
 function fitFrames(){tv.querySelectorAll("iframe[data-z]").forEach(f=>{f.style.transform=`scale(${tv.clientWidth/(1920/+f.dataset.z)})`})}
 addEventListener("resize",fitFrames);
 refresh();setInterval(refresh,20000);
+// pick up new versions on their own: if this page changes on the server, reload it (checked every 5 minutes)
+(()=>{const files=["/tv.html","/board.html"];let base=null;
+const sig=async()=>{const t=await Promise.all(files.map(f=>fetch(f,{cache:"no-store"}).then(r=>r.ok?r.text():"")));
+  if(t.some(x=>!x))return null;return t.map(x=>x.length+":"+[...x].reduce((h,c)=>(h*31+c.charCodeAt(0))|0,0)).join("|")};
+sig().then(s=>{base=s}).catch(()=>{});
+setInterval(async()=>{try{const s=await sig();if(!s)return;if(base===null)base=s;else if(s!==base)location.reload()}catch(e){}},5*60*1000);})();
 // keep the screen awake where the browser allows it
 try{navigator.wakeLock&&navigator.wakeLock.request("screen").catch(()=>{})}catch(e){}
 document.addEventListener("dblclick",()=>{const el=document.documentElement;(document.fullscreenElement?document.exitFullscreen():el.requestFullscreen&&el.requestFullscreen()).catch?.(()=>{})});

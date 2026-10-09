@@ -12,13 +12,13 @@
   .head{display:flex;align-items:center;justify-content:space-between;gap:2cqw}
   .title{font-family:"Barlow Condensed","Segoe UI",sans-serif;font-weight:800;font-size:var(--title,5.4cqw);line-height:.9;text-transform:uppercase;letter-spacing:.01em}
   .title span{color:#F6B221}
-  .meta{text-align:right;font-size:1.35cqw;color:#A8B6CF;line-height:1.35}
+  .meta{text-align:right;font-size:1.35cqw;color:#A8B6CF;line-height:1.35;white-space:nowrap}
   .meta b{color:#fff;font-weight:600}
-  .cols,.row{display:grid;grid-template-columns:calc(var(--fs)*1.8) minmax(0,1fr) calc(var(--fs)*3.6) calc(var(--fs)*3.2) calc(var(--fs)*4) calc(var(--fs)*2.6) calc(var(--fs)*2.6) calc(var(--fs)*3.1);column-gap:calc(var(--fs)*.6);align-items:center}
-  .cols{font-size:max(.9cqw,calc(var(--fs)*.5));text-transform:uppercase;letter-spacing:.1em;color:#7F8FAD;font-weight:600;padding:0 calc(var(--fs)*.7)}
-  .cols span:nth-child(n+3){text-align:right}.cols span:nth-child(5){text-align:left}
+  .cols,.row{display:grid;grid-template-columns:calc(var(--fs)*1.8) minmax(0,1fr) calc(var(--fs)*3.6) calc(var(--fs)*3.1) calc(var(--fs)*3.2) calc(var(--fs)*3.2) calc(var(--fs)*2.6) calc(var(--fs)*2.6) calc(var(--fs)*3.1);column-gap:calc(var(--fs)*.6);align-items:center}
+  .cols{white-space:nowrap;font-size:max(.85cqw,calc(var(--fs)*.5));text-transform:uppercase;letter-spacing:.1em;color:#7F8FAD;font-weight:600;padding:0 calc(var(--fs)*.7)}
+  .cols span:nth-child(n+3){text-align:right}.cols span:nth-child(6){text-align:left}
   .rows{display:flex;flex-direction:column;gap:calc(var(--fs)*.22);flex:1;min-height:0}
-  .row{background:rgba(255,255,255,.05);border-radius:calc(var(--fs)*.35);padding:0 calc(var(--fs)*.7);flex:1 1 0;min-height:0;max-height:calc(var(--fs)*3.2);overflow:hidden;line-height:1}
+  .row{background:rgba(255,255,255,.05);border-radius:calc(var(--fs)*.35);padding:0 calc(var(--fs)*.7);flex:1 1 0;min-height:0;max-height:calc(var(--fs)*3.2);overflow:hidden;line-height:1.2}
   .row.first{background:linear-gradient(90deg,rgba(246,178,33,.28),rgba(246,178,33,.06));box-shadow:inset 0 0 0 .15cqw rgba(246,178,33,.7)}
   .row.stale{opacity:.5}
   .rank{font-family:"Barlow Condensed","Segoe UI",sans-serif;font-weight:800;font-size:calc(var(--fs)*1.2);color:#7F8FAD;text-align:center}
@@ -30,13 +30,20 @@
   .live{color:#fff;font-weight:700}
   .bar{position:relative;height:calc(var(--fs)*.42);background:rgba(255,255,255,.08);border-radius:1cqw}
   .bar i{position:absolute;left:0;top:0;bottom:0;border-radius:1cqw;transition:width .8s ease}
+  .vsbec{font-size:calc(var(--fs)*.9);font-weight:700;text-align:right;font-variant-numeric:tabular-nums}
+  .ahead{color:#4AD68A}.behind{color:#FF8A9A}.even{color:#C9D3E4}
+  .bar .bec{position:absolute;top:calc(var(--fs)*-.3);bottom:calc(var(--fs)*-.3);width:.35cqw;margin-left:-.175cqw;background:#F6B221;border-radius:.2cqw}
+  .becbox{display:flex;align-items:center;gap:1.4cqw;background:rgba(246,178,33,.12);border:.15cqw solid rgba(246,178,33,.55);border-radius:1cqw;padding:.5cqw 1.4cqw}
+  .becbox .lbl{font-size:1.05cqw;letter-spacing:.14em;text-transform:uppercase;color:#F6C46A;font-weight:700;line-height:1.25}
+  .becbox .lbl small{display:block;white-space:nowrap;letter-spacing:.02em;text-transform:none;color:#A8B6CF;font-weight:500;font-size:1.05cqw}
+  .becbox .num{font-family:"Barlow Condensed","Segoe UI",sans-serif;font-weight:800;font-size:3.2cqw;line-height:.9;font-variant-numeric:tabular-nums}
   .bar .goal{position:absolute;top:calc(var(--fs)*-.22);bottom:calc(var(--fs)*-.22);width:.18cqw;background:#fff;opacity:.8}
   .flash{animation:flash 1.2s ease-out}
   @keyframes flash{0%{text-shadow:0 0 1.2cqw #F6B221;transform:scale(1.12)}100%{text-shadow:none;transform:scale(1)}}
   @media (prefers-reduced-motion:reduce){.flash{animation:none}}
   .dotlive{display:inline-block;width:.8cqw;height:.8cqw;border-radius:50%;background:#34C77B;margin-right:.5cqw;animation:pulse 1.6s infinite}
   @keyframes pulse{50%{opacity:.25}}
-  .cars{font-size:1.9cqw;font-weight:600;text-align:right;font-variant-numeric:tabular-nums;color:#C9D3E4}
+  .cars{font-size:calc(var(--fs)*.9);font-weight:600;text-align:right;font-variant-numeric:tabular-nums;color:#C9D3E4}
   .good{color:#4AD68A}.warn{color:#F4BC4C}.bad{color:#FF6B7E}
   .b-good{background:#34C77B}.b-warn{background:#F4BC4C}.b-bad{background:#FF5A70}
   .foot{display:flex;gap:2.4cqw;font-size:1.15cqw;color:#8E9CB6;align-items:center}
@@ -47,10 +54,10 @@
 </head>
 <body>
 <div class="tv"><div class="lb">
-  <div class="head"><div class="title" id="title">Drive-Thru<br><span>Showdown</span></div><div class="meta" id="meta">Connecting…</div></div>
-  <div class="cols"><span>#</span><span>Store</span><span style="text-align:right">Today</span><span style="text-align:right">Daypart</span><span>vs. goal</span><span style="text-align:right">Cars</span><span style="text-align:right">In line</span><span style="text-align:right">Window</span></div>
+  <div class="head"><div class="title" id="title">Drive-Thru<br><span>Showdown</span></div><div class="becbox" id="bec"><div class="num" id="becNum">--</div><div class="lbl">BEC average<small id="becSub">car-weighted · waiting for stores</small></div></div><div class="meta" id="meta">Connecting…</div></div>
+  <div class="cols"><span>#</span><span>Store</span><span style="text-align:right">Today</span><span style="text-align:right">vs BEC</span><span style="text-align:right">Daypart</span><span>vs. goal</span><span style="text-align:right">Cars</span><span style="text-align:right">In line</span><span style="text-align:right">Window</span></div>
   <div class="rows" id="rows"></div>
-  <div class="foot"><span><i class="b-good"></i>At or under goal</span><span><i class="b-warn"></i>Within 30 sec</span><span><i class="b-bad"></i>Over by 30+ sec</span><span class="sp"></span><span id="src"><i class="dotlive"></i>Live from Berry AI</span></div>
+  <div class="foot"><span><i class="b-good"></i>At or under goal</span><span><i class="b-warn"></i>Within 30 sec</span><span><i class="b-bad"></i>Over by 30+ sec</span><span><i style="background:#F6B221;width:.35cqw"></i>BEC average</span><span class="sp"></span><span id="src"><i class="dotlive"></i>Live from Berry AI</span></div>
 </div><div class="offline" id="offline">Feeder not responding</div></div>
 <script>
 const fmt=s=>s==null?"--":Math.floor(s/60)+":"+String(Math.round(s)%60).padStart(2,"0");
@@ -68,6 +75,18 @@ function render(d){
   const stores=d.stores.map(s=>({...s,age:s.updatedAt?now-Date.parse(s.updatedAt):Infinity}));
   stores.sort((a,b)=>(a.todayAvg??9e9)-(b.todayAvg??9e9));
   const max=Math.max(g+120,...stores.map(s=>s.todayAvg||0));
+  // BEC number: every car counts once (total seconds / total cars), not an average of store averages.
+  // Stores with no cars yet, or no update in 20 minutes, are left out.
+  const inBec=stores.filter(s=>s.todayAvg!=null&&s.todayCars>0&&s.age<20*60*1000);
+  const becCars=inBec.reduce((a,s)=>a+s.todayCars,0);
+  const bec=becCars?inBec.reduce((a,s)=>a+s.todayAvg*s.todayCars,0)/becCars:null;
+  const becEl=document.getElementById("becNum");const bt=fmt(bec);
+  const changed=becEl.textContent!==bt&&becEl.textContent!=="--";
+  becEl.textContent=bt;becEl.className="num "+(bec==null?"":band(bec));
+  if(changed){void becEl.offsetWidth;becEl.classList.add("flash")}
+  document.getElementById("becSub").textContent=bec==null?"car-weighted · waiting for stores":`${becCars.toLocaleString()} cars · ${inBec.length} of ${stores.length} stores`;
+  const vs=s=>{if(bec==null||s.todayAvg==null)return'<div class="vsbec">--</div>';const d=Math.round(s.todayAvg-bec);
+    return `<div class="vsbec ${d<0?"ahead":d>0?"behind":"even"}">${d===0?"even":(d<0?"\u2212":"+")+fmt(Math.abs(d))}</div>`};
   const last=Math.max(0,...stores.filter(s=>s.updatedAt).map(s=>Date.parse(s.updatedAt)));
   const dp=(stores.find(s=>s.daypart)||{}).daypart||"";
   document.getElementById("meta").innerHTML=`Avg total time today${dp?" · "+esc(dp.replace(/\s*\(.*\)/,"")):""}<br>Goal <b>${fmt(g)}</b> · updated <b>${last?new Date(last).toLocaleTimeString([],{hour:"numeric",minute:"2-digit"}):"--"}</b>`;
@@ -76,24 +95,35 @@ function render(d){
   const compact=N>7;
   lb.style.setProperty("--title",compact?"3.6cqw":"5.4cqw");
   document.getElementById("title").innerHTML=compact?'Drive-Thru <span>Showdown</span>':'Drive-Thru<br><span>Showdown</span>';
-  const area=compact?37:31; // cqw of height left for the rows
-  lb.style.setProperty("--fs",Math.min(2.2,(area/N)/1.28).toFixed(3)+"cqw");
+  // size rows from the height actually left on screen, so every row fits without clipping
+  const rowsEl=document.getElementById("rows"),cq=document.querySelector(".tv").clientWidth/100;
+  const fit=()=>{const h=rowsEl.clientHeight;if(!h||!cq)return;
+    const fs=Math.min(2.2,h/(N*1.72)/cq); // each row needs about 1.5 x font size, plus the gap
+    lb.style.setProperty("--fs",fs.toFixed(3)+"cqw")};
   document.getElementById("rows").innerHTML=stores.map((s,i)=>{const b=band(s.todayAvg);const stale=s.age>STALE;
     return `<div class="row ${i===0&&s.todayAvg!=null?"first":""} ${stale?"stale":""}">
       <div class="rank">${i+1}</div>
       <div class="store">${esc(s.name)}<small>${s.num?"#"+esc(s.num):""}${stale?(s.updatedAt?" · no update "+Math.round(s.age/60000)+"m":" · waiting"):""}</small></div>
       <div class="time ${b}" data-k="${esc(s.code)}-t">${fmt(s.todayAvg)}</div>
+      ${vs(s)}
       <div class="dp ${band(s.daypartAvg)}">${fmt(s.daypartAvg)}</div>
-      <div class="bar">${s.todayAvg!=null?`<i class="b-${b}" style="width:${(s.todayAvg/max*100).toFixed(1)}%"></i>`:""}<span class="goal" style="left:${(g/max*100).toFixed(1)}%"></span></div>
+      <div class="bar">${s.todayAvg!=null?`<i class="b-${b}" style="width:${(s.todayAvg/max*100).toFixed(1)}%"></i>`:""}<span class="goal" style="left:${(g/max*100).toFixed(1)}%"></span>${bec!=null?`<span class="bec" style="left:${(bec/max*100).toFixed(1)}%"></span>`:""}</div>
       <div class="cars" data-k="${esc(s.code)}-cars">${s.todayCars??"--"}</div>
       <div class="live" data-k="${esc(s.code)}-q">${s.queue??"--"}</div>
       <div class="live ${s.windowNow!=null&&s.windowGoal?(s.windowNow<=s.windowGoal?"good":s.windowNow<=s.windowGoal+30?"warn":"bad"):""}" data-k="${esc(s.code)}-w">${s.windowNow?fmt(s.windowNow):"--"}</div>
     </div>`}).join("");
+  fit();requestAnimationFrame(fit);
   // flash any number that changed since the last refresh
   document.querySelectorAll("[data-k]").forEach(el=>{const k=el.dataset.k,v=el.firstChild?el.firstChild.textContent:"";
     if(prev[k]!==undefined&&prev[k]!==v){el.classList.remove("flash");void el.offsetWidth;el.classList.add("flash")}prev[k]=v});
 }
 tick();setInterval(tick,3000);
+// pick up new versions on their own: if this page changes on the server, reload it (checked every 5 minutes)
+(()=>{const files=["/board.html"];let base=null;
+const sig=async()=>{const t=await Promise.all(files.map(f=>fetch(f,{cache:"no-store"}).then(r=>r.ok?r.text():"")));
+  if(t.some(x=>!x))return null;return t.map(x=>x.length+":"+[...x].reduce((h,c)=>(h*31+c.charCodeAt(0))|0,0)).join("|")};
+sig().then(s=>{base=s}).catch(()=>{});
+setInterval(async()=>{try{const s=await sig();if(!s)return;if(base===null)base=s;else if(s!==base)location.reload()}catch(e){}},5*60*1000);})();
 </script>
 </body>
 </html>
