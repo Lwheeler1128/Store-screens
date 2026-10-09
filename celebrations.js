@@ -51,6 +51,24 @@ module.exports = function ({ DATA_DIR, log }) {
     if (/sharepoint\.com|onedrive\.live\.com|1drv\.ms/i.test(url.hostname)) url.searchParams.set("download", "1");
     return url.toString();
   }
+  // SharePoint "Anyone" links set a guest cookie on the first hop and require it on the next,
+  // so follow redirects by hand and carry cookies along.
+  async function fetchWithCookies(u) {
+    const jar = new Map();
+    const deadline = AbortSignal.timeout(30000);
+    for (let hop = 0; hop < 10; hop++) {
+      const headers = { "User-Agent": "Mozilla/5.0 (StoreScreens)" };
+      if (jar.size) headers.Cookie = [...jar].map(([k, v]) => `${k}=${v}`).join("; ");
+      const r = await fetch(u, { redirect: "manual", headers, signal: deadline });
+      const cookies = typeof r.headers.getSetCookie === "function" ? r.headers.getSetCookie()
+        : (r.headers.get("set-cookie") || "").split(/,(?=\s*[^;,=\s]+=)/);
+      for (const c of cookies) { const m = /^\s*([^=;\s]+)=([^;]*)/.exec(c); if (m) jar.set(m[1], m[2]); }
+      const loc = r.headers.get("location");
+      if (r.status >= 300 && r.status < 400 && loc) { u = new URL(loc, u).toString(); continue; }
+      return r;
+    }
+    throw new Error("The link redirected too many times.");
+  }
   let running = null;
   async function check() {
     if (!src.url) return;
@@ -58,7 +76,7 @@ module.exports = function ({ DATA_DIR, log }) {
     running = (async () => {
       src.lastCheck = new Date().toISOString();
       try {
-        const r = await fetch(downloadUrl(src.url), { redirect: "follow", signal: AbortSignal.timeout(30000) });
+        const r = await fetchWithCookies(downloadUrl(src.url));
         if (!r.ok) throw new Error(`The link answered ${r.status}.`);
         const text = await r.text();
         let obj;
