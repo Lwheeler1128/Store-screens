@@ -229,6 +229,17 @@ code{font-family:Consolas,"Cascadia Mono",monospace;font-size:13px;background:va
       <div class="tw"><table id="rvTable"></table></div>
       <div class="row"><button class="btn" id="rvCheckAll">Check all stores now</button><span class="muted" id="rvCheckNote"></span></div>
     </div>
+    <div class="panel" style="grid-column:1/-1">
+      <div class="row"><h2>SC Celebration Cup</h2><span class="sp"></span><span class="pill" id="ceStatus"></span></div>
+      <p class="sub">The 6 AM celebration board task saves the day's alerts to celebrations.json in your OneDrive. The server downloads that file every 30 minutes, keeps the last good copy, and the Cup slide updates on its own.</p>
+      <div class="row" style="align-items:flex-end">
+        <label class="f" style="flex:1;min-width:240px">OneDrive share link to celebrations.json <span id="ceLinkState" style="text-transform:none;letter-spacing:0;font-weight:600"></span><input type="url" id="ceLink" autocomplete="off" placeholder="Paste the &quot;Anyone with the link&quot; share link"></label>
+        <button class="btn primary" id="ceLinkSave">Save and download</button>
+        <button class="btn" id="ceCheck">Check now</button>
+      </div>
+      <p class="muted" id="ceNote" style="margin:-4px 0 0"></p>
+      <div class="row"><label class="btn" style="cursor:pointer">Upload celebrations.json by hand<input type="file" id="ceFile" accept=".json,application/json" hidden></label><span class="muted">Only needed if the link stops working.</span></div>
+    </div>
     <div class="panel">
       <h2>Stores and Berry access</h2>
       <p class="sub">Stores, Berry codes and the Berry access key live in config.json. Edit it in Notepad, then restart START.</p>
@@ -394,6 +405,18 @@ $("#rAdd").addEventListener("click",async()=>{
 
 /* ---------- Google reviews settings ---------- */
 let RV=null,rvOpen=null,rvResults={};
+let CE=null;
+const ceWhen=s=>s?new Date(s).toLocaleString([],{weekday:"short",month:"short",day:"numeric",hour:"numeric",minute:"2-digit"}):"never";
+async function loadCelebrations(){try{CE=await call("GET","/api/celebrations/admin");renderCelebrations()}catch(e){}}
+function renderCelebrations(){if(!CE)return;
+  const stale=!CE.updated||Date.now()-Date.parse(CE.updated)>36*3600e3;
+  $("#ceStatus").innerHTML=`<span class="dot ${CE.lastError||stale?"warn":"good"}"></span>Celebrations updated: ${CE.updated?ceWhen(CE.updated):"never"} · ${CE.count} alerts`;
+  $("#ceLinkState").textContent=CE.hasUrl?"(saved: "+CE.urlHint+")":"(not set yet)";
+  $("#ceNote").textContent=CE.lastError?"Last download failed: "+CE.lastError:(CE.hasUrl?"Last checked "+ceWhen(CE.lastCheck)+". Next check within 30 minutes.":"Paste the share link to turn on daily updates.");}
+$("#ceLinkSave").addEventListener("click",async()=>{const u=$("#ceLink").value.trim();if(!u)return toast("Paste the share link first");
+  const b=$("#ceLinkSave");b.disabled=true;try{CE=await call("POST","/api/celebrations/source",{url:u});$("#ceLink").value="";toast(CE.lastError?CE.lastError:"Link saved. "+CE.count+" alerts loaded.");renderCelebrations()}catch(err){if(err.message!=="auth")toast(err.message)}b.disabled=false});
+$("#ceCheck").addEventListener("click",async()=>{const b=$("#ceCheck");b.disabled=true;try{CE=await call("POST","/api/celebrations/check");toast(CE.lastError||"Checked. "+CE.count+" alerts.");renderCelebrations()}catch(err){if(err.message!=="auth")toast(err.message)}b.disabled=false});
+$("#ceFile").addEventListener("change",async e=>{const f=e.target.files[0];if(!f)return;try{const d=JSON.parse(await f.text());CE=await call("POST","/api/celebrations",d);toast(CE.count+" alerts loaded");renderCelebrations()}catch(err){if(err.message!=="auth")toast(err.message.includes("JSON")?"That isn't a celebrations.json file.":err.message)}e.target.value=""});
 async function loadReviews(){try{RV=await call("GET","/api/reviews/admin");renderReviews()}catch(e){}}
 function renderReviews(){
   if(!RV)return;const u=RV.usage;
@@ -472,7 +495,7 @@ async function start(){
   $("#login").hidden=true;$("#app").hidden=false;
   $("#shareUrl").value=store.get("ss_share")||"";
   try{S.info=await (await fetch("/api/info")).json()}catch(e){}
-  await load();loadLive();loadReviews();
+  await load();loadLive();loadReviews();loadCelebrations();
   $("#pv").src="/tv?store=all";
   const t=store.get("ss_tab");if(t&&["playlist","add","screens","settings"].includes(t))tab(t);
   setInterval(loadLive,15000);
