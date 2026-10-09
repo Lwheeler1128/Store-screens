@@ -229,18 +229,8 @@ function cleanItem(src, base = {}) {
 // ---------- Google reviews ----------
 const reviews = require("./reviews")({ DATA_DIR, cfg, log });
 
-// ---------- SC Celebration Board copy (guest shout-outs for the TVs) ----------
-const CELEB_PATH = path.join(DATA_DIR, "celebrations.json");
-let celebrations = { updatedAt: null, alerts: [] };
-try { celebrations = JSON.parse(fs.readFileSync(CELEB_PATH, "utf8")); } catch {}
-function cleanCelebration(a) {
-  const str = (v, n) => String(v ?? "").replace(/[\u0000-\u001f]/g, " ").trim().slice(0, n);
-  const received = str(a.received, 16), store = str(a.store, 12);
-  if (!/^\d{4}-\d{2}-\d{2}/.test(received) || !store) return null;
-  let member = str(a.member, 60);
-  if (/^(team\s*members?|n\/?a|none)$/i.test(member)) member = "";
-  return { store, member, received, comment: str(a.comment, 600), excerpt: !!a.excerpt };
-}
+// ---------- SC Celebration Cup data (downloaded each morning from the OneDrive share link) ----------
+const celebrations = require("./celebrations")({ DATA_DIR, log });
 
 // ---------- web server ----------
 function payload() {
@@ -296,7 +286,7 @@ async function api(req, res, url) {
     return sendJson(res, 200, { items: [...content.items].sort((a, b) => a.order - b.order), stores: cfg.stores.map(s => ({ code: s.code, name: s.name, num: s.num || "" })), goalSeconds: cfg.goalSeconds });
   }
   if (p === "/api/reviews" && m === "GET") return sendJson(res, 200, reviews.publicView(url.searchParams.get("store")));
-  if (p === "/api/celebrations" && m === "GET") return sendJson(res, 200, celebrations);
+  if (p === "/api/celebrations" && m === "GET") return sendJson(res, 200, celebrations.apiView());
   if (p === "/api/info" && m === "GET") {
     return sendJson(res, 200, { port: cfg.port, lan: cfg.publicUrl ? [] : lanAddresses(), publicUrl: cfg.publicUrl || null, tokenExpires: expires ? expires.toISOString() : null });
   }
@@ -309,15 +299,18 @@ async function api(req, res, url) {
     try { const out = await reviews.adminAction(p, body); if (out) return sendJson(res, 200, out); }
     catch (e) { return sendJson(res, 400, { error: e.message }); }
   }
-  if (p === "/api/celebrations" && m === "POST") {
-    const body = JSON.parse((await readBody(req, 2e6)).toString() || "{}");
-    if (!Array.isArray(body.alerts)) return sendJson(res, 400, { error: "Send { alerts: [...] }." });
-    const alerts = body.alerts.map(cleanCelebration).filter(Boolean).sort((x, y) => y.received.localeCompare(x.received));
-    celebrations = { updatedAt: new Date().toISOString(), alerts };
-    fs.writeFileSync(CELEB_PATH, JSON.stringify(celebrations));
-    log(`Dashboard: celebration alerts updated (${alerts.length})`);
-    return sendJson(res, 200, { ok: true, count: alerts.length, updatedAt: celebrations.updatedAt });
+  if (p === "/api/celebrations" && m === "POST") { // upload a celebrations.json by hand
+    const body = JSON.parse((await readBody(req, 3e6)).toString() || "{}");
+    try { const count = celebrations.upload(body); return sendJson(res, 200, { ok: true, count, ...celebrations.adminView() }); }
+    catch (e) { return sendJson(res, 400, { error: e.message }); }
   }
+  if (p === "/api/celebrations/admin" && m === "GET") return sendJson(res, 200, celebrations.adminView());
+  if (p === "/api/celebrations/source" && m === "POST") {
+    const body = JSON.parse((await readBody(req, 1e5)).toString() || "{}");
+    try { await celebrations.setUrl(body.url); return sendJson(res, 200, celebrations.adminView()); }
+    catch (e) { return sendJson(res, 400, { error: e.message }); }
+  }
+  if (p === "/api/celebrations/check" && m === "POST") { await celebrations.check(); return sendJson(res, 200, celebrations.adminView()); }
   if (p === "/api/upload" && m === "PUT") {
     const mime = String(req.headers["content-type"] || "").split(";")[0].trim().toLowerCase();
     const ext = EXT_FOR[mime];
@@ -373,6 +366,7 @@ const server = http.createServer(async (req, res) => {
   const url = new URL(req.url, "http://x");
   try {
     if (url.pathname.startsWith("/api/")) return await api(req, res, url);
+    if (url.pathname === "/celebrations.json") return sendJson(res, 200, celebrations.file());
     if (url.pathname.startsWith("/media/")) return serveFile(req, res, path.join(MEDIA_DIR, path.basename(decodeURIComponent(url.pathname))));
     const routes = { "/": "/board.html", "/board": "/board.html", "/admin": "/admin.html", "/tv": "/tv.html" };
     const p = routes[url.pathname] || url.pathname;
