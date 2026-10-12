@@ -19,7 +19,7 @@
   .wk b{display:block;font-family:"Barlow Condensed",sans-serif;font-size:1.5cqw;line-height:1.1}
   .wk small{font-size:.95cqw;color:#7F8FAD}
   .wk.done{border-color:#F6B221;background:rgba(246,178,33,.12)} .wk.done small{color:#F6C46A}
-  .main{flex:1;min-height:0;display:grid;grid-template-columns:1fr 1.25fr;gap:1.8cqw}
+  .main{flex:1;min-height:0;display:grid;grid-template-columns:.95fr 1.35fr;gap:1.6cqw}
   .left{display:flex;flex-direction:column;gap:1cqw;min-height:0;overflow:hidden}
   .sec{font-size:1.05cqw;letter-spacing:.16em;text-transform:uppercase;color:#7F8FAD;font-weight:700}
   .pods{display:grid;grid-template-columns:1fr;gap:.8cqw}
@@ -32,16 +32,22 @@
   .p2{border-color:#A9B5C2}.p2 .pl{color:#A9B5C2}
   .p3{border-color:#CF8A57}.p3 .pl{color:#CF8A57}
   .stores{display:flex;flex-direction:column;gap:.45cqw;flex:1;min-height:0}
-  .srow{flex:1 1 0;min-height:0;max-height:3.4cqw;display:grid;grid-template-columns:2.4cqw 1fr auto auto;align-items:center;gap:1cqw;background:rgba(255,255,255,.05);border-radius:.6cqw;padding:0 1cqw;font-size:1.5cqw}
+  .srow{flex:1 1 0;min-height:0;max-height:3.4cqw;display:grid;grid-template-columns:2.4cqw 1fr auto auto auto;align-items:center;gap:1cqw;background:rgba(255,255,255,.05);border-radius:.6cqw;padding:0 1cqw;font-size:1.5cqw}
   .srow .n{font-family:"Barlow Condensed",sans-serif;font-weight:800;color:#7F8FAD}
-  .srow b{font-family:"Barlow Condensed",sans-serif;font-weight:700;font-size:1.7cqw}
-  .srow .c{font-size:1.05cqw;color:#7F8FAD}
-  .srow .t{font-family:"Barlow Condensed",sans-serif;font-weight:800;font-size:1.9cqw;font-variant-numeric:tabular-nums}
+  .srow b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;font-family:"Barlow Condensed",sans-serif;font-weight:700;font-size:1.7cqw}
+  .srow .c{white-space:nowrap;font-size:.95cqw;color:#7F8FAD}
+  .srow .t{font-family:"Barlow Condensed",sans-serif;font-weight:800;font-size:1.8cqw;font-variant-numeric:tabular-nums}
   .srow.first{background:rgba(246,178,33,.16)}
   .right{display:flex;flex-direction:column;gap:.5cqw;min-height:0}
-  .cols,.mrow{display:grid;grid-template-columns:calc(var(--fs)*2) minmax(0,1fr) minmax(0,.9fr) calc(var(--fs)*3.4) calc(var(--fs)*3.6);column-gap:calc(var(--fs)*.7);align-items:center}
+  .cols,.mrow{display:grid;grid-template-columns:calc(var(--fs)*2) calc(var(--fs)*2.2) minmax(0,1.35fr) minmax(0,.75fr) var(--wk) calc(var(--fs)*3.4) calc(var(--fs)*3.6);column-gap:calc(var(--fs)*.7);align-items:center}
   .cols{font-size:.95cqw;letter-spacing:.12em;text-transform:uppercase;color:#7F8FAD;font-weight:700;padding:0 calc(var(--fs)*.6)}
-  .cols span:nth-child(n+4){text-align:right}
+  .cols span:nth-child(n+5){text-align:right}
+  .cols .mvh{text-align:center}
+  .wkc{display:flex;justify-content:flex-end;gap:calc(var(--fs)*.8);color:#A8B6CF;font-variant-numeric:tabular-nums}
+  .cols .wkc{color:inherit}
+  .mrow .mv{text-align:center;font-weight:700;color:#7F8FAD;font-size:calc(var(--fs)*.85)}
+  .mrow .mv.up{color:#5CCF83} .mrow .mv.dn{color:#F2857B}
+  .srow .w{white-space:nowrap;font-size:.95cqw;color:#A8B6CF;font-variant-numeric:tabular-nums}
   .mrows{display:flex;flex-direction:column;gap:calc(var(--fs)*.18);flex:1;min-height:0}
   .mrow{flex:1 1 0;min-height:0;max-height:calc(var(--fs)*2.4);background:rgba(255,255,255,.05);border-radius:calc(var(--fs)*.3);padding:0 calc(var(--fs)*.6);font-size:var(--fs);line-height:1;overflow:hidden}
   .mrow .n{font-family:"Barlow Condensed",sans-serif;font-weight:800;color:#7F8FAD;text-align:center}
@@ -67,7 +73,7 @@
       <div class="stores" id="stores"></div>
     </div>
     <div class="right" id="right">
-      <div class="cols"><span>#</span><span>Manager</span><span>Store</span><span>Col O</span><span>Behind 1st</span></div>
+      <div class="cols" id="cols"></div>
       <div class="mrows" id="mrows"></div>
     </div>
   </div>
@@ -78,22 +84,29 @@
 const C = window.CONTEST, fmt = C.fmt, esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 function render(){
   const { mgrs, stores } = C.combine("all");
-  const ranked = mgrs.filter(r => r.ok), out = mgrs.length - ranked.length;
-  document.getElementById("kicker").textContent = (C.WEEKS.length > 1 ? C.WEEKS.length + "-week average" : "Contest to date") + " · lower time wins";
+  const ranked = mgrs.filter(r => r.ok), out = mgrs.length - ranked.length, W = C.WEEKS.length, multi = W > 1;
+  document.getElementById("kicker").textContent = (multi ? "Overall standings · " + W + "-week average" : "Contest to date") + " · lower time wins";
   document.getElementById("weeks").innerHTML = Array.from({ length: C.totalWeeks }, (_, i) => { const w = C.WEEKS[i];
     return `<div class="wk ${w ? "done" : ""}"><b>Week ${i + 1}</b><small>${w ? esc(w.dates) : "Coming up"}</small></div>`; }).join("");
+  const wkTimes = r => multi ? `<span class="wkc">${C.WEEKS.map((w, i) => `<span>${r.times[i] != null ? fmt(r.times[i]) : "—"}</span>`).join("")}</span>` : `<span></span>`;
   const pl = ["1st", "2nd", "3rd"];
   document.getElementById("pods").innerHTML = ranked.slice(0, 3).map((r, i) =>
     `<div class="pod p${i + 1}"><div class="pl">${pl[i]}</div><div><div class="nm">${esc(r.name)}</div><div class="st">${esc(r.store)} · ${r.cars.toLocaleString()} cars</div></div><div class="t">${fmt(r.time)}</div></div>`).join("");
   document.getElementById("stores").innerHTML = stores.map((s, i) =>
-    `<div class="srow ${i === 0 ? "first" : ""}"><span class="n">${i + 1}</span><b>${esc(s.name)}</b><span class="c">${s.cars.toLocaleString()} cars</span><span class="t">${fmt(s.time)}</span></div>`).join("");
+    `<div class="srow ${i === 0 ? "first" : ""}"><span class="n">${i + 1}</span><b>${esc(s.name.replace(/\s*#\d+$/,''))}</b><span class="w">${multi ? C.WEEKS.map((w, k) => "Wk " + (k + 1) + " " + (s.times[k] != null ? fmt(s.times[k]) : "—")).join(" · ") : ""}</span><span class="c">${s.cars.toLocaleString()} cars</span><span class="t">${fmt(s.time)}</span></div>`).join("");
   // size the manager list so every qualified manager fits
-  const N = ranked.length, fs = Math.min(1.7, 40 / N / 1.25);
-  document.getElementById("right").style.setProperty("--fs", fs.toFixed(3) + "cqw");
-  const lead = ranked[0] ? ranked[0].time : 0;
+  const N = ranked.length, fs = Math.min(1.7, 40 / N / 1.25), right = document.getElementById("right");
+  right.style.setProperty("--fs", fs.toFixed(3) + "cqw");
+  right.style.setProperty("--wk", multi ? `calc(var(--fs) * ${(W * 2.6).toFixed(1)})` : "0px");
+  document.getElementById("cols").innerHTML = `<span>#</span><span class="mvh">${multi ? "Move" : ""}</span><span>Manager</span><span>Store</span>` +
+    (multi ? `<span class="wkc">${C.WEEKS.map((w, i) => `<span>Wk ${i + 1}</span>`).join("")}</span>` : `<span></span>`) +
+    `<span>${multi ? W + "-Wk" : "Col O"}</span><span>Behind 1st</span>`;
+  const mv = C.moves(ranked);
+  const moveTxt = r => { const d = mv[r.name]; return d === undefined ? `<span class="mv"></span>` : d > 0 ? `<span class="mv up">▲${d}</span>` : d < 0 ? `<span class="mv dn">▼${-d}</span>` : `<span class="mv">–</span>`; };
+  const lead = ranked[0] ? Math.round(ranked[0].time) : 0;
   document.getElementById("mrows").innerHTML = ranked.map((r, i) =>
-    `<div class="mrow ${i < 3 ? "top" : ""}"><span class="n">${i + 1}</span><span class="who">${esc(r.name)}</span><span class="st">${esc(r.store)}</span><span class="t">${fmt(r.time)}</span><span class="g">${i ? "+" + fmt(r.time - lead) : "—"}</span></div>`).join("");
-  document.getElementById("note").textContent = out ? `${out} manager${out > 1 ? "s" : ""} not qualified yet (under 4 days)` : "";
+    `<div class="mrow ${i < 3 ? "top" : ""}"><span class="n">${i + 1}</span>${moveTxt(r)}<span class="who">${esc(r.name)}</span><span class="st">${esc(r.store)}</span>${wkTimes(r)}<span class="t">${fmt(r.time)}</span><span class="g">${i && Math.round(r.time) > lead ? "+" + fmt(Math.round(r.time) - lead) : "—"}</span></div>`).join("");
+  document.getElementById("note").textContent = out ? `${out} manager${out > 1 ? "s" : ""} not qualified (under 4 days in a week or missed a week)` : "";
 }
 render();
 </script>

@@ -9,17 +9,17 @@
 :root{
   --bg:#f3f5f8; --panel:#ffffff; --fg:#14202e; --muted:#5d6b7c; --line:#dde3ea;
   --accent:#d98a00; --accent-ink:#7a4d00; --accent-soft:#fdf1dc;
-  --gold:#c99a1e; --silver:#8e9aa8; --bronze:#b06b3a; --dim:#9aa5b2; --good-bg:#dcefe0; --bad-bg:#f6dcd8;
+  --gold:#c99a1e; --silver:#8e9aa8; --bronze:#b06b3a; --dim:#9aa5b2; --good-bg:#dcefe0; --bad-bg:#f6dcd8; --up:#1f7a3a; --dn:#b3261e;
   --display:"Barlow Condensed","Arial Narrow",system-ui,sans-serif;
   --body:"Archivo",system-ui,-apple-system,"Segoe UI",sans-serif;
 }
 @media (prefers-color-scheme:dark){:root{
   --bg:#0e151d; --panel:#16202b; --fg:#e8edf3; --muted:#9aa8b8; --line:#26323f;
   --accent:#f0a823; --accent-ink:#f6c46a; --accent-soft:#2a2114;
-  --gold:#e0b440; --silver:#a9b5c2; --bronze:#cf8a57; --dim:#6b7887; --good-bg:#183526; --bad-bg:#3a1f1d; color-scheme:dark}}
+  --gold:#e0b440; --silver:#a9b5c2; --bronze:#cf8a57; --dim:#6b7887; --good-bg:#183526; --bad-bg:#3a1f1d; --up:#5ccf83; --dn:#f2857b; color-scheme:dark}}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--body);font-size:15px;line-height:1.5}
-.wrap{max-width:960px;margin:0 auto;padding-inline:16px;padding-block:28px 48px;display:grid;gap:22px}
+.wrap{max-width:1080px;margin:0 auto;padding-inline:16px;padding-block:28px 48px;display:grid;gap:22px}
 header{display:grid;gap:6px}
 .eyebrow{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:600}
 h1{font-family:var(--display);font-weight:800;font-size:clamp(34px,6vw,52px);line-height:1;margin:0;text-wrap:balance}
@@ -47,8 +47,8 @@ h1 span{color:var(--accent)}
 .pod .meta{color:var(--muted);font-size:13px}
 .board{background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow-x:auto}
 table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
-th{text-align:left;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:600;padding:10px 12px;border-bottom:1px solid var(--line);white-space:nowrap}
-td{padding:9px 12px;border-bottom:1px solid var(--line);white-space:nowrap}
+th{text-align:left;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:600;padding:10px 8px;border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:9px 8px;border-bottom:1px solid var(--line);white-space:nowrap}
 tr:last-child td{border-bottom:0}
 td.pl{font-family:var(--display);font-weight:800;font-size:18px;width:44px}
 td.t{font-family:var(--display);font-weight:700;font-size:20px;text-align:right}
@@ -61,6 +61,10 @@ tr.gap td{color:var(--dim)}
 .rule{border-left:3px solid var(--accent);padding:4px 0 4px 12px;color:var(--muted);font-size:14px}
 .rule b{display:block;color:var(--fg);font-weight:600}
 td.g{color:var(--muted)}
+td.mv{font-weight:700;text-align:center;color:var(--muted)}
+td.mv.up{color:var(--up)}
+td.mv.dn{color:var(--dn)}
+tr.gap td.t{font-weight:600}
 td.good{background:var(--good-bg);font-weight:700}
 td.bad{background:var(--bad-bg)}
 .how{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 16px;display:grid;gap:8px}
@@ -96,15 +100,16 @@ h2{font-family:var(--display);font-weight:700;font-size:22px;margin:0}
     <h2>How to read this</h2>
     <dl>
       <div><dt>Col O</dt><dd>Total drive-thru time per car, from pulling into the lane to leaving the window, pull-forwards included. Lower is better.</dd></div>
-      <div><dt>Days</dt><dd>Days you were credited as the manager on shift, meaning you covered at least half of a daypart. You need 4 days every week to place.</dd></div>
+      <div><dt>Days</dt><dd>Days you were credited as the manager on shift, meaning you covered at least half of a daypart, shown week by week. You need 4 days every week to place.</dd></div>
       <div><dt>Cars</dt><dd>Drive-thru cars served on your credited dayparts. Busy shifts count more than slow ones, so a strong dinner rush moves your number more than a slow open.</dd></div>
+      <div><dt>Move</dt><dd>Places gained (▲) or lost (▼) since Week 1, compared with managers still in the contest.</dd></div>
       <div><dt>Behind 1st / Behind next</dt><dd>How much time per car you need to cut to catch the leader, or to pass the person one spot ahead.</dd></div>
     </dl>
   </section>
 
   <section style="display:grid;gap:10px">
     <h2>Where your time goes</h2>
-    <p class="sub"><b style="color:var(--fg)">Lane Queue is where the race is won.</b> Menu Time barely moves between managers, but Lane Queue swings the most from first place to last. Keeping the line moving between the menu board and the window explains most of the gap. Green marks the 3 fastest in the group for each step, red the 3 slowest.</p>
+    <p class="sub"><b style="color:var(--fg)">Lane Queue is where the race is won.</b> <span id="lqtext"></span></p>
     <div class="board"><table><thead><tr><th>Place</th><th>Manager</th><th class="r">Pre-Menu Queue</th><th class="r">Menu Time</th><th class="r">Lane Queue</th><th class="r">Window Time</th></tr></thead><tbody id="parts"></tbody></table></div>
   </section>
 
@@ -129,24 +134,34 @@ function render(){
   const rows = board === "mgr" ? mgrs : stores;
   const ranked = rows.filter(r => r.ok);
   const placeTxt = ["1st place","2nd place","3rd place"];
+  const multi = period === "all" && WEEKS.length > 1;
+  const daysTxt = r => r.dayList.join(" / ");
+  const mv = multi && board === "mgr" ? C.moves(ranked) : {};
+  const moveCell = r => { const d = r.ok ? mv[r.name] : undefined; if (d === undefined) return `<td class="mv"></td>`;
+    return d > 0 ? `<td class="mv up" title="Up ${d} since Week 1">▲${d}</td>` : d < 0 ? `<td class="mv dn" title="Down ${-d} since Week 1">▼${-d}</td>` : `<td class="mv">–</td>`; };
   document.getElementById("podium").innerHTML = ranked.slice(0,3).map((r,i) => `
     <div class="pod p${i+1}"><div class="place">${placeTxt[i]}</div>
       <div class="name">${r.name}</div><div class="time">${fmt(r.time)}</div>
-      <div class="meta">${board==="mgr" ? r.store + " · " + r.days + " days" : r.cars.toLocaleString() + " cars"}</div></div>`).join("");
+      <div class="meta">${board==="mgr" ? r.store + " · " + (multi ? daysTxt(r) + " days by week" : r.days + " days") : r.cars.toLocaleString() + " cars"}</div></div>`).join("");
+  const wkHead = multi ? WEEKS.map((w,i)=>`<th class="r">Wk ${i+1}</th>`).join("") : "";
+  const colO = multi ? WEEKS.length + "-Wk Col O" : "Col O";
   document.getElementById("thead").innerHTML = board === "mgr"
-    ? `<tr><th>Place</th><th>Manager</th><th>Store</th><th class="r">Days</th><th class="r">Cars</th><th class="r">Col O</th><th class="r">Behind 1st</th><th class="r">Behind next</th></tr>`
-    : `<tr><th>Place</th><th>Store</th><th class="r">Cars</th><th class="r">Col O</th></tr>`;
-  let place = 0; const lead = ranked[0] ? ranked[0].time : 0;
-  const gap = x => Math.round(x) <= 0 ? "—" : "+" + fmt(x);
+    ? `<tr><th>Place</th>${multi?"<th>Move</th>":""}<th>Manager</th><th>Store</th>${wkHead}<th class="r">Days</th><th class="r">Cars</th><th class="r">${colO}</th><th class="r">Behind 1st</th><th class="r">Behind next</th></tr>`
+    : `<tr><th>Place</th><th>Store</th>${wkHead}<th class="r">Cars</th><th class="r">${colO}</th></tr>`;
+  let place = 0; const lead = ranked[0] ? Math.round(ranked[0].time) : 0;
+  const gap = x => x <= 0 ? "—" : "+" + fmt(x);
   document.getElementById("tbody").innerHTML = rows.map(r => {
     const pl = r.ok ? ++place : "—";
-    const b1 = r.ok ? gap(r.time - lead) : "", bn = r.ok && place > 1 ? gap(r.time - ranked[place-2].time) : (r.ok ? "—" : "");
-    if (board === "mgr") return `<tr class="${r.ok?"":"gap"}"><td class="pl">${pl}</td><td class="who">${r.name}${r.ok?"":' <span class="tag">Not qualified · under 4 days</span>'}</td>
-      <td class="store">${r.store}</td><td class="r">${r.days}</td><td class="r">${r.cars.toLocaleString()}</td><td class="t">${fmt(r.time)}</td><td class="r g">${b1}</td><td class="r g">${bn}</td></tr>`;
-    return `<tr><td class="pl">${pl}</td><td class="who">${r.name}</td><td class="r">${r.cars.toLocaleString()}</td><td class="t">${fmt(r.time)}</td></tr>`;
+    const b1 = r.ok ? gap(Math.round(r.time) - lead) : "", bn = r.ok && place > 1 ? gap(Math.round(r.time) - Math.round(ranked[place-2].time)) : (r.ok ? "—" : "");
+    const wkCells = multi ? WEEKS.map((w,i)=>`<td class="r">${r.times[i]!=null?fmt(r.times[i]):"—"}</td>`).join("") : "";
+    if (board === "mgr") return `<tr class="${r.ok?"":"gap"}"><td class="pl">${pl}</td>${multi?moveCell(r):""}<td class="who">${r.name}${r.ok?"":` <span class="tag">Not qualified · ${r.why}</span>`}</td>
+      <td class="store">${r.store}</td>${wkCells}<td class="r">${multi?daysTxt(r):r.days}</td><td class="r">${r.cars.toLocaleString()}</td><td class="t">${fmt(r.time)}</td><td class="r g">${b1}</td><td class="r g">${bn}</td></tr>`;
+    return `<tr><td class="pl">${pl}</td><td class="who">${r.name}</td>${wkCells}<td class="r">${r.cars.toLocaleString()}</td><td class="t">${fmt(r.time)}</td></tr>`;
   }).join("");
   const q = mgrs.filter(r => r.ok && r.parts);
   const cols = [0,1,2,3].map(i => q.map(r => r.parts[i]).sort((a,b)=>a-b));
+  if (q.length) { const lq = [...q].sort((a,b)=>a.parts[2]-b.parts[2]), mt = q.map(r=>r.parts[1]).sort((a,b)=>a-b);
+    document.getElementById("lqtext").textContent = `Menu Time stays in a tight band (${fmt(mt[0])} to ${fmt(mt[mt.length-1])}), but Lane Queue runs from ${fmt(lq[0].parts[2])} for ${lq[0].name} to ${fmt(lq[lq.length-1].parts[2])} for ${lq[lq.length-1].name.replace(/\.$/,"")}. Keeping the line moving between the menu board and the window explains most of the gap between first and last. Green marks the 3 fastest in the group for each step, red the 3 slowest.`; }
   document.getElementById("parts").innerHTML = q.map((r,k) => `<tr><td class="pl">${k+1}</td><td class="who">${r.name}</td>` +
     r.parts.map((v,i) => { const c = v <= cols[i][2] ? "good" : v >= cols[i][cols[i].length-3] ? "bad" : ""; return `<td class="r ${c}">${fmt(v)}</td>`; }).join("") + `</tr>`).join("");
 }
