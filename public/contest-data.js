@@ -20,14 +20,14 @@ window.CONTEST = {
         ["Nolan J.", "Moncks Corner", 5, 1160, 301], ["Schmidt C.", "Moncks Corner + Tanger", 5, 648, 284],
         ["Hart K.", "Dorchester", 5, 927, 365], ["Smith J.", "Dorchester", 5, 800, 425],
         ["Simmons A.", "Dorchester", 5, 570, 480], ["Long R.", "Dorchester", 5, 809, 378],
-        ["Blake B.", "Dorchester", 5, 741, 367], ["Geathers B.", "Shelby Ray", 5, 708, 333],
+        ["Geathers B.", "Shelby Ray", 5, 708, 333],
         ["Singleton E.", "Shelby Ray", 5, 890, 297], ["Hamilton D.", "Shelby Ray", 6, 852, 299],
         ["Aska M.", "Shelby Ray", 4, 353, 308], ["Greene D.", "Shelby Ray", 4, 537, 258],
         ["Parker M.", "Tanger", 4, 479, 278], ["Hopper R.", "Tanger", 5, 604, 286],
         ["Wall M.", "University", 5, 967, 305], ["Lashway Z.", "University", 5, 1018, 262],
         ["Alvarez J.", "University", 1, 174, 213], ["Thomas C.", "University", 5, 885, 315]],
       // [Pre-Menu Queue, Menu Time, Lane Queue, Window Time] seconds, Lunch–Late
-      comp: {"Chisom T.": [37, 55, 66, 63], "Dunn C.": [34, 58, 118, 78], "Nolan J.": [57, 57, 114, 71], "Galloway C.": [57, 60, 153, 83], "Cooper D.": [69, 64, 156, 87], "Hart K.": [68, 69, 106, 97], "Blake B.": [63, 65, 100, 92], "Long R.": [70, 66, 101, 97], "Smith J.": [75, 76, 113, 101], "Simmons A.": [87, 75, 104, 104], "Greene D.": [25, 55, 80, 84], "Singleton E.": [24, 59, 100, 92], "Hamilton D.": [27, 62, 92, 97], "Aska M.": [23, 58, 77, 81], "Geathers B.": [45, 62, 104, 96], "Parker M.": [38, 65, 74, 92], "Hopper R.": [20, 62, 79, 110], "Thomas C.": [58, 68, 90, 86], "Alvarez J.": [30, 58, 54, 66], "Wall M.": [56, 70, 87, 85], "Lashway Z.": [44, 63, 70, 76], "Schmidt C.": [41, 58, 93, 85]}
+      comp: {"Chisom T.": [37, 55, 66, 63], "Dunn C.": [34, 58, 118, 78], "Nolan J.": [57, 57, 114, 71], "Galloway C.": [57, 60, 153, 83], "Cooper D.": [69, 64, 156, 87], "Hart K.": [68, 69, 106, 97], "Long R.": [70, 66, 101, 97], "Smith J.": [75, 76, 113, 101], "Simmons A.": [87, 75, 104, 104], "Greene D.": [25, 55, 80, 84], "Singleton E.": [24, 59, 100, 92], "Hamilton D.": [27, 62, 92, 97], "Aska M.": [23, 58, 77, 81], "Geathers B.": [45, 62, 104, 96], "Parker M.": [38, 65, 74, 92], "Hopper R.": [20, 62, 79, 110], "Thomas C.": [58, 68, 90, 86], "Alvarez J.": [30, 58, 54, 66], "Wall M.": [56, 70, 87, 85], "Lashway Z.": [44, 63, 70, 76], "Schmidt C.": [41, 58, 93, 85]}
     },
     { label: "Week 2", dates: "Oct 5 – Oct 11",
       stores: [
@@ -43,19 +43,41 @@ window.CONTEST = {
         ["Thomas C.", "University", 4, 562, 257], ["Wall M.", "University", 5, 822, 284],
         ["Lashway Z.", "University", 4, 813, 286],
         ["Smith J.", "Dorchester", 5, 798, 382], ["Simmons A.", "Dorchester", 4, 481, 392],
-        ["Blake B.", "Dorchester", 5, 824, 410], ["Long R.", "Dorchester", 5, 754, 422],
+        ["Long R.", "Dorchester", 5, 754, 422],
         ["Parker M.", "Tanger", 5, 633, 255], ["Hart K.", "Tanger", 5, 609, 275],
         ["Hopper R.", "Tanger", 5, 772, 283],
         ["Singleton E.", "Shelby Ray", 5, 867, 285], ["Greene D.", "Shelby Ray", 4, 515, 295],
         ["Hamilton D.", "Shelby Ray", 5, 634, 385]],
       comp: {"Chisom T.": [42, 58, 85, 68], "Schmidt C.": [31, 58, 93, 78], "Nolan J.": [44, 56, 92, 67], "Galloway C.": [43, 56, 129, 77], "Dunn C.": [44, 56, 150, 81], "Cooper D.": [50, 64, 171, 88],
-        "Lashway Z.": [59, 63, 76, 77], "Wall M.": [35, 67, 76, 88], "Thomas C.": [44, 60, 67, 77], "Smith J.": [58, 71, 114, 110], "Simmons A.": [49, 71, 120, 110], "Blake B.": [65, 71, 106, 98], "Long R.": [70, 72, 96, 103],
+        "Lashway Z.": [59, 63, 76, 77], "Wall M.": [35, 67, 76, 88], "Thomas C.": [44, 60, 67, 77], "Smith J.": [58, 71, 114, 110], "Simmons A.": [49, 71, 120, 110], "Long R.": [70, 72, 96, 103],
         "Parker M.": [29, 56, 63, 90], "Hart K.": [27, 56, 78, 100], "Hopper R.": [25, 60, 74, 102], "Singleton E.": [32, 58, 89, 85], "Greene D.": [36, 60, 89, 89], "Hamilton D.": [41, 68, 139, 112]}
+    },
+    { label: "Week 3", dates: "Oct 12 – Oct 18",
+      // Moncks Corner: broken-headset hours (all day Mon 10/12, Open/Lunch Tue 10/13) left out of times, cars and days
+      stores: [
+        ["Moncks Corner #25901", 378, 2163],
+        ["Dorchester #35403", 389, 1889],
+        ["Shelby Ray #35402", 300, 1640],
+        ["Tanger #55801", 332, 1429],
+        ["University #35401", 280, 1964]],
+      managers: [
+        ["Chisom T.", "Moncks Corner", 5, 868, 356], ["Schmidt C.", "Moncks Corner", 3, 653, 369],
+        ["Nolan J.", "Moncks Corner", 3, 465, 306], ["Galloway C.", "Moncks Corner", 4, 1069, 376],
+        ["Dunn C.", "Moncks Corner", 4, 924, 411], ["Cooper D.", "Moncks Corner", 4, 606, 438],
+        ["Lashway Z.", "University", 5, 846, 260], ["Thomas C.", "University", 4, 569, 262],
+        ["Wall M.", "University", 6, 899, 306], ["Simmons A.", "Dorchester", 5, 588, 395],
+        ["Long R.", "Dorchester", 6, 867, 397], ["Smith J.", "Dorchester", 5, 843, 426],
+        ["Hart K.", "Tanger", 5, 597, 290], ["Parker M.", "Tanger", 5, 622, 309],
+        ["Hopper R.", "Tanger", 5, 695, 383], ["Singleton E.", "Shelby Ray", 4, 563, 286],
+        ["Greene D.", "Shelby Ray", 5, 670, 290], ["Hamilton D.", "Shelby Ray", 6, 790, 306]]
     }
   ],
+  // Excluded entirely (never on the board): Wesner K. (DM), Cobin A. (MIT), Hulsey L. and Blake B. (not running shifts)
   // No longer in the contest: Geathers B. left the store, Aska M. moved back to Crew Trainer (still shown in their Week 1 tab)
   LEFT: ["Geathers B.", "Aska M."],
   // Managers who worked at more than one store across the contest
+  // GMs keep their overall place but can't win the prize
+  GMS: ["Lashway Z.", "Singleton E.", "Galloway C."],
   STORE_LABEL: {"Hart K.": "Dorchester → Tanger", "Schmidt C.": "Moncks Corner + Tanger"}
 };
 
@@ -87,6 +109,8 @@ window.CONTEST.combine = function (weekIdx) {
   const stores = [...s.values()].map(r => ({ ...r, time: r.secs / r.cars, ok: true })).sort((a, b) => a.time - b.time);
   return { mgrs, stores, nWeeks: ws.length };
 };
+// prize rank: qualified non-GMs only
+window.CONTEST.isGM = n => (window.CONTEST.GMS || []).includes(n);
 // places gained since Week 1, among managers ranked now: {name: +n / -n / 0}
 window.CONTEST.moves = function (rankedNow) {
   const C = window.CONTEST, out = {};

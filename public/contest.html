@@ -56,6 +56,11 @@ th.r,td.r{text-align:right}
 td.who{font-weight:600}
 td.store{color:var(--muted)}
 tr.gap td{color:var(--dim)}
+.gm{display:inline-block;font-size:10px;font-weight:700;letter-spacing:.06em;padding:1px 6px;border-radius:4px;background:var(--accent-soft);color:var(--accent-ink);margin-left:6px;vertical-align:2px}
+.gmcall{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:10px;padding:10px 14px;display:flex;flex-wrap:wrap;gap:6px 14px;align-items:baseline}
+.gmcall b{font-family:var(--display);font-size:20px}
+.gmcall .t{font-family:var(--display);font-weight:800;font-size:24px;font-variant-numeric:tabular-nums}
+.gmcall small{color:var(--muted)}
 .tag{display:inline-block;font-size:11px;font-weight:600;letter-spacing:.04em;padding:2px 8px;border-radius:999px;border:1px solid var(--line);color:var(--muted)}
 .rules{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}
 .rule{border-left:3px solid var(--accent);padding:4px 0 4px 12px;color:var(--muted);font-size:14px}
@@ -94,6 +99,7 @@ h2{font-family:var(--display);font-weight:700;font-size:22px;margin:0}
   </div>
 
   <div class="podium" id="podium"></div>
+  <div class="gmcall" id="gmcall" hidden></div>
   <div class="board"><table><thead id="thead"></thead><tbody id="tbody"></tbody></table></div>
 
   <section class="how">
@@ -102,6 +108,7 @@ h2{font-family:var(--display);font-weight:700;font-size:22px;margin:0}
       <div><dt>Col O</dt><dd>Total drive-thru time per car, from pulling into the lane to leaving the window, pull-forwards included. Lower is better.</dd></div>
       <div><dt>Days</dt><dd>Days you were credited as the manager on shift, meaning you covered at least half of a daypart, shown week by week. You need 4 days every week to place.</dd></div>
       <div><dt>Cars</dt><dd>Drive-thru cars served on your credited dayparts. Busy shifts count more than slow ones, so a strong dinner rush moves your number more than a slow open.</dd></div>
+      <div><dt>Prize</dt><dd>Prize place among non-GM managers. GMs keep their overall place on the board but can't win the prize.</dd></div>
       <div><dt>Move</dt><dd>Places gained (▲) or lost (▼) since Week 1, compared with managers still in the contest.</dd></div>
       <div><dt>Behind 1st / Behind next</dt><dd>How much time per car you need to cut to catch the leader, or to pass the person one spot ahead.</dd></div>
     </dl>
@@ -119,6 +126,7 @@ h2{font-family:var(--display);font-weight:700;font-size:22px;margin:0}
       <div class="rule"><b>Raw time wins</b>Everyone is ranked on fastest Col O across all 5 stores, not against their store's goal.</div>
       <div class="rule"><b>4-day minimum</b>A manager needs at least 4 days credited in every week to hold a place. Short weeks show as not qualified.</div>
       <div class="rule"><b>Car-weighted average</b>The 4-week time is weighted by cars served, so a busy week counts more than a light one.</div>
+      <div class="rule"><b>GMs</b>General managers stay on the board with their overall place, but the prize goes to the fastest non-GM managers. The fastest GM gets a callout.</div>
       <div class="rule"><b>Roster</b>District manager, managers in training and new hires not yet running shifts are left off. Managers who cover other stores are combined into one entry.</div>
     </div>
   </section>
@@ -134,19 +142,24 @@ function render(){
   const rows = board === "mgr" ? mgrs : stores;
   const ranked = rows.filter(r => r.ok);
   const placeTxt = ["1st place","2nd place","3rd place"];
+  const isMgr = board === "mgr", prizeRows = isMgr ? ranked.filter(r => !C.isGM(r.name)) : ranked;
+  const prize = {}; prizeRows.forEach((r,i) => prize[r.name] = i+1);
+  const gmTop = isMgr ? ranked.find(r => C.isGM(r.name)) : null, gc = document.getElementById("gmcall");
+  gc.hidden = !gmTop;
+  if (gmTop) gc.innerHTML = `<small>FASTEST GM</small><b>${gmTop.name}</b><span class="t">${fmt(gmTop.time)}</span><small>${gmTop.store} · ${ranked.indexOf(gmTop)+1}${["st","nd","rd"][ranked.indexOf(gmTop)]||"th"} overall · GMs aren't eligible for the prize</small>`;
   const multi = period === "all" && WEEKS.length > 1;
   const daysTxt = r => r.dayList.join(" / ");
   const mv = multi && board === "mgr" ? C.moves(ranked) : {};
   const moveCell = r => { const d = r.ok ? mv[r.name] : undefined; if (d === undefined) return `<td class="mv"></td>`;
     return d > 0 ? `<td class="mv up" title="Up ${d} since Week 1">▲${d}</td>` : d < 0 ? `<td class="mv dn" title="Down ${-d} since Week 1">▼${-d}</td>` : `<td class="mv">–</td>`; };
-  document.getElementById("podium").innerHTML = ranked.slice(0,3).map((r,i) => `
-    <div class="pod p${i+1}"><div class="place">${placeTxt[i]}</div>
+  document.getElementById("podium").innerHTML = prizeRows.slice(0,3).map((r,i) => `
+    <div class="pod p${i+1}"><div class="place">${isMgr ? "Prize · " : ""}${placeTxt[i]}</div>
       <div class="name">${r.name}</div><div class="time">${fmt(r.time)}</div>
       <div class="meta">${board==="mgr" ? r.store + " · " + (multi ? daysTxt(r) + " days by week" : r.days + " days") : r.cars.toLocaleString() + " cars"}</div></div>`).join("");
   const wkHead = multi ? WEEKS.map((w,i)=>`<th class="r">Wk ${i+1}</th>`).join("") : "";
   const colO = multi ? WEEKS.length + "-Wk Col O" : "Col O";
   document.getElementById("thead").innerHTML = board === "mgr"
-    ? `<tr><th>Place</th>${multi?"<th>Move</th>":""}<th>Manager</th><th>Store</th>${wkHead}<th class="r">Days</th><th class="r">Cars</th><th class="r">${colO}</th><th class="r">Behind 1st</th><th class="r">Behind next</th></tr>`
+    ? `<tr><th>Place</th><th class="r">Prize</th>${multi?"<th>Move</th>":""}<th>Manager</th><th>Store</th>${wkHead}<th class="r">Days</th><th class="r">Cars</th><th class="r">${colO}</th><th class="r">Behind 1st</th><th class="r">Behind next</th></tr>`
     : `<tr><th>Place</th><th>Store</th>${wkHead}<th class="r">Cars</th><th class="r">${colO}</th></tr>`;
   let place = 0; const lead = ranked[0] ? Math.round(ranked[0].time) : 0;
   const gap = x => x <= 0 ? "—" : "+" + fmt(x);
@@ -154,7 +167,7 @@ function render(){
     const pl = r.ok ? ++place : "—";
     const b1 = r.ok ? gap(Math.round(r.time) - lead) : "", bn = r.ok && place > 1 ? gap(Math.round(r.time) - Math.round(ranked[place-2].time)) : (r.ok ? "—" : "");
     const wkCells = multi ? WEEKS.map((w,i)=>`<td class="r">${r.times[i]!=null?fmt(r.times[i]):"—"}</td>`).join("") : "";
-    if (board === "mgr") return `<tr class="${r.ok?"":"gap"}"><td class="pl">${pl}</td>${multi?moveCell(r):""}<td class="who">${r.name}${r.ok?"":` <span class="tag">Not qualified · ${r.why}</span>`}</td>
+    if (board === "mgr") return `<tr class="${r.ok?"":"gap"}"><td class="pl">${pl}</td><td class="r g">${prize[r.name] || (r.ok && C.isGM(r.name) ? "GM" : "")}</td>${multi?moveCell(r):""}<td class="who">${r.name}${C.isGM(r.name)?'<span class="gm">GM</span>':""}${r.ok?"":` <span class="tag">Not qualified · ${r.why}</span>`}</td>
       <td class="store">${r.store}</td>${wkCells}<td class="r">${multi?daysTxt(r):r.days}</td><td class="r">${r.cars.toLocaleString()}</td><td class="t">${fmt(r.time)}</td><td class="r g">${b1}</td><td class="r g">${bn}</td></tr>`;
     return `<tr><td class="pl">${pl}</td><td class="who">${r.name}</td>${wkCells}<td class="r">${r.cars.toLocaleString()}</td><td class="t">${fmt(r.time)}</td></tr>`;
   }).join("");

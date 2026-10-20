@@ -19,15 +19,15 @@
   .wk b{display:block;font-family:"Barlow Condensed",sans-serif;font-size:1.5cqw;line-height:1.1}
   .wk small{font-size:.95cqw;color:#7F8FAD}
   .wk.done{border-color:#F6B221;background:rgba(246,178,33,.12)} .wk.done small{color:#F6C46A}
-  .main{flex:1;min-height:0;display:grid;grid-template-columns:.95fr 1.35fr;gap:1.6cqw}
+  .main{flex:1;min-height:0;display:grid;grid-template-columns:.82fr 1.5fr;gap:1.4cqw}
   .left{display:flex;flex-direction:column;gap:1cqw;min-height:0;overflow:hidden}
   .sec{font-size:1.05cqw;letter-spacing:.16em;text-transform:uppercase;color:#7F8FAD;font-weight:700}
   .pods{display:grid;grid-template-columns:1fr;gap:.8cqw}
   .pod{display:grid;grid-template-columns:5.5cqw 1fr auto;align-items:center;gap:1cqw;background:rgba(255,255,255,.06);border-radius:1cqw;padding:.6cqw 1.3cqw;border-left:.5cqw solid}
   .pod .pl{font-family:"Barlow Condensed",sans-serif;font-weight:800;font-size:2.2cqw;text-transform:uppercase}
-  .pod .nm{font-family:"Barlow Condensed",sans-serif;font-weight:700;font-size:2.4cqw;line-height:1}
+  .pod .nm{font-family:"Barlow Condensed",sans-serif;font-weight:700;font-size:2.2cqw;line-height:1}
   .pod .st{font-size:1.05cqw;color:#A8B6CF}
-  .pod .t{font-family:"Barlow Condensed",sans-serif;font-weight:800;font-size:3.6cqw;font-variant-numeric:tabular-nums}
+  .pod .t{font-family:"Barlow Condensed",sans-serif;font-weight:800;font-size:3.2cqw;font-variant-numeric:tabular-nums}
   .p1{border-color:#E0B440}.p1 .pl{color:#E0B440}
   .p2{border-color:#A9B5C2}.p2 .pl{color:#A9B5C2}
   .p3{border-color:#CF8A57}.p3 .pl{color:#CF8A57}
@@ -39,12 +39,13 @@
   .srow .t{font-family:"Barlow Condensed",sans-serif;font-weight:800;font-size:1.8cqw;font-variant-numeric:tabular-nums}
   .srow.first{background:rgba(246,178,33,.16)}
   .right{display:flex;flex-direction:column;gap:.5cqw;min-height:0}
-  .cols,.mrow{display:grid;grid-template-columns:calc(var(--fs)*2) calc(var(--fs)*2.2) minmax(0,1.35fr) minmax(0,.75fr) var(--wk) calc(var(--fs)*3.4) calc(var(--fs)*3.6);column-gap:calc(var(--fs)*.7);align-items:center}
+  .cols,.mrow{display:grid;grid-template-columns:calc(var(--fs)*2) calc(var(--fs)*1.8) minmax(0,1.45fr) minmax(0,.8fr) var(--wk) calc(var(--fs)*3.2) calc(var(--fs)*3.2);column-gap:calc(var(--fs)*.7);align-items:center}
   .cols{font-size:.95cqw;letter-spacing:.12em;text-transform:uppercase;color:#7F8FAD;font-weight:700;padding:0 calc(var(--fs)*.6)}
   .cols span:nth-child(n+5){text-align:right}
   .cols .mvh{text-align:center}
-  .wkc{display:flex;justify-content:flex-end;gap:calc(var(--fs)*.8);color:#A8B6CF;font-variant-numeric:tabular-nums}
-  .cols .wkc{color:inherit}
+  .wkc{display:flex;justify-content:flex-end;gap:calc(var(--fs)*.6);font-size:calc(var(--fs)*.9);color:#A8B6CF;font-variant-numeric:tabular-nums}
+  .cols .wkc{color:inherit;font-size:inherit;white-space:nowrap}
+  .cols span{white-space:nowrap}
   .mrow .mv{text-align:center;font-weight:700;color:#7F8FAD;font-size:calc(var(--fs)*.85)}
   .mrow .mv.up{color:#5CCF83} .mrow .mv.dn{color:#F2857B}
   .srow .w{white-space:nowrap;font-size:.95cqw;color:#A8B6CF;font-variant-numeric:tabular-nums}
@@ -56,6 +57,12 @@
   .mrow .t{font-family:"Barlow Condensed",sans-serif;font-weight:800;font-size:calc(var(--fs)*1.2);text-align:right;font-variant-numeric:tabular-nums}
   .mrow .g{color:#7F8FAD;text-align:right;font-variant-numeric:tabular-nums}
   .mrow.top{background:rgba(246,178,33,.14)} .mrow.top .n{color:#F6B221}
+  .gmc{display:flex;align-items:baseline;gap:.9cqw;white-space:nowrap;overflow:hidden;padding:.5cqw 1.3cqw;border-radius:.8cqw;background:rgba(246,178,33,.08);border:.12cqw solid rgba(246,178,33,.35);font-size:1.05cqw;color:#A8B6CF}
+  .gmc:empty{display:none}
+  .gmc .k{letter-spacing:.14em;text-transform:uppercase;font-weight:700;color:#F6C46A}
+  .gmc b{font-family:"Barlow Condensed",sans-serif;font-size:1.8cqw;color:#F2F5FA}
+  .gmc .t{font-family:"Barlow Condensed",sans-serif;font-weight:800;font-size:2cqw;color:#F2F5FA;margin-left:auto}
+  .gmtag{font-size:calc(var(--fs)*.6);font-weight:700;letter-spacing:.06em;padding:0 .35em;border-radius:.25em;background:rgba(246,178,33,.2);color:#F6C46A;margin-left:.4em;vertical-align:.15em}
   .foot{display:flex;justify-content:space-between;font-size:1.05cqw;color:#7F8FAD}
 </style>
 </head>
@@ -67,9 +74,10 @@
   </div>
   <div class="main">
     <div class="left">
-      <div class="sec">Top managers</div>
+      <div class="sec">Prize leaders</div>
       <div class="pods" id="pods"></div>
-      <div class="sec">Store standings</div>
+      <div class="gmc" id="gmc"></div>
+      <div class="sec" id="ssec">Store standings</div>
       <div class="stores" id="stores"></div>
     </div>
     <div class="right" id="right">
@@ -77,7 +85,7 @@
       <div class="mrows" id="mrows"></div>
     </div>
   </div>
-  <div class="foot"><span>Col O: lane total with pull-forward, car-weighted. 4-day minimum every week to place.</span><span id="note"></span></div>
+  <div class="foot"><span>Col O: lane total with pull-forward, car-weighted. 4-day minimum every week to place. GMs aren't prize-eligible.</span><span id="note"></span></div>
 </div>
 <script src="/contest-data.js"></script>
 <script>
@@ -90,23 +98,26 @@ function render(){
     return `<div class="wk ${w ? "done" : ""}"><b>Week ${i + 1}</b><small>${w ? esc(w.dates) : "Coming up"}</small></div>`; }).join("");
   const wkTimes = r => multi ? `<span class="wkc">${C.WEEKS.map((w, i) => `<span>${r.times[i] != null ? fmt(r.times[i]) : "—"}</span>`).join("")}</span>` : `<span></span>`;
   const pl = ["1st", "2nd", "3rd"];
-  document.getElementById("pods").innerHTML = ranked.slice(0, 3).map((r, i) =>
+  document.getElementById("ssec").textContent = multi ? "Store standings · " + C.WEEKS.map((w, i) => "Wk " + (i + 1)).join(" · ") : "Store standings";
+  const prizeRows = ranked.filter(r => !C.isGM(r.name)), gmTop = ranked.find(r => C.isGM(r.name));
+  document.getElementById("gmc").innerHTML = gmTop ? `<span class="k">Top GM</span><b>${esc(gmTop.name)}</b><span>#${ranked.indexOf(gmTop) + 1} overall</span><span class="t">${fmt(gmTop.time)}</span>` : "";
+  document.getElementById("pods").innerHTML = prizeRows.slice(0, 3).map((r, i) =>
     `<div class="pod p${i + 1}"><div class="pl">${pl[i]}</div><div><div class="nm">${esc(r.name)}</div><div class="st">${esc(r.store)} · ${r.cars.toLocaleString()} cars</div></div><div class="t">${fmt(r.time)}</div></div>`).join("");
   document.getElementById("stores").innerHTML = stores.map((s, i) =>
-    `<div class="srow ${i === 0 ? "first" : ""}"><span class="n">${i + 1}</span><b>${esc(s.name.replace(/\s*#\d+$/,''))}</b><span class="w">${multi ? C.WEEKS.map((w, k) => "Wk " + (k + 1) + " " + (s.times[k] != null ? fmt(s.times[k]) : "—")).join(" · ") : ""}</span><span class="c">${s.cars.toLocaleString()} cars</span><span class="t">${fmt(s.time)}</span></div>`).join("");
+    `<div class="srow ${i === 0 ? "first" : ""}"><span class="n">${i + 1}</span><b>${esc(s.name.replace(/\s*#\d+$/,''))}</b><span class="w">${multi ? C.WEEKS.map((w, k) => s.times[k] != null ? fmt(s.times[k]) : "—").join(" · ") : ""}</span><span class="c">${s.cars.toLocaleString()} cars</span><span class="t">${fmt(s.time)}</span></div>`).join("");
   // size the manager list so every qualified manager fits
   const N = ranked.length, fs = Math.min(1.7, 40 / N / 1.25), right = document.getElementById("right");
   right.style.setProperty("--fs", fs.toFixed(3) + "cqw");
-  right.style.setProperty("--wk", multi ? `calc(var(--fs) * ${(W * 2.6).toFixed(1)})` : "0px");
+  right.style.setProperty("--wk", multi ? `calc(var(--fs) * ${(W * 2.35).toFixed(1)})` : "0px");
   document.getElementById("cols").innerHTML = `<span>#</span><span class="mvh">${multi ? "Move" : ""}</span><span>Manager</span><span>Store</span>` +
     (multi ? `<span class="wkc">${C.WEEKS.map((w, i) => `<span>Wk ${i + 1}</span>`).join("")}</span>` : `<span></span>`) +
-    `<span>${multi ? W + "-Wk" : "Col O"}</span><span>Behind 1st</span>`;
+    `<span>${multi ? W + "-Wk" : "Col O"}</span><span>Behind</span>`;
   const mv = C.moves(ranked);
   const moveTxt = r => { const d = mv[r.name]; return d === undefined ? `<span class="mv"></span>` : d > 0 ? `<span class="mv up">▲${d}</span>` : d < 0 ? `<span class="mv dn">▼${-d}</span>` : `<span class="mv">–</span>`; };
   const lead = ranked[0] ? Math.round(ranked[0].time) : 0;
   document.getElementById("mrows").innerHTML = ranked.map((r, i) =>
-    `<div class="mrow ${i < 3 ? "top" : ""}"><span class="n">${i + 1}</span>${moveTxt(r)}<span class="who">${esc(r.name)}</span><span class="st">${esc(r.store)}</span>${wkTimes(r)}<span class="t">${fmt(r.time)}</span><span class="g">${i && Math.round(r.time) > lead ? "+" + fmt(Math.round(r.time) - lead) : "—"}</span></div>`).join("");
-  document.getElementById("note").textContent = out ? `${out} manager${out > 1 ? "s" : ""} not qualified (under 4 days in a week or missed a week)` : "";
+    `<div class="mrow ${prizeRows.indexOf(r) > -1 && prizeRows.indexOf(r) < 3 ? "top" : ""}"><span class="n">${i + 1}</span>${moveTxt(r)}<span class="who">${esc(r.name)}${C.isGM(r.name) ? '<span class="gmtag">GM</span>' : ""}</span><span class="st">${esc(r.store.replace("Moncks Corner + Tanger","Moncks + Tanger").replace("Moncks Corner","Moncks").replace("Dorchester → Tanger","Dorch → Tanger"))}</span>${wkTimes(r)}<span class="t">${fmt(r.time)}</span><span class="g">${i && Math.round(r.time) > lead ? "+" + fmt(Math.round(r.time) - lead) : "—"}</span></div>`).join("");
+  document.getElementById("note").textContent = out ? `${out} manager${out > 1 ? "s" : ""} not qualified` : "";
 }
 render();
 </script>
