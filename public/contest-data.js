@@ -53,17 +53,17 @@ window.CONTEST = {
         "Parker M.": [29, 56, 63, 90], "Hart K.": [27, 56, 78, 100], "Hopper R.": [25, 60, 74, 102], "Singleton E.": [32, 58, 89, 85], "Greene D.": [36, 60, 89, 89], "Hamilton D.": [41, 68, 139, 112]}
     },
     { label: "Week 3", dates: "Oct 12 – Oct 18",
-      // Moncks Corner: broken-headset hours (all day Mon 10/12, Open/Lunch Tue 10/13) left out of times, cars and days
+      // Moncks Corner: headsets down all day Tue 10/13. All of Tuesday is left out of times, cars and days (Monday counts normally).
       stores: [
-        ["Moncks Corner #25901", 378, 2163],
+        ["Moncks Corner #25901", 375, 2294],
         ["Dorchester #35403", 389, 1889],
         ["Shelby Ray #35402", 300, 1640],
         ["Tanger #55801", 332, 1429],
         ["University #35401", 280, 1964]],
       managers: [
-        ["Chisom T.", "Moncks Corner", 5, 868, 356], ["Schmidt C.", "Moncks Corner", 3, 653, 369],
-        ["Nolan J.", "Moncks Corner", 3, 465, 306], ["Galloway C.", "Moncks Corner", 4, 1069, 376],
-        ["Dunn C.", "Moncks Corner", 4, 924, 411], ["Cooper D.", "Moncks Corner", 4, 606, 438],
+        ["Chisom T.", "Moncks Corner", 4, 747, 347], ["Schmidt C.", "Moncks Corner", 4, 1033, 355],
+        ["Nolan J.", "Moncks Corner", 2, 344, 254], ["Galloway C.", "Moncks Corner", 4, 1140, 357],
+        ["Dunn C.", "Moncks Corner", 4, 782, 433], ["Cooper D.", "Moncks Corner", 5, 764, 446],
         ["Lashway Z.", "University", 5, 846, 260], ["Thomas C.", "University", 4, 569, 262],
         ["Wall M.", "University", 6, 899, 306], ["Simmons A.", "Dorchester", 5, 588, 395],
         ["Long R.", "Dorchester", 6, 867, 397], ["Smith J.", "Dorchester", 5, 843, 426],
@@ -78,6 +78,8 @@ window.CONTEST = {
   // Managers who worked at more than one store across the contest
   // GMs keep their overall place but can't win the prize
   GMS: ["Lashway Z.", "Singleton E.", "Galloway C."],
+  // Qualified by owner override: Schmidt C. worked his Week 2 days but they are missing from the Tanger timecard (report shows 2). His time uses the days on record.
+  QUALIFY_OVERRIDE: ["Schmidt C."],
   STORE_LABEL: {"Hart K.": "Dorchester → Tanger", "Schmidt C.": "Moncks Corner + Tanger"}
 };
 
@@ -85,7 +87,7 @@ window.CONTEST = {
 window.CONTEST.fmt = s => { s = Math.round(s); return Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0"); };
 window.CONTEST.combine = function (weekIdx) {
   const C = window.CONTEST, all = weekIdx === "all", ws = all ? C.WEEKS : [C.WEEKS[weekIdx]];
-  const left = new Set(C.LEFT || []), labels = C.STORE_LABEL || {};
+  const left = new Set(C.LEFT || []), labels = C.STORE_LABEL || {}, override = new Set(C.QUALIFY_OVERRIDE || []);
   const m = new Map(), s = new Map();
   ws.forEach(w => {
     const wi = C.WEEKS.indexOf(w);
@@ -104,7 +106,7 @@ window.CONTEST.combine = function (weekIdx) {
   const mgrs = [...m.values()].map(r => ({ ...r, time: r.secs / r.cars,
       store: all && labels[r.name] ? labels[r.name] : r.store,
       why: r.weeks < need ? "missed a week" : "under 4 days in a week",
-      ok: r.weeks === need && r.minDays >= C.minDays, parts: r.comp ? r.comp.map(v => v / r.compCars) : null }))
+      ok: r.weeks === need && (r.minDays >= C.minDays || (all && override.has(r.name))), parts: r.comp ? r.comp.map(v => v / r.compCars) : null }))
     .sort((a, b) => (b.ok - a.ok) || (a.time - b.time));
   const stores = [...s.values()].map(r => ({ ...r, time: r.secs / r.cars, ok: true })).sort((a, b) => a.time - b.time);
   return { mgrs, stores, nWeeks: ws.length };
@@ -112,11 +114,14 @@ window.CONTEST.combine = function (weekIdx) {
 // prize rank: qualified non-GMs only
 window.CONTEST.isGM = n => (window.CONTEST.GMS || []).includes(n);
 // places gained since Week 1, among managers ranked now: {name: +n / -n / 0}
+// "new": ranked now but not qualified in the standings before the latest week (e.g. Schmidt C. after Week 3)
 window.CONTEST.moves = function (rankedNow) {
   const C = window.CONTEST, out = {};
   if (C.WEEKS.length < 2) return out;
   const now = new Set(rankedNow.map(r => r.name)), w1 = {};
   C.combine(0).mgrs.filter(r => r.ok && now.has(r.name)).forEach((r, i) => w1[r.name] = i + 1);
-  rankedNow.forEach((r, i) => { if (w1[r.name]) out[r.name] = w1[r.name] - (i + 1); });
+  let before = null;
+  if (C.WEEKS.length > 2) { const all = C.WEEKS, ov = C.QUALIFY_OVERRIDE; C.WEEKS = all.slice(0, -1); C.QUALIFY_OVERRIDE = []; try { before = new Set(C.combine("all").mgrs.filter(r => r.ok).map(r => r.name)); } finally { C.WEEKS = all; C.QUALIFY_OVERRIDE = ov; } }
+  rankedNow.forEach((r, i) => { if (before && !before.has(r.name)) out[r.name] = "new"; else if (w1[r.name]) out[r.name] = w1[r.name] - (i + 1); });
   return out;
 };

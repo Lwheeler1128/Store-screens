@@ -109,7 +109,7 @@ h2{font-family:var(--display);font-weight:700;font-size:22px;margin:0}
       <div><dt>Days</dt><dd>Days you were credited as the manager on shift, meaning you covered at least half of a daypart, shown week by week. You need 4 days every week to place.</dd></div>
       <div><dt>Cars</dt><dd>Drive-thru cars served on your credited dayparts. Busy shifts count more than slow ones, so a strong dinner rush moves your number more than a slow open.</dd></div>
       <div><dt>Prize</dt><dd>Prize place among non-GM managers. GMs keep their overall place on the board but can't win the prize.</dd></div>
-      <div><dt>Move</dt><dd>Places gained (▲) or lost (▼) since Week 1, compared with managers still in the contest.</dd></div>
+      <div><dt>Move</dt><dd>Places gained (▲) or lost (▼) since Week 1, compared with managers still in the contest. "New" means newly qualified this week.</dd></div>
       <div><dt>Behind 1st / Behind next</dt><dd>How much time per car you need to cut to catch the leader, or to pass the person one spot ahead.</dd></div>
     </dl>
   </section>
@@ -151,6 +151,7 @@ function render(){
   const daysTxt = r => r.dayList.join(" / ");
   const mv = multi && board === "mgr" ? C.moves(ranked) : {};
   const moveCell = r => { const d = r.ok ? mv[r.name] : undefined; if (d === undefined) return `<td class="mv"></td>`;
+    if (d === "new") return `<td class="mv" title="Newly qualified this week">New</td>`;
     return d > 0 ? `<td class="mv up" title="Up ${d} since Week 1">▲${d}</td>` : d < 0 ? `<td class="mv dn" title="Down ${-d} since Week 1">▼${-d}</td>` : `<td class="mv">–</td>`; };
   document.getElementById("podium").innerHTML = prizeRows.slice(0,3).map((r,i) => `
     <div class="pod p${i+1}"><div class="place">${isMgr ? "Prize · " : ""}${placeTxt[i]}</div>
