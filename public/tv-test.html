@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TV Test</title>
+<style>
+  html,body{margin:0;height:100%;background:#0B1426;color:#F2F5FA;font-family:system-ui,"Segoe UI",sans-serif}
+  .wrap{height:100%;display:flex;flex-direction:column;gap:1.2vw;padding:1.5vw;box-sizing:border-box}
+  h1{margin:0;font-size:2.6vw}
+  .ua{font-size:1.1vw;color:#A8B6CF;word-break:break-all}
+  .grid{flex:1;display:grid;grid-template-columns:repeat(4,1fr);gap:1vw;min-height:0}
+  .cell{display:flex;flex-direction:column;gap:.5vw;min-height:0}
+  .cell b{font-size:1.5vw}
+  .cell span{font-size:1.1vw;color:#A8B6CF}
+  .box{position:relative;flex:1;border:.2vw solid #F6B221;border-radius:.6vw;overflow:hidden;background:#fff;min-height:0}
+  .box iframe{border:0;position:absolute;left:0;top:0}
+  .res{font-size:1.6vw;font-weight:700}
+  .ok{color:#4AD68A}.bad{color:#FF6B7E}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Store Screens TV test: take a photo of this screen</h1>
+  <div class="ua" id="ua"></div>
+  <div class="res" id="feat"></div>
+  <div class="grid">
+    <div class="cell"><b>A. Our page, normal size</b><span>Should show the Speed Contest</span><div class="box" id="a"></div><div class="res" id="ra">loading…</div></div>
+    <div class="cell"><b>B. Our page, shrunk to fit</b><span>Same page, scaled like the TV slides</span><div class="box" id="b"></div><div class="res" id="rb">loading…</div></div>
+    <div class="cell"><b>C. Outside site (store board)</b><span>Should show a store dashboard</span><div class="box" id="c"></div><div class="res" id="rc">loading…</div></div>
+    <div class="cell"><b>D. Simple test frame</b><span>Should say "FRAME WORKS"</span><div class="box" id="d"></div><div class="res" id="rd">loading…</div></div>
+  </div>
+</div>
+<script>
+document.getElementById("ua").textContent="Browser: "+navigator.userAgent;
+const f=[];try{f.push("Container units: "+(CSS.supports("width","1cqw")?"yes":"NO"))}catch(e){f.push("CSS.supports missing")}
+f.push("Screen "+innerWidth+"×"+innerHeight);
+document.getElementById("feat").textContent=f.join(" · ");
+function frame(id,src,scaled){
+  const box=document.getElementById(id),r=document.getElementById("r"+id);
+  const fr=document.createElement("iframe");fr.src=src;
+  const W=box.clientWidth,H=box.clientHeight;
+  if(scaled){fr.style.width="1920px";fr.style.height="1080px";fr.style.transformOrigin="0 0";fr.style.transform="scale("+(W/1920)+")";}
+  else{fr.style.width="100%";fr.style.height="100%";}
+  let done=false;fr.onload=()=>{done=true;let note="loaded";
+    try{const t=fr.contentDocument&&fr.contentDocument.body?fr.contentDocument.body.innerText.trim():null;if(t!==null)note=t.length?"loaded with text":"loaded but EMPTY"}catch(e){}
+    r.textContent=note;r.className="res "+(/EMPTY/.test(note)?"bad":"ok")};
+  setTimeout(()=>{if(!done){r.textContent="did NOT load";r.className="res bad"}},15000);
+  box.appendChild(fr);
+}
+frame("a","/contest-tv.html",false);
+frame("b","/contest-tv.html",true);
+frame("c","https://bec-store-board.netlify.app/#dorchester",true);
+frame("d","data:text/html,<body style='margin:0;display:flex;align-items:center;justify-content:center;height:100vh;font:bold 40px sans-serif;background:%2334C77B'>FRAME WORKS</body>",false);
+</script>
+</body>
+</html>
