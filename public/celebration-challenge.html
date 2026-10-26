@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Celebration Challenge</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@500;600;700&display=swap">
+<style>
+  html,body{margin:0;height:100%;background:#000;overflow:hidden}
+  body{display:flex;align-items:center;justify-content:center;font-family:"Barlow","Segoe UI",system-ui,sans-serif}
+  .tv{width:min(100vw,177.78vh);aspect-ratio:16/9;container-type:inline-size;position:relative;box-sizing:border-box;overflow:hidden;
+      background:radial-gradient(120% 90% at 100% 0%,#1B2F57 0%,#0B1426 60%);color:#F2F5FA;padding:2.4cqw 3cqw 1.8cqw;display:flex;flex-direction:column;gap:1.3cqw}
+  .cond{font-family:"Barlow Condensed","Arial Narrow",sans-serif}
+  .head{display:flex;align-items:flex-end;justify-content:space-between;gap:2cqw}
+  .kicker{font-size:1.1cqw;letter-spacing:.2em;text-transform:uppercase;color:#A8B6CF;font-weight:700;margin-bottom:.4cqw}
+  h1{margin:0;font-family:"Barlow Condensed","Arial Narrow",sans-serif;font-weight:800;font-size:4.4cqw;line-height:.9;text-transform:uppercase}
+  h1 span{color:#F6B221}
+  .hright{display:flex;gap:.8cqw;align-items:stretch}
+  .prize{border-radius:.8cqw;padding:.5cqw 1.2cqw;display:flex;flex-direction:column;justify-content:center;min-width:8cqw;text-align:center}
+  .prize small{font-size:.95cqw;letter-spacing:.14em;text-transform:uppercase;font-weight:700}
+  .prize b{font-family:"Barlow Condensed",sans-serif;font-weight:800;font-size:3cqw;line-height:1}
+  .p1{background:linear-gradient(160deg,#F6B221,#C98A0C);color:#1A1205}
+  .p2{background:linear-gradient(160deg,#C9D3E0,#8E9AA8);color:#121821}
+  .clock{border:.12cqw solid rgba(255,255,255,.18);border-radius:.8cqw;padding:.5cqw 1.2cqw;text-align:center;display:flex;flex-direction:column;justify-content:center;min-width:8cqw}
+  .clock b{font-family:"Barlow Condensed",sans-serif;font-weight:800;font-size:3cqw;line-height:1}
+  .clock small{font-size:.95cqw;letter-spacing:.14em;text-transform:uppercase;color:#A8B6CF;font-weight:700}
+  .main{flex:1;min-height:0;display:grid;grid-template-columns:1.6fr 1fr;gap:1.6cqw}
+  .sec{font-size:1.05cqw;letter-spacing:.16em;text-transform:uppercase;color:#7F8FAD;font-weight:700;margin-bottom:.6cqw;display:flex;justify-content:space-between}
+  .board{display:flex;flex-direction:column;min-height:0}
+  .rows{display:flex;flex-direction:column;gap:.45cqw;flex:1;min-height:0}
+  .row{flex:1 1 0;min-height:0;max-height:4.4cqw;display:grid;grid-template-columns:2.6cqw minmax(0,1.4fr) minmax(0,1.4fr) 4.6cqw;align-items:center;gap:1.1cqw;
+       background:rgba(255,255,255,.05);border-radius:.7cqw;padding:0 1.2cqw}
+  .row .rk{font-family:"Barlow Condensed",sans-serif;font-weight:800;font-size:2cqw;color:#7F8FAD;text-align:center}
+  .row .nm{min-width:0}
+  .row .nm b{display:block;font-family:"Barlow Condensed",sans-serif;font-weight:700;font-size:2cqw;line-height:1.05;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .row .nm small{display:block;font-size:1cqw;color:#A8B6CF;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .row .ct{font-family:"Barlow Condensed",sans-serif;font-weight:800;font-size:2.6cqw;text-align:right;font-variant-numeric:tabular-nums}
+  .bar{position:relative;height:1cqw;background:rgba(255,255,255,.08);border-radius:1cqw}
+  .bar i{position:absolute;left:0;top:0;bottom:0;border-radius:1cqw;background:#5E79A8}
+  .bar .goal{position:absolute;top:-.45cqw;bottom:-.45cqw;width:.18cqw;background:#fff;opacity:.85}
+  .bar .goal span{position:absolute;top:-1.35cqw;left:50%;transform:translateX(-50%);font-size:.8cqw;white-space:nowrap;color:#C9D3E4;font-weight:600}
+  .row.q .bar i{background:#34C77B}
+  .row.q .ct{color:#4AD68A}
+  .row.lead{background:linear-gradient(90deg,rgba(246,178,33,.26),rgba(246,178,33,.05));box-shadow:inset 0 0 0 .14cqw rgba(246,178,33,.7)}
+  .row.lead .rk{color:#F6B221}
+  .row.second .rk{color:#C9D3E0}
+  .row.ne{opacity:.6}.row.ne small em{font-style:normal;color:#F4BC4C}.row.ne .bar i{background:#4A5872}.pill.ne{background:rgba(255,255,255,.1);color:#C9D3E4}
+  .pill{display:inline-block;font-size:.8cqw;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:.1cqw .5cqw;border-radius:.4cqw;margin-left:.5cqw;vertical-align:.15cqw;background:rgba(52,199,123,.18);color:#5CDB95}
+  .side{display:flex;flex-direction:column;gap:1cqw;min-height:0}
+  .spot{border-radius:1cqw;padding:.9cqw 1.3cqw;display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:1.2cqw;background:rgba(255,255,255,.06);border-left:.5cqw solid}
+  .spot.s1{border-color:#F6B221}.spot.s2{border-color:#C9D3E0}
+  .spot .amt{font-family:"Barlow Condensed",sans-serif;font-weight:800;font-size:2.6cqw}
+  .spot.s1 .amt{color:#F6B221}.spot.s2 .amt{color:#C9D3E0}
+  .spot .who b{display:block;font-family:"Barlow Condensed",sans-serif;font-weight:700;font-size:2.1cqw;line-height:1.05}
+  .spot .who small{font-size:1cqw;color:#A8B6CF}
+  .spot .n{font-family:"Barlow Condensed",sans-serif;font-weight:800;font-size:2.4cqw}
+  .spot.open .who b{color:#A8B6CF;font-size:1.7cqw}
+  .rules{background:rgba(255,255,255,.04);border:.12cqw solid rgba(255,255,255,.1);border-radius:1cqw;padding:1cqw 1.3cqw;display:flex;flex-direction:column;gap:.7cqw;flex:1;min-height:0}
+  .rule{display:grid;grid-template-columns:2.4cqw 1fr;gap:.8cqw;align-items:start;font-size:1.25cqw;line-height:1.3;color:#C9D3E4}
+  .rule .ic{font-family:"Barlow Condensed",sans-serif;font-weight:800;font-size:1.6cqw;color:#F6B221;text-align:center}
+  .rule b{color:#fff}
+  .close{font-size:1.15cqw;color:#A8B6CF;line-height:1.35}
+  .close b{color:#F6C46A}
+  .foot{display:flex;justify-content:space-between;font-size:1cqw;color:#7F8FAD}
+  .ribbon{position:absolute;bottom:3.2cqw;left:50%;transform:translateX(-50%);background:#F6B221;color:#1A1205;font-weight:800;font-size:1cqw;letter-spacing:.12em;text-transform:uppercase;padding:.3cqw 1.2cqw;border-radius:2cqw}
+  .empty{display:flex;align-items:center;justify-content:center;flex:1;font-size:1.8cqw;color:#A8B6CF;text-align:center;line-height:1.4}
+</style>
+</head>
+<body>
+<div class="tv" id="tv">
+  <div class="head">
+    <div><div class="kicker" id="kicker">SC market · team member contest</div><h1>Celebration <span>Challenge</span></h1></div>
+    <div class="hright">
+      <div class="prize p1"><small>1st place</small><b id="pz1">$200</b></div>
+      <div class="prize p2"><small>2nd place</small><b id="pz2">$100</b></div>
+      <div class="clock"><b id="days">--</b><small id="daysLbl">days left</small></div>
+    </div>
+  </div>
+  <div class="main">
+    <div class="board"><div class="sec"><span>Leaderboard · most celebrations</span><span id="sub"></span></div><div class="rows" id="rows"></div></div>
+    <div class="side">
+      <div class="sec" style="margin-bottom:0"><span>Prize spots</span></div>
+      <div id="spots" style="display:flex;flex-direction:column;gap:.8cqw"></div>
+      <div class="rules">
+        <div class="rule"><span class="ic">10</span><span><b>Get at least 10 celebrations</b> to qualify for a prize.</span></div>
+        <div class="rule"><span class="ic">★</span><span><b>Most celebrations wins.</b> Every SMG Celebration Alert that names you counts, at any SC store.</span></div>
+        <div class="rule"><span class="ic">✓</span><span><b>Team members only.</b> Managers, GMs and shift leaders aren't eligible.</span></div>
+        <div class="rule"><span class="ic">+</span><span><b>Shared shout-outs count for everyone named.</b> Ask guests to mention you by name!</span></div>
+        <div class="rule"><span class="ic">=</span><span><b>Tie?</b> Whoever reached that number first wins. Winners are final <span id="finTxt"></span>.</span></div>
+        <div class="close" id="close"></div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span id="period"></span><span id="upd"></span></div>
+</div>
+<script>
+// ===== CONTEST SETTINGS =====
+const CONTEST = {
+  start: "2026-10-26",            // first visit date that counts
+  end:   "2026-11-22",            // last visit date that counts (end of day)
+  minToQualify: 10,
+  finalOn: "2026-11-25",          // winners locked in (gives late SMG alerts for Nov 22 visits time to arrive)
+  prizes: ["$200", "$100"],
+  show: 10,                       // rows on the leaderboard
+  stores: { "25901": "Moncks Corner", "35401": "University", "35402": "Shelby", "35403": "Dorchester", "55801": "Tanger" },
+  // Nicknames guests use -> first name on the schedule
+  aliases: { "ann": "annie", "belle": "ellabelle", "quiana": "qiana", "kaesha": "kaiesha", "jaylyn": "jaelyn",
+             "steve": "steven", "jullian": "julian", "kenzie": "makenzie" },
+  // Nicknames that belong to a specific person on the schedule ("store:nickname": "Full Name")
+  nicknames: { "35403:steven": "Robert Turner", "35403:steve": "Robert Turner", "35403:breanjonal": "Brittany Bonneau" },
+  // These titles stay on the board but can't win a prize or take a place
+  notEligible: ["GM", "Asst. Manager", "Shift Leader"],
+  // From the weekly labor schedules (week of Oct 19 / Oct 26). "Full Name|Title". Update when staff changes.
+  roster: {
+    "25901": ["Judith Price|Cashier", "Amanda Wilson|Cashier", "Carlos Reyes|Cashier", "Cheyenne Tipton|Cashier", "Dani Jenkins|Cashier", "Dayami Mendez|Cashier", "Evan Young|Cashier", "Ezra Aiken|Cashier", "Jada Mitchell|Cashier", "Jonah Bridges|Cashier", "Kelsi Hiles|Cashier", "Morgan Mack|Cashier", "Nyla Gillians|Cashier", "Rain Purdy|Cashier", "Sandra Gunnells|Cashier", "Shannon Wells|Cashier", "Syna Durham|Cashier", "Careem Smalls|Cook", "Chrisean Dennis|Cook", "Christopher Campbell|Cook", "Denzel Martin|Cook", "Gracelyn Floyd|Cook", "Jamaya Gadsden|Cook", "James Allen|Cook", "King Dargan|Cook", "Malik Croker|Cook", "Miguel Sanders|Cook", "Quheem Lassiter|Cook", "Quintin Washington|Cook", "Rihanna Holmes|Cook", "Schuyler Williamson|Cook", "Scott Coppa|Cook", "Terry Williams|Cook", "Tyler Smith|Cook", "Malayna Miller|Cook", "Caleb Schmidt|Asst. Manager", "Duane Cooper|Asst. Manager", "Cedric Galloway|GM", "Cass Dunn|Shift Leader", "Jordan Nolan|Shift Leader", "Trayvon Chisom|Shift Leader"],
+    "35403": ["Ameai Brown|Cashier", "Brittany Bonneau|Cashier", "Dan'a Brown|Cashier", "Faith Parson|Cashier", "Ijalayah Scott|Cashier", "Kayla Jackson|Cashier", "Kherian Jackson|Cashier", "Makenzie Johnson|Cashier", "Quinten Wingate|Cashier", "Robert Turner|Cashier", "Torrey Young|Cashier", "Tyler Nelson|Cashier", "Paris Smalls|Cashier", "Carlos Prioleau|Cook", "Cerek Slempa|Cook", "D'Marion White|Cook", "Dante Allen|Cook", "Evan Colonna|Cook", "Evan Young|Cook", "Isaiah Sanders|Cook", "Khaedan Washington|Cook", "Luke Pinkard|Cook", "Michael Stallings|Cook", "Ahmere Lewis|Crew Leader", "Annie Washington|Crew Leader", "Kyonna Thompson|Crew Leader", "Jaelyn Smith|Asst. Manager", "Robert Long|GM", "Alliah Cobin|Shift Leader", "Amber Simmons|Shift Leader", "Landon Hulsey|Shift Leader"],
+    "35401": ["Alyzaee Jones|Cashier", "Carrin Dawson|Cashier", "Christina Forrest|Cashier", "Danna Garcia Matthews|Cashier", "Heavyn Kelly|Cashier", "Jayla Moore|Cashier", "Kaiesha Alston|Cashier", "Liam Mayle|Cashier", "Natalia Velasquez Diaz|Cashier", "Noah Hill|Cashier", "Palmer Wingate|Cashier", "TT Givens|Cashier", "Trinity Scott|Cashier", "Andrew Tanner|Cook", "Dwayne Frasier|Cook", "Eugene Campbell|Cook", "Jeremiah Harrison|Cook", "Johntrey Simmons|Cook", "Keon Green|Cook", "Rashawn Ancrum-Brown|Cook", "Rashawn Duncan|Cook", "Trevan Bergeron|Cook", "Tyrik Brown|Cook", "Yan Tolentino|Cook", "Walter Leest|Crew Trainer", "Caylee Thomas|Asst. Manager", "Micheal Wall|Asst. Manager", "Zachary Lashway|GM", "Davion Heyward|Shift Leader", "Julian Alvarez|Shift Leader", "Qiana Wright|Shift Leader"],
+    "35402": ["Braelyn Collins|Cashier", "Gia Monie Lesston|Cashier", "Kayden Gadsen|Cashier", "Kenneth Odom|Cashier", "Monica Fuller|Cashier", "Samia Walker|Cashier", "Zyairra Washington|Cashier", "Janee Washinton|Cashier", "Ameera Rouse Clark|Cook", "George Axson|Cook", "Hakeem Muhammad|Cook", "Jalon Murray|Cook", "Jnasia Wiggins|Cook", "Jude Washington|Cook", "Shqell Douglas|Cook", "Tamarion Green|Cook", "Makeva Aska|Crew Trainer", "Diamond Greene|Asst. Manager", "Ellabelle Singleton|GM", "Davaun Hamilton|Shift Leader"],
+    "55801": ["Angel Hogan|Cashier", "Megan Gordon|Cashier", "Darren Headen|Cashier", "Brielle Jones|Cashier", "JeMiah Brown|Cashier", "Shayla Avila Avila|Cashier", "Teetee Powell|Cashier", "Ja'nazia Chinnis|Cashier", "William Phillips|Cashier", "Dajion Gadsden|Cook", "Daijon Greene|Cook", "Jordan Price|Cook", "Jamaani Fields|Cook", "Sean Smith|Cook", "Shironn Praleau|Cook", "Kamari Gadsden|Cook", "Stefan Moultrie|Cook", "Thomas Miller II|Cook", "Vandell Morehead|Cook", "Kevin Hart|Asst. Manager", "Madisyn Parker|Asst. Manager", "Andrew Witko|GM", "Raymond Hopper|Shift Leader"]
+  }
+};
+// ?preview=1 shows how it looks using October's alerts
+const PREVIEW = new URLSearchParams(location.search).has("preview");
+const WIN = PREVIEW ? { start: "2026-10-01", end: "2026-10-25" } : { start: CONTEST.start, end: CONTEST.end };
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const md = d => new Date(d + "T12:00").toLocaleDateString("en-US", { month: "short", day: "numeric" });
+
+function people(member) {
+  return String(member || "").split(/\s*(?:,|&|\band\b|\+)\s*/i).map(s => s.replace(/^(ms|mr|mrs|miss)\.?\s+/i, "").replace(/[.]/g, "").trim())
+    .filter(s => s && !/^(team|team members?|n\/?a|none|everyone|staff|crew)$/i.test(s));
+}
+const norm = x => String(x || "").toLowerCase().replace(/[’'`.]/g, "");
+const ROSTER = {};
+Object.entries(CONTEST.roster).forEach(([st, list]) => ROSTER[st] = list.map(e => {
+  const [full, title] = e.split("|"), w = full.split(/\s+/);
+  return { full, title, first: norm(w[0]), init: (w[1] || "").charAt(0).toUpperCase(), eligible: !CONTEST.notEligible.includes(title) };
+}));
+// Match a name from an alert to someone on that store's schedule (first name, plus last initial when the guest gave one)
+function match(store, first, init) {
+  const nick = CONTEST.nicknames[store + ":" + first];
+  if (nick) { const p = (ROSTER[store] || []).find(x => x.full === nick); if (p) return p; }
+  let c = (ROSTER[store] || []).filter(p => p.first === first);
+  if (init && c.length > 1) { const n = c.filter(p => p.init === init); if (n.length) c = n; }
+  return c.length === 1 ? c[0] : null;
+}
+function tally(alerts) {
+  const raw = [];
+  let unnamed = 0, counted = 0;
+  alerts.forEach(a => {
+    const d = (a.expDate || a.received || "").slice(0, 10);
+    if (d < WIN.start || d > WIN.end) return;
+    counted++;
+    const ps = people(a.member);
+    if (!ps.length) { unnamed++; return; }
+    ps.forEach(p => {
+      const t = p.split(/\s+/), f0 = norm(t[0]), init = (t[1] || "").charAt(0).toUpperCase();
+      const first = CONTEST.aliases[f0] || f0;
+      raw.push({ store: a.store, first, init, spelled: t[0], date: d, who: match(a.store, first, init) });
+    });
+  });
+  // Names not on the schedule: same first name at the same store = same person, unless told apart by last initial
+  const inits = {};
+  raw.filter(r => !r.who).forEach(r => { const k = r.store + ":" + r.first; (inits[k] = inits[k] || new Set()); if (r.init) inits[k].add(r.init); });
+  const m = new Map();
+  raw.forEach(r => {
+    let k;
+    if (r.who) k = "R:" + r.store + ":" + r.who.full;
+    else { const base = r.store + ":" + r.first; k = inits[base].size > 1 ? base + ":" + (r.init || "?") : base; }
+    const p = m.get(k) || { store: r.store, who: r.who, count: 0, spell: {}, inits: {}, last: "" };
+    p.count++; p.spell[r.spelled] = (p.spell[r.spelled] || 0) + 1; if (r.init) p.inits[r.init] = (p.inits[r.init] || 0) + 1;
+    if (r.date > p.last) p.last = r.date;
+    m.set(k, p);
+  });
+  const top = o => Object.entries(o).sort((a, b) => b[1] - a[1])[0];
+  const list = [...m.values()].map(p => {
+    let name;
+    if (p.who) { const w = p.who.full.split(/\s+/); name = w[0] + (w.length > 1 ? " " + w[1].charAt(0) + "." : ""); }
+    else { const s = top(p.spell)[0], i = top(p.inits); name = s.charAt(0).toUpperCase() + s.slice(1) + (i ? " " + i[0] + "." : ""); }
+    return { ...p, name, eligible: p.who ? p.who.eligible : true, title: p.who ? p.who.title : "", onSchedule: !!p.who };
+  }).sort((a, b) => b.count - a.count || a.last.localeCompare(b.last) || a.name.localeCompare(b.name));
+  return { list, unnamed, counted };
+}
+
+function render(d) {
+  const { list, unnamed, counted } = tally(d.alerts || []);
+  const N = CONTEST.minToQualify, show = list.slice(0, CONTEST.show);
+  const scale = Math.max(N + 2, ...(show.map(p => p.count))) ;
+  let place = 0; const ranks = list.map(p => p.eligible ? ++place : "–"); // ties go to whoever reached that number first
+  const q = list.filter(p => p.eligible && p.count >= N);
+  document.getElementById("kicker").textContent = `SC market · team member contest · ${md(CONTEST.start)} – ${md(CONTEST.end)}`;
+  document.getElementById("finTxt").textContent = md(CONTEST.finalOn);
+  document.getElementById("pz1").textContent = CONTEST.prizes[0];
+  document.getElementById("pz2").textContent = CONTEST.prizes[1];
+  // days left (counting today)
+  const today = new Date(); today.setHours(0, 0, 0, 0);
+  const endD = new Date(CONTEST.end + "T00:00"), startD = new Date(CONTEST.start + "T00:00");
+  const left = Math.round((endD - today) / 864e5) + 1;
+  const finD = new Date(CONTEST.finalOn + "T00:00");
+  if (today > endD && today < finD) { document.getElementById("days").textContent = md(CONTEST.finalOn); document.getElementById("daysLbl").textContent = "winners final"; }
+  else if (today < startD) { document.getElementById("days").textContent = md(CONTEST.start); document.getElementById("daysLbl").textContent = "starts"; }
+  else if (left <= 0) { document.getElementById("days").textContent = "Final"; document.getElementById("daysLbl").textContent = "results"; }
+  else { document.getElementById("days").textContent = left; document.getElementById("daysLbl").textContent = left === 1 ? "last day" : "days left"; }
+
+  document.getElementById("sub").textContent = `${q.length} qualified · ${list.filter(p => p.eligible).length} eligible`;
+  const rows = document.getElementById("rows");
+  if (!show.length) rows.innerHTML = `<div class="empty">No celebrations yet. The first alert that names you puts you on the board!</div>`;
+  else rows.innerHTML = show.map((p, i) => {
+    const ok = p.eligible && p.count >= N, r = ranks[i];
+    const cls = [ok ? "q" : "", ok && q[0] === p ? "lead" : "", ok && q[1] === p ? "second" : ""].join(" ");
+    return `<div class="row ${cls} ${p.eligible ? "" : "ne"}"><span class="rk">${r}</span>
+      <span class="nm"><b>${esc(p.name)}${ok ? '<span class="pill">Qualified</span>' : ""}</b><small>${esc(CONTEST.stores[p.store] || p.store)}${!p.eligible ? ` · ${esc(p.title)} · <em>no prize</em>` : ""}</small></span>
+      <span class="bar"><i style="width:${(p.count / scale * 100).toFixed(1)}%"></i><span class="goal" style="left:${(N / scale * 100).toFixed(1)}%">${i === 0 ? `<span>${N} to qualify</span>` : ""}</span></span>
+      <span class="ct">${p.count}</span></div>`;
+  }).join("");
+
+  const spot = (k, cls) => {
+    const p = q[k];
+    if (!p) return `<div class="spot ${cls} open"><span class="amt">${CONTEST.prizes[k]}</span><span class="who"><b>Open · needs ${N}+ celebrations</b></span><span></span></div>`;
+    const tie = (q[k + 1] && q[k + 1].count === p.count) || (k && q[k - 1].count === p.count);
+    return `<div class="spot ${cls}"><span class="amt">${CONTEST.prizes[k]}</span><span class="who"><b>${esc(p.name)}</b><small>${esc(CONTEST.stores[p.store] || p.store)}${tie ? " · won tie, reached it first" : ""}</small></span><span class="n">${p.count}</span></div>`;
+  };
+  document.getElementById("spots").innerHTML = spot(0, "s1") + spot(1, "s2");
+  const near = list.filter(p => p.eligible && p.count < N && p.count >= Math.max(1, N - 4)).slice(0, 3);
+  document.getElementById("close").innerHTML = near.length ? `Close to qualifying: ${near.map(p => `<b>${esc(p.name)}</b> (${N - p.count} to go)`).join(", ")}` : "";
+  document.getElementById("period").textContent = `Counts SMG Celebration Alerts by visit date, ${md(WIN.start)} – ${md(WIN.end)}. ${counted} alerts so far${unnamed ? `, ${unnamed} didn't name anyone` : ""}.`;
+  document.getElementById("upd").textContent = d.updated ? "Updated " + new Date(d.updated).toLocaleString("en-US", { weekday: "short", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }) : "";
+  if (PREVIEW && !document.querySelector(".ribbon")) { const r = document.createElement("div"); r.className = "ribbon"; r.textContent = "Draft preview · using October alerts"; document.getElementById("tv").appendChild(r); }
+}
+async function load() { try { render(await fetch("celebrations.json?t=" + Date.now(), { cache: "no-store" }).then(r => r.json())); } catch (e) {} }
+load(); setInterval(load, 10 * 60 * 1000);
+</script>
+</body>
+</html>
