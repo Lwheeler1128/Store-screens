@@ -94,7 +94,7 @@ const C = window.CONTEST, fmt = C.fmt, esc = s => String(s ?? "").replace(/[&<>"
 function render(){
   const { mgrs, stores } = C.combine("all");
   const ranked = mgrs.filter(r => r.ok), out = mgrs.length - ranked.length, W = C.WEEKS.length, multi = W > 1;
-  document.getElementById("kicker").textContent = (multi ? "Overall standings · " + W + "-week average" : "Contest to date") + " · lower time wins";
+  document.getElementById("kicker").textContent = (W >= C.totalWeeks ? "Final standings · " + W + "-week average" : multi ? "Overall standings · " + W + "-week average" : "Contest to date") + " · lower time wins";
   document.getElementById("weeks").innerHTML = Array.from({ length: C.totalWeeks }, (_, i) => { const w = C.WEEKS[i];
     return `<div class="wk ${w ? "done" : ""}"><b>Week ${i + 1}</b><small>${w ? esc(w.dates) : "Coming up"}</small></div>`; }).join("");
   const wkTimes = r => multi ? `<span class="wkc">${C.WEEKS.map((w, i) => `<span>${r.times[i] != null ? fmt(r.times[i]) : "—"}</span>`).join("")}</span>` : `<span></span>`;
