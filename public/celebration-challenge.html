@@ -107,7 +107,8 @@ const CONTEST = {
   aliases: { "ann": "annie", "belle": "ellabelle", "quiana": "qiana", "kaesha": "kaiesha", "jaylyn": "jaelyn",
              "steve": "steven", "jullian": "julian", "kenzie": "makenzie" },
   // Nicknames that belong to a specific person on the schedule ("store:nickname": "Full Name")
-  nicknames: { "35403:steven": "Robert Turner", "35403:steve": "Robert Turner", "35403:breanjonal": "Brittany Bonneau" },
+  nicknames: { "35403:steven": "Robert Turner", "35403:steve": "Robert Turner", "35403:breanjonal": "Brittany Bonneau",
+               "35403:jay": "Jaelyn Smith" },
   // These titles stay on the board but can't win a prize or take a place
   notEligible: ["GM", "Asst. Manager", "Shift Leader"],
   // From the weekly labor schedules (week of Oct 19 / Oct 26). "Full Name|Title". Update when staff changes.
@@ -126,8 +127,7 @@ const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "
 const md = d => new Date(d + "T12:00").toLocaleDateString("en-US", { month: "short", day: "numeric" });
 
 function people(member) {
-  // "Robert T aka not Steve" -> Robert T; "Not Steve" -> Steve (the guest is correcting the name)
-  return String(member || "").split(/\s*(?:,|&|\band\b|\+)\s*/i).map(s => s.replace(/\s+(?:aka|a\.k\.a\.?)\b.*$/i, "").replace(/^(?:not|no)\s+/i, "").replace(/^(ms|mr|mrs|miss)\.?\s+/i, "").replace(/[.]/g, "").trim())
+  return String(member || "").split(/\s*(?:,|&|\band\b|\+)\s*/i).map(s => s.replace(/^(ms|mr|mrs|miss)\.?\s+/i, "").replace(/[.]/g, "").trim())
     .filter(s => s && !/^(team|team members?|n\/?a|none|everyone|staff|crew)$/i.test(s));
 }
 const norm = x => String(x || "").toLowerCase().replace(/[’'`.]/g, "");
