@@ -127,7 +127,8 @@ const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "
 const md = d => new Date(d + "T12:00").toLocaleDateString("en-US", { month: "short", day: "numeric" });
 
 function people(member) {
-  return String(member || "").split(/\s*(?:,|&|\band\b|\+)\s*/i).map(s => s.replace(/^(ms|mr|mrs|miss)\.?\s+/i, "").replace(/[.]/g, "").trim())
+  // "Robert T aka not Steve" -> Robert T; "Not Steve" -> Steve (the guest is correcting the name)
+  return String(member || "").split(/\s*(?:,|&|\band\b|\+)\s*/i).map(s => s.replace(/\s+(?:aka|a\.k\.a\.?)\b.*$/i, "").replace(/^(?:not|no)\s+/i, "").replace(/^(ms|mr|mrs|miss)\.?\s+/i, "").replace(/[.]/g, "").trim())
     .filter(s => s && !/^(team|team members?|n\/?a|none|everyone|staff|crew)$/i.test(s));
 }
 const norm = x => String(x || "").toLowerCase().replace(/[’'`.]/g, "");
