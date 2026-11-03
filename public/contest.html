@@ -199,5 +199,46 @@ function buildChrome(){
 }
 buildChrome(); render();
 </script>
+<script>
+// Period extras: GOAT badge + last period winner banner, Fastest Store callout, double-shift rule
+(() => {
+  const C = window.CONTEST, w = C.lastWinner;
+  const css = document.createElement("style");
+  css.textContent = `.champ{display:flex;align-items:center;gap:14px;flex-wrap:wrap;background:var(--accent-soft);border:1px solid var(--accent);border-radius:10px;padding:12px 16px}
+.champ .lbl{display:block;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent-ink);font-weight:700}
+.champ b{font-family:var(--display);font-weight:800;font-size:26px}.champ small{color:var(--muted);font-size:14px;margin-left:8px}
+.goat{display:inline-flex;align-items:center;gap:4px;background:var(--accent);color:#13233F;font-family:var(--display);font-weight:800;letter-spacing:.06em;font-size:18px;padding:4px 10px;border-radius:999px;white-space:nowrap}
+.goat.sm{font-size:12px;padding:1px 7px;vertical-align:2px;margin-left:6px}`;
+  document.head.appendChild(css);
+  const eb = document.querySelector(".eyebrow");
+  if (eb && C.period) eb.textContent = `${C.period} · 5-store SOS speed contest · ${C.range} · Col O, car-weighted`;
+  if (w) {
+    const b = document.createElement("div"); b.className = "champ";
+    b.innerHTML = `<span class="goat">🐐 GOAT</span><div><span class="lbl">Last period winner · ${w.period}</span><b>${w.name}</b><small>${w.store} · won ${w.period} at ${w.time}</small></div>`;
+    document.querySelector("header").after(b);
+  }
+  document.querySelectorAll(".how dd").forEach(dd => { if (/since Week 1/.test(dd.textContent)) dd.textContent = "Places gained (▲) or lost (▼) since last week, compared with managers still in the contest. \"New\" means newly qualified this week."; });
+  document.querySelectorAll(".rule").forEach(r => { if (/^4-day minimum/.test(r.textContent)) r.innerHTML = "<b>4-day minimum</b>A manager needs at least 4 days credited in every week to hold a place. A double shift (Day and Night on the same day) counts as two days."; });
+  const base = render;
+  render = function () {
+    base();
+    if (w) document.querySelectorAll(".pod .name, td.who").forEach(el => {
+      if (el.textContent.trim().startsWith(w.board) && !el.querySelector(".goat")) el.insertAdjacentHTML("beforeend", ' <span class="goat sm">🐐 GOAT</span>');
+    });
+    // Show double-shift credit in the Days column, e.g. "3 + 2 dbl"
+    if (board === "mgr") { const res = C.combine(period).mgrs; document.querySelectorAll("tr").forEach(tr => {
+      const who = tr.querySelector("td.who"); if (!who) return;
+      const r = res.find(x => who.textContent.trim().startsWith(x.name)); const dc = tr.children[4];
+      if (r && r.doubles && dc && !dc.dataset.dbl) { dc.dataset.dbl = 1; dc.textContent = `${r.days} + ${r.doubles} dbl`; }
+    }); }
+    let s = document.getElementById("storecall");
+    if (!s) { s = document.createElement("div"); s.id = "storecall"; s.className = "gmcall"; document.getElementById("gmcall").after(s); }
+    const st = board === "mgr" ? C.combine(period).stores : [];
+    s.hidden = !st.length;
+    if (st.length) s.innerHTML = `<small>FASTEST STORE</small><b>${st[0].name}</b><span class="t">${C.fmt(st[0].time)}</span><small>${st[0].cars.toLocaleString()} drive-thru cars${st[1] ? ` · ${Math.round(st[1].time) - Math.round(st[0].time)} sec ahead of ${st[1].name}` : ""}</small>`;
+  };
+  render();
+})();
+</script>
 </body>
 </html>

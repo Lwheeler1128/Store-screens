@@ -122,5 +122,35 @@ function render(){
 }
 render();
 </script>
+<script>
+// Period extras on the TV: period label, GOAT badge on the last winner, "last period winner" chip
+(() => {
+  const C = window.CONTEST, w = C.lastWinner;
+  const css = document.createElement("style");
+  css.textContent = `.goatchip{display:flex;flex-direction:column;justify-content:center;border:.12cqw solid #F6B221;background:rgba(246,178,33,.14);border-radius:.7cqw;padding:.35cqw .9cqw;white-space:nowrap}
+.goatchip b{font-family:"Barlow Condensed",sans-serif;font-size:1.5cqw;line-height:1.1;color:#F6C46A}.goatchip small{font-size:.9cqw;color:#C9D3E4}
+.goatsm{font-size:.75em;margin-left:.3em}
+.head h1{white-space:nowrap}#weeks{gap:.5cqw}#weeks .wk{width:auto;min-width:0;flex:0 1 auto;padding-left:.8cqw;padding-right:.8cqw}`;
+  document.head.appendChild(css);
+  const addChip = () => {
+    const wk = document.getElementById("weeks");
+    if (!w || !wk || wk.querySelector(".goatchip")) return;
+    const chip = document.createElement("div"); chip.className = "goatchip";
+    chip.innerHTML = `<b>🐐 GOAT · ${w.name}</b><small>Last period winner (${w.period}) · ${w.time}</small>`;
+    wk.style.alignItems = "stretch"; wk.prepend(chip);
+  };
+  const base = render;
+  render = function () {
+    base();
+    addChip();
+    const k = document.getElementById("kicker");
+    if (C.period && !k.textContent.startsWith(C.period)) k.textContent = `${C.period} · ${k.textContent}`;
+    if (w) document.querySelectorAll(".pod .nm, .mrow .who").forEach(el => {
+      if (el.textContent.trim().startsWith(w.board) && !el.querySelector(".goatsm")) el.insertAdjacentHTML("beforeend", '<span class="goatsm">🐐</span>');
+    });
+  };
+  render();
+})();
+</script>
 </body>
 </html>
