@@ -32,6 +32,29 @@ window.CONTEST = {
         ["Greene D.", "Shelby Ray", 5, 672, 380]],
       // [Pre-Menu Queue, Menu Time, Lane Queue, Window Time] seconds
       comp: {"Schmidt C.": [40, 57, 114, 79], "Nolan J.": [51, 58, 149, 82], "Chisom T.": [52, 59, 153, 82], "Dunn C.": [65, 63, 179, 89], "Galloway C.": [70, 63, 177, 84], "Cooper D.": [92, 70, 232, 94], "Lashway Z.": [38, 59, 71, 78], "Thomas C.": [48, 60, 74, 78], "Wall M.": [46, 66, 101, 93], "Long R.": [64, 68, 111, 96], "Simmons A.": [58, 63, 125, 98], "Smith J.": [104, 76, 129, 103], "Parker M.": [34, 69, 97, 114], "Hart K.": [46, 70, 107, 108], "Hopper R.": [39, 69, 118, 115], "Witko A.": [52, 70, 116, 107], "Singleton E.": [33, 58, 95, 89], "Hamilton D.": [34, 60, 113, 99], "Greene D.": [44, 63, 139, 107]}
+    },
+    { label: "Week 2", dates: "Nov 2 – Nov 8",
+      stores: [
+        ["Moncks Corner #25901", 407, 2351],
+        ["Dorchester #35403", 378, 2034],
+        ["Shelby Ray #35402", 322, 1565],
+        ["Tanger #55801", 311, 1495],
+        ["University #35401", 261, 1959]],
+      // Doubles (Day half + Night half credited the same day): Thomas C. Sun 11/8, Greene D. Wed 11/4.
+      // Hulsey L. ran shifts at #35403 this week (5:53) but stays off the board; new SL Moon S. not on the scorecard.
+      managers: [
+        ["Chisom T.", "Moncks Corner", 5, 981, 351], ["Schmidt C.", "Moncks Corner", 5, 927, 390],
+        ["Dunn C.", "Moncks Corner", 5, 908, 398], ["Nolan J.", "Moncks Corner", 4, 689, 412],
+        ["Galloway C.", "Moncks Corner", 5, 1106, 454], ["Cooper D.", "Moncks Corner", 5, 860, 461],
+        ["Wall M.", "University", 4, 650, 241], ["Thomas C.", "University", 3, 508, 249, 1],
+        ["Lashway Z.", "University", 5, 860, 287],
+        ["Long R.", "Dorchester", 5, 1136, 347], ["Smith J.", "Dorchester", 5, 973, 372],
+        ["Simmons A.", "Dorchester", 5, 579, 408],
+        ["Witko A.", "Tanger", 5, 721, 264], ["Parker M.", "Tanger", 5, 507, 270],
+        ["Hart K.", "Tanger", 4, 574, 312], ["Hopper R.", "Tanger", 5, 688, 357],
+        ["Singleton E.", "Shelby Ray", 5, 847, 295], ["Greene D.", "Shelby Ray", 3, 446, 356, 1],
+        ["Hamilton D.", "Shelby Ray", 7, 787, 366]],
+      comp: {"Chisom T.": [52, 58, 158, 84], "Schmidt C.": [46, 59, 189, 93], "Dunn C.": [57, 65, 177, 94], "Nolan J.": [54, 59, 177, 89], "Galloway C.": [78, 68, 205, 94], "Cooper D.": [64, 67, 198, 101], "Wall M.": [39, 59, 59, 74], "Thomas C.": [25, 57, 69, 82], "Lashway Z.": [53, 64, 78, 82], "Long R.": [84, 72, 125, 97], "Smith J.": [73, 67, 95, 88], "Simmons A.": [70, 67, 128, 104], "Witko A.": [33, 65, 93, 103], "Parker M.": [27, 64, 75, 104], "Hart K.": [40, 67, 102, 99], "Hopper R.": [43, 68, 119, 106], "Singleton E.": [32, 58, 105, 92], "Greene D.": [24, 54, 147, 115], "Hamilton D.": [52, 63, 127, 101]}
     }
   ],
   // Off the board entirely: Wesner K. (DM), Cobin A. (MIT), Hulsey L. (not running shifts), Blake B. (gone from #35403), Hogan A. (Tanger, in training)
