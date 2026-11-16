@@ -55,11 +55,34 @@ window.CONTEST = {
         ["Singleton E.", "Shelby Ray", 5, 847, 295], ["Greene D.", "Shelby Ray", 3, 446, 356, 1],
         ["Hamilton D.", "Shelby Ray", 7, 787, 366]],
       comp: {"Chisom T.": [52, 58, 158, 84], "Schmidt C.": [46, 59, 189, 93], "Dunn C.": [57, 65, 177, 94], "Nolan J.": [54, 59, 177, 89], "Galloway C.": [78, 68, 205, 94], "Cooper D.": [64, 67, 198, 101], "Wall M.": [39, 59, 59, 74], "Thomas C.": [25, 57, 69, 82], "Lashway Z.": [53, 64, 78, 82], "Long R.": [84, 72, 125, 97], "Smith J.": [73, 67, 95, 88], "Simmons A.": [70, 67, 128, 104], "Witko A.": [33, 65, 93, 103], "Parker M.": [27, 64, 75, 104], "Hart K.": [40, 67, 102, 99], "Hopper R.": [43, 68, 119, 106], "Singleton E.": [32, 58, 105, 92], "Greene D.": [24, 54, 147, 115], "Hamilton D.": [52, 63, 127, 101]}
+    },
+    { label: "Week 3", dates: "Nov 9 – Nov 15",
+      stores: [
+        ["Moncks Corner #25901", 415, 2342],
+        ["Dorchester #35403", 358, 2022],
+        ["Shelby Ray #35402", 303, 1568],
+        ["Tanger #55801", 313, 1394],
+        ["University #35401", 256, 1900]],
+      // Double: Thomas C. Sun 11/15 (Day + Night half). Wall M. / Lashway Z. raw 272.76s vs 272.93s per the report.
+      // Hart K. left the company this week (Tanger roster note). Cobin A. / Hulsey L. / Hogan A. / Wesner K. still off the board.
+      managers: [
+        ["Nolan J.", "Moncks Corner", 4, 860, 266], ["Chisom T.", "Moncks Corner", 5, 948, 328],
+        ["Dunn C.", "Moncks Corner", 5, 1152, 394], ["Galloway C.", "Moncks Corner", 5, 1267, 428],
+        ["Cooper D.", "Moncks Corner", 5, 715, 586], ["Schmidt C.", "Moncks Corner", 4, 434, 609],
+        ["Thomas C.", "University", 3, 507, 225, 1], ["Wall M.", "University", 5, 709, 272.76],
+        ["Lashway Z.", "University", 5, 1006, 272.93],
+        ["Long R.", "Dorchester", 6, 1364, 340], ["Simmons A.", "Dorchester", 4, 473, 407],
+        ["Smith J.", "Dorchester", 5, 757, 414],
+        ["Witko A.", "Tanger", 5, 607, 289], ["Parker M.", "Tanger", 5, 510, 323],
+        ["Hopper R.", "Tanger", 5, 644, 339],
+        ["Singleton E.", "Shelby Ray", 6, 882, 265], ["Hamilton D.", "Shelby Ray", 5, 698, 328],
+        ["Greene D.", "Shelby Ray", 4, 403, 330]],
+      comp: {"Nolan J.": [39, 58, 130, 82], "Chisom T.": [51, 62, 134, 83], "Dunn C.": [65, 61, 174, 83], "Galloway C.": [83, 66, 202, 89], "Cooper D.": [110, 76, 256, 109], "Schmidt C.": [122, 82, 299, 114], "Thomas C.": [14, 52, 62, 78], "Wall M.": [42, 59, 81, 84], "Lashway Z.": [51, 62, 79, 81], "Long R.": [59, 69, 97, 93], "Simmons A.": [63, 68, 126, 103], "Smith J.": [60, 69, 98, 98], "Witko A.": [20, 59, 87, 109], "Parker M.": [36, 65, 101, 114], "Hopper R.": [34, 62, 118, 110], "Singleton E.": [40, 58, 82, 79], "Hamilton D.": [38, 64, 94, 95], "Greene D.": [38, 58, 121, 94]}
     }
   ],
   // Off the board entirely: Wesner K. (DM), Cobin A. (MIT), Hulsey L. (not running shifts), Blake B. (gone from #35403), Hogan A. (Tanger, in training)
   EXCLUDE: ["Wesner K.", "Cobin A.", "Hulsey L.", "Blake B.", "Hogan A."],
-  LEFT: [],
+  LEFT: ["Hart K."], // Hart K. left the company during Week 3
   // GMs are ranked but can't win the prize
   GMS: ["Lashway Z.", "Singleton E.", "Galloway C.", "Witko A."],
   // Double shift (credited Day half + Night half the same day) counts as two days toward the 4-day minimum
