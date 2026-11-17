@@ -17,13 +17,15 @@ window.CONTEST = {
         ["Tanger #55801", 353, 1496],
         ["University #35401", 283, 2058]],
       // [manager, store, days credited, cars credited, Col O seconds, extra days from doubles]
-      // University's Week 44 appendix credits crew too; only the managers on its scorecard are counted.
+      // University's Week 44 appendix credits crew too; only managers are counted. Alvarez J. (shift leader, not on the report scorecard)
+      // is scored from the Day/Night halves he clocked in for (Every Shift Ranked), car-weighted.
       managers: [
         ["Schmidt C.", "Moncks Corner", 5, 887, 289], ["Nolan J.", "Moncks Corner", 3, 596, 336],
         ["Chisom T.", "Moncks Corner", 4, 749, 346], ["Dunn C.", "Moncks Corner", 5, 1037, 418],
         ["Galloway C.", "Moncks Corner", 4, 969, 423], ["Cooper D.", "Moncks Corner", 5, 703, 490],
         ["Lashway Z.", "University", 5, 847, 260], ["Thomas C.", "University", 4, 671, 273],
         ["Wall M.", "University", 3, 616, 323, 2],
+        ["Alvarez J.", "University", 4, 687, 267.1],
         ["Long R.", "Dorchester", 5, 1011, 335], ["Simmons A.", "Dorchester", 5, 672, 386],
         ["Smith J.", "Dorchester", 5, 866, 455],
         ["Parker M.", "Tanger", 5, 555, 287], ["Hart K.", "Tanger", 5, 719, 331],
@@ -48,6 +50,7 @@ window.CONTEST = {
         ["Galloway C.", "Moncks Corner", 5, 1106, 454], ["Cooper D.", "Moncks Corner", 5, 860, 461],
         ["Wall M.", "University", 4, 650, 241], ["Thomas C.", "University", 3, 508, 249, 1],
         ["Lashway Z.", "University", 5, 860, 287],
+        ["Alvarez J.", "University", 4, 929, 280.2, 2],
         ["Long R.", "Dorchester", 5, 1136, 347], ["Smith J.", "Dorchester", 5, 973, 372],
         ["Simmons A.", "Dorchester", 5, 579, 408],
         ["Witko A.", "Tanger", 5, 721, 264], ["Parker M.", "Tanger", 5, 507, 270],
@@ -71,6 +74,7 @@ window.CONTEST = {
         ["Cooper D.", "Moncks Corner", 5, 715, 586], ["Schmidt C.", "Moncks Corner", 4, 434, 609],
         ["Thomas C.", "University", 3, 507, 225, 1], ["Wall M.", "University", 5, 709, 272.76],
         ["Lashway Z.", "University", 5, 1006, 272.93],
+        ["Alvarez J.", "University", 5, 821, 255.9],
         ["Long R.", "Dorchester", 6, 1364, 340], ["Simmons A.", "Dorchester", 4, 473, 407],
         ["Smith J.", "Dorchester", 5, 757, 414],
         ["Witko A.", "Tanger", 5, 607, 289], ["Parker M.", "Tanger", 5, 510, 323],
