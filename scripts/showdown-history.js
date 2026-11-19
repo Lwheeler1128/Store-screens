@@ -24,10 +24,12 @@ function nowET() {
   const d = await r.json();
   const stores = (d.stores || []).filter(s => s.code);
   const m = /Daypart\s+(\d)/.exec((stores.find(s => s.daypart) || {}).daypart || "");
-  const c0 = m ? +m[1] : 0, final = hour >= 23, c = final ? 6 : c0;
+  const wd = new Date().toLocaleDateString("en-US", { timeZone: "America/New_York", weekday: "short" });
+  const N = /^(Fri|Sat)/.test(wd) ? 6 : 5; // Late Night (daypart 6) is only raced Friday and Saturday
+  const c0 = m ? +m[1] : 0, final = hour >= 23, c = final ? N + 1 : c0;
 
   const winners = {}, wins = {};
-  for (let n = 1; n <= 5; n++) {
+  for (let n = 1; n <= N; n++) {
     if (n >= c) break; // only finished dayparts have a winner
     const race = stores.map(s => ({ s, p: (s.dayparts || []).find(x => x.dp === n) }))
       .filter(x => x.p && x.p.t && x.p.cars >= MIN_CARS).sort((a, b) => a.p.t - b.p.t);
