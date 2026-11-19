@@ -129,7 +129,10 @@ setInterval(async()=>{try{const s=await sig();if(!s)return;if(base===null)base=s
 // Daypart Races panel for the Drive-Thru Showdown: each daypart is its own race.
 // Finished dayparts show their winner; the current daypart shows a live race. Keeps the all-day board running.
 (() => {
-  const DP = { 1: "Open", 2: "Lunch", 3: "Afternoon", 4: "Dinner", 5: "Late" };
+  const DP = { 1: "Open", 2: "Lunch", 3: "Afternoon", 4: "Dinner", 5: "Late", 6: "Late Night" };
+  // Daypart 6 (Late Night, 10p–close) is only raced on Friday and Saturday (Eastern)
+  const isLateNightDay = () => /^(Fri|Sat)/.test(new Date().toLocaleDateString("en-US", { timeZone: "America/New_York", weekday: "short" }));
+  const etHour = () => +new Intl.DateTimeFormat("en-US", { timeZone: "America/New_York", hour: "2-digit", hourCycle: "h23" }).format(new Date());
   const MIN_CARS = 5; // a store needs this many cars in a daypart to win it
   const fmt = s => { s = Math.round(s); return Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0"); };
   const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
@@ -179,6 +182,10 @@ setInterval(async()=>{try{const s=await sig();if(!s)return;if(base===null)base=s
   .wkchip .v i{font-style:normal;color:#F6C46A;margin-left:.35cqw}
   .wkchip .gg{display:inline-block;filter:sepia(1) saturate(5) hue-rotate(-8deg) brightness(1.15) drop-shadow(0 0 .25cqw rgba(246,178,33,.6));margin-right:.1cqw}
   .wkchip .v.dim{color:#7F8FAD;font-weight:600;font-size:1.05cqw}
+  .dpside.six{gap:.5cqw}
+  .dpside.six .dpc{padding:.35cqw .9cqw}
+  .dpside.six .dpc .t{font-size:1.7cqw}
+  .dpside.six .dplive{padding:.5cqw .9cqw;gap:.2cqw}
   .dpwins{display:inline-block;margin-left:.6cqw;font-size:.62em;color:#F6C46A;vertical-align:.1em;white-space:nowrap}
   `;
   document.head.appendChild(css);
@@ -191,15 +198,16 @@ setInterval(async()=>{try{const s=await sig();if(!s)return;if(base===null)base=s
   cols.before(wrap); main.append(cols, rows); wrap.append(main, side);
 
   const cur = d => { const m = /Daypart\s+(\d)/.exec((d.stores.find(s => s.daypart) || {}).daypart || ""); return m ? +m[1] : 0; };
-  const HRS = { 1: "Open–11a", 2: "11a–2p", 3: "2p–5p", 4: "5p–8p", 5: "8p–Close" };
+  const HRS = { 1: "Open–11a", 2: "11a–2p", 3: "2p–5p", 4: "5p–8p", 5: "8p–Close", 6: "10p–Close" };
   const short = n => n.replace(/^N\. Charleston /, "").replace(/^Charleston /, "");
 
   function drawSide(d) {
-    const c0 = cur(d), c = c0 === 5 && new Date().getHours() >= 23 ? 6 : c0, wins = {}; // after 11 PM the Late race is final
+    const N = isLateNightDay() ? 6 : 5, hrs = n => (N === 6 && n === 5 ? "8p–10p" : HRS[n]);
+    const c0 = cur(d), c = c0 >= N && etHour() >= 23 ? N + 1 : c0, wins = {}; // after 11 PM the last race is final
     const race = n => d.stores.map(s => ({ s, p: (s.dayparts || []).find(x => x.dp === n) }))
       .filter(x => x.p && x.p.t && x.p.cars >= MIN_CARS).sort((a, b) => a.p.t - b.p.t);
     let html = `<div class="dph"><b>Daypart <span>Races</span></b></div><!--crown-->`;
-    for (let n = 1; n <= 5; n++) {
+    for (let n = 1; n <= N; n++) {
       const r = race(n);
       if (n < c && r[0]) {
         wins[r[0].s.code] = (wins[r[0].s.code] || 0) + 1;
@@ -207,22 +215,23 @@ setInterval(async()=>{try{const s=await sig();if(!s)return;if(base===null)base=s
         html += `<div class="dpc done"><div class="nm">${DP[n]}<small>Won${gap}</small></div><div class="w">${esc(short(r[0].s.name))}</div><div class="t">${fmt(r[0].p.t)}</div></div>`;
       } else if (n === c) {
         const top = r.slice(0, 3);
-        html += `<div class="dplive"><div class="top"><b><span class="pill">LIVE</span>${DP[n]}</b><small>${HRS[n]}</small></div>` +
+        html += `<div class="dplive"><div class="top"><b><span class="pill">LIVE</span>${DP[n]}</b><small>${hrs(n)}</small></div>` +
           (top.length ? top.map((x, i) => `<div class="r${i === 0 ? " lead" : ""}"><span class="n">${i + 1}</span><span class="s">${esc(short(x.s.name))}</span><span class="v">${fmt(x.p.t)}</span></div>`).join("")
             : `<div class="r"><span></span><span class="s" style="color:#A8B6CF">Waiting for ${MIN_CARS} cars per store…</span><span></span></div>`) +
           (top[1] ? `<div class="gap">${esc(short(top[1].s.name))} is ${Math.round(top[1].p.t) - Math.round(top[0].p.t)}s behind the lead</div>` : "") + `</div>`;
       } else if (n < c) {
         html += `<div class="dpc"><div class="nm">${DP[n]}</div><div class="w" style="color:#7F8FAD">No winner</div><div class="t"></div></div>`;
       } else {
-        html += `<div class="dpc soon"><div class="nm">${DP[n]}</div><div class="w">Up next · ${HRS[n]}</div><div class="t"></div></div>`;
+        html += `<div class="dpc soon"><div class="nm">${DP[n]}</div><div class="w">Up next · ${hrs(n)}</div><div class="t"></div></div>`;
       }
     }
     // Day crown: most daypart wins; a tie goes to the faster all-day time
     const ranked = Object.entries(wins).map(([code, n]) => ({ s: d.stores.find(x => x.code === code), n }))
       .sort((a, b) => (b.n - a.n) || ((a.s.todayAvg || 9e9) - (b.s.todayAvg || 9e9)));
-    const final = c === 0 || c > 5;
+    const final = c === 0 || c > N;
     const crown = ranked[0] ? `<div class="dpcrown"><span class="ic">👑</span><div><div class="l">${final ? "Crown of the day" : "Leading for the crown"}</div><div class="w">${esc(short(ranked[0].s.name))}</div></div><span class="n">${ranked[0].n} ${ranked[0].n === 1 ? "win" : "wins"}</span></div>`
       : `<div class="dpcrown none"><span class="ic">👑</span><div><div class="l">Crown of the day</div><div class="w">Most daypart wins takes it</div></div><span></span></div>`;
+    side.classList.toggle("six", N === 6);
     side.innerHTML = html.replace("<!--crown-->", crown);
     wins.__crown = ranked[0] ? ranked[0].s.code : null;
     return wins;
