@@ -172,7 +172,7 @@ setInterval(async()=>{try{const s=await sig();if(!s)return;if(base===null)base=s
   .dpcrown .n{font-family:"Barlow Condensed",sans-serif;font-weight:800;font-size:1.5cqw;color:#F6C46A;white-space:nowrap}
   .dpcrown.none .w{color:#7F8FAD;font-weight:600;font-size:1.3cqw}
   .head{gap:1cqw}
-  .wkchip{flex:0 0 auto;max-width:25cqw;border-radius:1cqw;border:.14cqw solid rgba(246,178,33,.55);background:rgba(246,178,33,.08);padding:.4cqw .8cqw;display:flex;flex-direction:row;gap:.9cqw;margin-left:auto}
+  .wkchip{flex:0 1 auto;min-width:0;max-width:21cqw;border-radius:1cqw;border:.14cqw solid rgba(246,178,33,.55);background:rgba(246,178,33,.08);padding:.4cqw .8cqw;display:flex;flex-direction:row;gap:.9cqw;margin-left:auto}
   .wkchip .ln{display:flex;flex-direction:column;align-items:flex-start;gap:.1cqw;min-width:0;white-space:nowrap;overflow:hidden}
   .wkchip .k{font-size:.7cqw;letter-spacing:.12em;text-transform:uppercase;color:#F6C46A;font-weight:700}
   .wkchip .v{max-width:100%;font-family:"Barlow Condensed",sans-serif;font-weight:700;font-size:1.3cqw;overflow:hidden;text-overflow:ellipsis}
@@ -273,9 +273,9 @@ setInterval(async()=>{try{const s=await sig();if(!s)return;if(base===null)base=s
     const champ = lastWk[0] && lastWk[0].crowns ? lastWk[0] : null;
     chip.innerHTML =
       `<div class="ln"><span class="k">Week leader</span>` +
-      (thisWk.length ? `<span class="v">${esc(short(thisWk[0].name))}<i><span class="gg">🐐</span>×${thisWk[0].crowns}</i></span>` : `<span class="v dim">Most daily crowns Mon–Sun</span>`) + `</div>` +
+      (thisWk.length ? `<span class="v">${esc(short(thisWk[0].name))}<i><span class="gg">🐐</span>×${thisWk[0].crowns}</i></span>` : `<span class="v dim">First crown tonight</span>`) + `</div>` +
       `<div class="ln"><span class="k">🏆 Last week</span>` +
-      (champ ? `<span class="v">${esc(short(champ.name))}<i><span class="gg">🐐</span>×${champ.crowns}</i></span>` : `<span class="v dim">Crowned Sunday night</span>`) + `</div>`;
+      (champ ? `<span class="v">${esc(short(champ.name))}<i><span class="gg">🐐</span>×${champ.crowns}</i></span>` : `<span class="v dim">Crowned Sun night</span>`) + `</div>`;
   }
 
   const base = render;
