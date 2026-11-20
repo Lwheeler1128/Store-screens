@@ -205,13 +205,13 @@ setInterval(async()=>{try{const s=await sig();if(!s)return;if(base===null)base=s
     const N = isLateNightDay() ? 6 : 5, hrs = n => (N === 6 && n === 5 ? "8p–10p" : HRS[n]);
     const c0 = cur(d), c = c0 >= N && etHour() >= 23 ? N + 1 : c0, wins = {}; // after 11 PM the last race is final
     const race = n => d.stores.map(s => ({ s, p: (s.dayparts || []).find(x => x.dp === n) }))
-      .filter(x => x.p && x.p.t && x.p.cars >= MIN_CARS).sort((a, b) => a.p.t - b.p.t);
+      .filter(x => x.p && x.p.t && x.p.cars >= MIN_CARS).sort((a, b) => (Math.round(a.p.t) - Math.round(b.p.t)) || (b.p.cars - a.p.cars)) // tie: more cars wins;
     let html = `<div class="dph"><b>Daypart <span>Races</span></b></div><!--crown-->`;
     for (let n = 1; n <= N; n++) {
       const r = race(n);
       if (n < c && r[0]) {
         wins[r[0].s.code] = (wins[r[0].s.code] || 0) + 1;
-        const gap = r[1] ? ` by ${Math.round(r[1].p.t) - Math.round(r[0].p.t)}s` : "";
+        const gs = r[1] ? Math.round(r[1].p.t) - Math.round(r[0].p.t) : null, gap = gs === null ? "" : gs === 0 ? " · tie, more cars" : ` by ${gs}s`;
         html += `<div class="dpc done"><div class="nm">${DP[n]}<small>Won${gap}</small></div><div class="w">${esc(short(r[0].s.name))}</div><div class="t">${fmt(r[0].p.t)}</div></div>`;
       } else if (n === c) {
         const top = r.slice(0, 3);
@@ -346,7 +346,7 @@ setInterval(async()=>{try{const s=await sig();if(!s)return;if(base===null)base=s
   function buildMsgs(d) {
     const out = [], stores = d.stores.filter(s => s.todayAvg);
     const m = /Daypart\s+(\d)/.exec((d.stores.find(s => s.daypart) || {}).daypart || ""); const c = m ? +m[1] : 0;
-    const race = stores.map(s => ({ s, p: (s.dayparts || []).find(x => x.dp === c) })).filter(x => x.p && x.p.t && x.p.cars >= 5).sort((a, b) => a.p.t - b.p.t);
+    const race = stores.map(s => ({ s, p: (s.dayparts || []).find(x => x.dp === c) })).filter(x => x.p && x.p.t && x.p.cars >= 5).sort((a, b) => (Math.round(a.p.t) - Math.round(b.p.t)) || (b.p.cars - a.p.cars)) // tie: more cars wins;
     if (race[1]) out.push(`🔥 <b>${esc(short(race[0].s.name))}</b> leads the ${DP[c]} race by ${Math.round(race[1].p.t) - Math.round(race[0].p.t)} sec`);
     for (let i = 1; i < Math.min(race.length, 5); i++) {
       const g = Math.round(race[i].p.t) - Math.round(race[i - 1].p.t);
