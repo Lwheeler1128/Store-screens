@@ -173,6 +173,7 @@ setInterval(async()=>{try{const s=await sig();if(!s)return;if(base===null)base=s
   .dpcrown .l{font-size:.85cqw;letter-spacing:.14em;text-transform:uppercase;color:#F6C46A;font-weight:700}
   .dpcrown .w{font-family:"Barlow Condensed",sans-serif;font-weight:800;font-size:1.8cqw;line-height:1.05;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .dpcrown .n{font-family:"Barlow Condensed",sans-serif;font-weight:800;font-size:1.5cqw;color:#F6C46A;white-space:nowrap}
+  .dpcrown.tie .w{white-space:normal;font-size:1.45cqw;line-height:1.1}
   .dpcrown.none .w{color:#7F8FAD;font-weight:600;font-size:1.3cqw}
   .head{gap:1cqw}
   .wkchip{flex:0 0 auto;min-width:0;max-width:30cqw;border-radius:1cqw;border:.14cqw solid rgba(246,178,33,.55);background:rgba(246,178,33,.08);padding:.4cqw .8cqw;display:flex;flex-direction:row;gap:.9cqw;margin-left:auto}
@@ -229,11 +230,17 @@ setInterval(async()=>{try{const s=await sig();if(!s)return;if(base===null)base=s
     const ranked = Object.entries(wins).map(([code, n]) => ({ s: d.stores.find(x => x.code === code), n }))
       .sort((a, b) => (b.n - a.n) || ((a.s.todayAvg || 9e9) - (b.s.todayAvg || 9e9)));
     const final = c === 0 || c > N;
-    const crown = ranked[0] ? `<div class="dpcrown"><span class="ic">👑</span><div><div class="l">${final ? "Crown of the day" : "Leading for the crown"}</div><div class="w">${esc(short(ranked[0].s.name))}</div></div><span class="n">${ranked[0].n} ${ranked[0].n === 1 ? "win" : "wins"}</span></div>`
+    // While the day is still running, a shared lead shows as a tie with every store in it
+    const top = ranked[0] ? ranked.filter(x => x.n === ranked[0].n) : [];
+    const tied = !final && top.length > 1;
+    const names = tied ? top.map(x => esc(short(x.s.name))) : [];
+    const tieNames = names.length > 1 ? names.slice(0, -1).join(", ") + " &amp; " + names[names.length - 1] : "";
+    const crown = tied ? `<div class="dpcrown tie"><span class="ic">👑</span><div><div class="l">Tied for the crown</div><div class="w">${tieNames}</div></div><span class="n">${ranked[0].n} ${ranked[0].n === 1 ? "win" : "wins"} each</span></div>`
+      : ranked[0] ? `<div class="dpcrown"><span class="ic">👑</span><div><div class="l">${final ? "Crown of the day" : "Leading for the crown"}</div><div class="w">${esc(short(ranked[0].s.name))}</div></div><span class="n">${ranked[0].n} ${ranked[0].n === 1 ? "win" : "wins"}</span></div>`
       : `<div class="dpcrown none"><span class="ic">👑</span><div><div class="l">Crown of the day</div><div class="w">Most daypart wins takes it</div></div><span></span></div>`;
     side.classList.toggle("six", N === 6);
     side.innerHTML = html.replace("<!--crown-->", crown);
-    wins.__crown = ranked[0] ? ranked[0].s.code : null;
+    wins.__crown = ranked[0] && !tied ? ranked[0].s.code : null;
     return wins;
   }
 
