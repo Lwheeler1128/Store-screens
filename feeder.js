@@ -164,7 +164,12 @@ async function runStore(browser, s) {
       if (/closed|crash/i.test(String(e && e.message))) { log(`${s.name}: tab closed (${String(e.message).split("\n")[0]}), restarting feeder`); process.exit(1); }
     }
     const now = Date.now();
-    if (r && r.ready) {
+    // Berry's dashboard blanks its totals for a moment about every 15 minutes while it refreshes.
+    // Ignore a blank read (no cars) for up to 10 minutes after a good one the same day, so stores don't drop off the board.
+    const pv = live[s.code];
+    if (r && r.ready && !(r.todayCars > 0) && pv && pv.todayCars > 0 && pv.updatedAt && now - Date.parse(pv.updatedAt) < 10 * 60000 && new Date(pv.updatedAt).toDateString() === new Date().toDateString()) {
+      lastGood = now; stuck = 0;
+    } else if (r && r.ready) {
       if (!lastGood && tokens.length > 1) log(`${s.name}: connected using Berry key #${ti + 1}`);
       lastGood = now; stuck = 0;
       live[s.code] = { ...r, status: "ok", updatedAt: new Date().toISOString() };
