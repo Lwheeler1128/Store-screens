@@ -295,5 +295,109 @@ setInterval(async()=>{try{const s=await sig();if(!s)return;if(base===null)base=s
   fetch("/api/live", { cache: "no-store" }).then(r => r.json()).then(d => render(d)).catch(() => {});
 })();
 </script>
+<script>
+// Showdown extras: deep slate theme, race-alert ticker, and row movement flashes.
+(() => {
+  const fmt = s => { s = Math.round(s); return Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0"); };
+  const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  const short = n => n.replace(/^N\. Charleston /, "").replace(/^Charleston /, "");
+  const DP = { 1: "Open", 2: "Lunch", 3: "Afternoon", 4: "Dinner", 5: "Late", 6: "Late Night" };
+  const lateNight = () => /^(Fri|Sat)/.test(new Date().toLocaleDateString("en-US", { timeZone: "America/New_York", weekday: "short" }));
+  const END = () => ({ 1: 11, 2: 14, 3: 17, 4: 20, 5: lateNight() ? 22 : 23, 6: 23 }); // hour each race ends (Eastern)
+
+  // Barlow fonts (the board asked for them but never loaded them)
+  const fl = document.createElement("link"); fl.rel = "stylesheet";
+  fl.href = "https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700;800&display=swap";
+  document.head.appendChild(fl);
+
+  const css = document.createElement("style");
+  css.textContent = `
+  html,body{background:#071318}
+  .lb{background:radial-gradient(120% 90% at 100% 0%,#14424F 0%,#0B2229 55%,#081A20 100%)!important;font-family:"Barlow","Segoe UI",sans-serif}
+  .title span,.dph b span{color:#F6B221!important}
+  .row{background:rgba(255,255,255,.055)!important;transition:transform .6s ease}
+  .becbox{background:rgba(64,196,190,.10)!important;border-color:rgba(64,196,190,.6)!important}
+  .becbox .lbl{color:#7FE3DC!important}
+  .cols,.rank,.store small,.meta{color:#8FB0B8!important}
+  .dpc{background:rgba(255,255,255,.05)!important}
+  /* movement */
+  @keyframes mvUp{0%{box-shadow:inset 0 0 0 .2cqw #4CD68A,0 0 1.6cqw rgba(76,214,138,.7);background:rgba(76,214,138,.28)}100%{box-shadow:none}}
+  @keyframes mvDn{0%{box-shadow:inset 0 0 0 .2cqw #F26B5E,0 0 1.2cqw rgba(242,107,94,.6);background:rgba(242,107,94,.22)}100%{box-shadow:none}}
+  .row.mv-up{animation:mvUp 3s ease-out 2}
+  .row.mv-dn{animation:mvDn 3s ease-out 1}
+  .mvtag{display:inline-block;margin-left:.5cqw;font-size:.55em;font-weight:800;vertical-align:.15em;padding:0 .35cqw;border-radius:.3cqw}
+  .mvtag.up{color:#0B2229;background:#4CD68A}.mvtag.dn{color:#fff;background:#D9534F}
+  /* ticker */
+  .tick{flex:none;display:flex;justify-content:center;min-width:0}
+  .tick .msg{display:inline-flex;align-items:center;gap:.7cqw;max-width:100%;padding:.35cqw 1.2cqw;border-radius:99px;background:rgba(246,178,33,.12);border:.12cqw solid rgba(246,178,33,.55);color:#FFF4DA;font-family:"Barlow Condensed",sans-serif;font-weight:700;font-size:1.55cqw;letter-spacing:.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:opacity .5s,transform .5s}
+  .tick .msg.out{opacity:0;transform:translateY(.6cqw)}
+  .tick .msg b{color:#F6B221;font-weight:800}
+  .tick .lv{font-family:"Barlow",sans-serif;font-size:.75cqw;font-weight:800;letter-spacing:.14em;color:#0B2229;background:#F6B221;border-radius:.3cqw;padding:.05cqw .45cqw}
+  `;
+  document.head.appendChild(css);
+
+  // Ticker sits under the store list (inside the main column, so the Daypart Races panel keeps its height)
+  const tick = document.createElement("div"); tick.className = "tick";
+  tick.innerHTML = `<span class="msg"><span class="lv">LIVE</span><span class="tx">Race alerts loading…</span></span>`;
+  (document.querySelector(".dpmain") || document.querySelector(".lb")).appendChild(tick);
+  const msgEl = tick.querySelector(".msg"), txEl = tick.querySelector(".tx");
+
+  let msgs = [], mi = 0;
+  function buildMsgs(d) {
+    const out = [], stores = d.stores.filter(s => s.todayAvg);
+    const m = /Daypart\s+(\d)/.exec((d.stores.find(s => s.daypart) || {}).daypart || ""); const c = m ? +m[1] : 0;
+    const race = stores.map(s => ({ s, p: (s.dayparts || []).find(x => x.dp === c) })).filter(x => x.p && x.p.t && x.p.cars >= 5).sort((a, b) => a.p.t - b.p.t);
+    if (race[1]) out.push(`🔥 <b>${esc(short(race[0].s.name))}</b> leads the ${DP[c]} race by ${Math.round(race[1].p.t) - Math.round(race[0].p.t)} sec`);
+    for (let i = 1; i < Math.min(race.length, 5); i++) {
+      const g = Math.round(race[i].p.t) - Math.round(race[i - 1].p.t);
+      if (g <= 6) { out.push(`⚡ Tight race: <b>${esc(short(race[i].s.name))}</b> is ${g} sec behind ${esc(short(race[i - 1].s.name))} for #${i} in ${DP[c]}`); break; }
+    }
+    if (c && END()[c]) {
+      const now = new Date(new Date().toLocaleString("en-US", { timeZone: "America/New_York" }));
+      const left = (END()[c] * 60) - (now.getHours() * 60 + now.getMinutes());
+      if (left > 0 && left <= 180) out.push(`⏱ ${DP[c]} race ends in <b>${Math.floor(left / 60) ? Math.floor(left / 60) + " hr " : ""}${left % 60} min</b> — every car counts`);
+    }
+    const all = [...stores].sort((a, b) => a.todayAvg - b.todayAvg);
+    if (all[0]) out.push(`👑 <b>${esc(short(all[0].name))}</b> is #1 today at ${fmt(all[0].todayAvg)}`);
+    const goal = d.goalSeconds, under = stores.filter(s => s.todayAvg <= goal).length;
+    if (goal) out.push(`🎯 <b>${under} of ${stores.length}</b> stores are at or under the ${fmt(goal)} goal today`);
+    if (window.__dpMoves && window.__dpMoves.length) out.push(...window.__dpMoves.map(x => x.up ? `📈 <b>${esc(short(x.name))}</b> just climbed to #${x.to}` : `📉 ${esc(short(x.name))} slipped to #${x.to}`));
+    return out;
+  }
+  function rotate() {
+    if (!msgs.length) return;
+    msgEl.classList.add("out");
+    setTimeout(() => { txEl.innerHTML = msgs[mi++ % msgs.length]; msgEl.classList.remove("out"); }, 500);
+  }
+  setInterval(rotate, 7000);
+
+  // Row movement: compare each store's place with the last update
+  let prev = null; const tagUntil = {};
+  function moves() {
+    const now = {}, rows = [...document.querySelectorAll("#rows .row")];
+    rows.forEach((row, i) => { const k = ((row.querySelector(".store small") || {}).textContent || "").trim(); if (k) now[k] = { i: i + 1, row, name: (row.querySelector(".store").firstChild || {}).textContent || k }; });
+    const ev = [];
+    if (prev) for (const [k, v] of Object.entries(now)) {
+      const p = prev[k]; if (!p || p === v.i) continue;
+      const up = v.i < p; tagUntil[k] = { up, n: Math.abs(p - v.i), until: Date.now() + 5 * 60 * 1000 };
+      v.row.classList.remove("mv-up", "mv-dn"); void v.row.offsetWidth; v.row.classList.add(up ? "mv-up" : "mv-dn");
+      ev.push({ name: v.name.trim(), up, to: v.i });
+    }
+    for (const [k, v] of Object.entries(now)) {
+      const st = v.row.querySelector(".store"); st.querySelectorAll(".mvtag").forEach(e => e.remove());
+      const t = tagUntil[k]; if (t && t.until > Date.now()) st.insertAdjacentHTML("beforeend", `<span class="mvtag ${t.up ? "up" : "dn"}">${t.up ? "▲" : "▼"}${t.n}</span>`);
+    }
+    if (ev.length) window.__dpMoves = ev.filter(e => e.up).slice(0, 2).concat(ev.filter(e => !e.up).slice(0, 1));
+    prev = Object.fromEntries(Object.entries(now).map(([k, v]) => [k, v.i]));
+  }
+
+  const base = render;
+  render = function (d) {
+    base(d);
+    try { moves(); const first = !msgs.length; msgs = buildMsgs(d); if (first) rotate(); } catch (e) { console.warn("extras", e); }
+  };
+  fetch("/api/live", { cache: "no-store" }).then(r => r.json()).then(d => render(d)).catch(() => {});
+})();
+</script>
 </body>
 </html>
