@@ -32,7 +32,7 @@ function nowET() {
   for (let n = 1; n <= N; n++) {
     if (n >= c) break; // only finished dayparts have a winner
     const race = stores.map(s => ({ s, p: (s.dayparts || []).find(x => x.dp === n) }))
-      .filter(x => x.p && x.p.t && x.p.cars >= MIN_CARS).sort((a, b) => a.p.t - b.p.t);
+      .filter(x => x.p && x.p.t && x.p.cars >= MIN_CARS).sort((a, b) => (Math.round(a.p.t) - Math.round(b.p.t)) || (b.p.cars - a.p.cars)) // tie: more cars wins;
     if (race[0]) { winners[n] = { code: race[0].s.code, t: Math.round(race[0].p.t) }; wins[race[0].s.code] = (wins[race[0].s.code] || 0) + 1; }
   }
   const byCode = Object.fromEntries(stores.map(s => [s.code, s]));
