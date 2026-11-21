@@ -176,17 +176,26 @@ setInterval(async()=>{try{const s=await sig();if(!s)return;if(base===null)base=s
   .dpcrown.tie .w{white-space:normal;font-size:1.45cqw;line-height:1.1}
   .dpcrown.none .w{color:#7F8FAD;font-weight:600;font-size:1.3cqw}
   .head{gap:1cqw}
-  .wkchip{flex:0 0 auto;min-width:0;max-width:30cqw;border-radius:1cqw;border:.14cqw solid rgba(246,178,33,.55);background:rgba(246,178,33,.08);padding:.4cqw .8cqw;display:flex;flex-direction:row;gap:.9cqw;margin-left:auto}
+  .wkchip{flex:0 1 auto;min-width:0;max-width:21cqw;border-radius:1cqw;border:.14cqw solid rgba(246,178,33,.55);background:rgba(246,178,33,.08);padding:.4cqw .8cqw;display:flex;flex-direction:row;gap:.9cqw;margin-left:auto}
   .wkchip .ln{display:flex;flex-direction:column;align-items:flex-start;gap:.1cqw;min-width:0;white-space:nowrap;overflow:hidden}
   .wkchip .k{font-size:.7cqw;letter-spacing:.12em;text-transform:uppercase;color:#F6C46A;font-weight:700}
   .wkchip .v{max-width:100%;font-family:"Barlow Condensed",sans-serif;font-weight:700;font-size:1.3cqw;overflow:hidden;text-overflow:ellipsis}
   .wkchip .v i{font-style:normal;color:#F6C46A;margin-left:.35cqw}
   .wkchip .gg{display:inline-block;filter:sepia(1) saturate(5) hue-rotate(-8deg) brightness(1.15) drop-shadow(0 0 .25cqw rgba(246,178,33,.6));margin-right:.1cqw}
+  .wkchip .v.ch{color:#CFE3E8;font-size:1.15cqw}
   .wkchip .v.dim{color:#7F8FAD;font-weight:600;font-size:1.05cqw}
   .dpside.six{gap:.5cqw}
   .dpside.six .dpc{padding:.35cqw .9cqw}
   .dpside.six .dpc .t{font-size:1.7cqw}
   .dpside.six .dplive{padding:.5cqw .9cqw;gap:.2cqw}
+  .wkchip{flex:0 0 auto;max-width:36cqw}
+  .dp .q{font-size:.6em;font-weight:700;color:#7F8FAD;margin-left:.25em;letter-spacing:.02em}
+  html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+  .dpside{overflow:hidden}
+  .dplive{flex:1 1 auto;overflow:hidden}
+  .dpside.six .dplive .r{font-size:1.25cqw}
+  .dpside.six .dplive .r .v{font-size:1.45cqw}
+  .dpside.six .dplive .gap{font-size:.85cqw}
   .dpwins{display:inline-block;margin-left:.6cqw;font-size:.62em;color:#F6C46A;vertical-align:.1em;white-space:nowrap}
   `;
   document.head.appendChild(css);
@@ -196,7 +205,9 @@ setInterval(async()=>{try{const s=await sig();if(!s)return;if(base===null)base=s
   const wrap = document.createElement("div"); wrap.className = "dpwrap";
   const main = document.createElement("div"); main.className = "dpmain";
   const side = document.createElement("div"); side.className = "dpside";
-  cols.before(wrap); main.append(cols, rows); wrap.append(main, side);
+  const allday = document.createElement("div"); allday.className = "dph allday";
+  allday.innerHTML = `<b>Fastest <span>All Day</span></b><small>Ranked by today’s average · crown goes to most daypart wins →</small>`;
+  cols.before(wrap); main.append(allday, cols, rows); wrap.append(main, side);
 
   const cur = d => { const m = /Daypart\s+(\d)/.exec((d.stores.find(s => s.daypart) || {}).daypart || ""); return m ? +m[1] : 0; };
   const HRS = { 1: "Open–11a", 2: "11a–2p", 3: "2p–5p", 4: "5p–8p", 5: "8p–Close", 6: "10p–Close" };
@@ -252,52 +263,68 @@ setInterval(async()=>{try{const s=await sig();if(!s)return;if(base===null)base=s
       const num = (st.querySelector("small") || {}).textContent || "";
       const s = d.stores.find(x => num.includes(x.num)); if (!s) return;
       const p = (s.dayparts || []).find(x => x.dp === c), dp = row.querySelector(".dp");
-      if (dp && p && p.t) { dp.textContent = fmt(p.t); dp.style.color = p.t <= d.goalSeconds ? "#4CC778" : p.t <= d.goalSeconds + 30 ? "#F6B221" : "#F26B5E"; }
+      if (dp && p && p.t) {
+        if (p.cars < MIN_CARS) { dp.innerHTML = `${fmt(p.t)}<span class="q">${p.cars}/${MIN_CARS}</span>`; dp.style.color = "#6F7F9C"; } // not in the race yet
+        else { dp.textContent = fmt(p.t); dp.style.color = p.t <= d.goalSeconds ? "#4CC778" : p.t <= d.goalSeconds + 30 ? "#F6B221" : "#F26B5E"; }
+      }
       st.querySelectorAll(".dpwins").forEach(e => e.remove());
       if (wins[s.code]) st.insertAdjacentHTML("beforeend", `<span class="dpwins">${wins.__crown === s.code ? "👑" : ""}${"🏆".repeat(wins[s.code])}</span>`);
     });
   }
 
 
-  // ---- Weekly crown: most daily crowns Mon–Sun (Eastern). Past days come from /showdown-history.json (recorded on the server). ----
-  let HIST = null;
+  // ---- Weekly goat: points Mon–Sun (Eastern). Each day: daypart win 1, crown 2, fastest all day 2.
+  // Past days come from /showdown-history.json (recorded on the server); today counts live, so the race moves during the day.
+  const PTS = { win: 1, crown: 2, fast: 2 };
+  let HIST = null, LIVE = null;
   const loadHist = () => fetch("/showdown-history.json", { cache: "no-store" }).then(r => r.ok ? r.json() : null).then(h => { HIST = h; }).catch(() => {});
   loadHist().then(() => { try { drawWeek(); } catch (e) {} }); setInterval(loadHist, 5 * 60 * 1000);
   const etDate = () => new Intl.DateTimeFormat("en-CA", { timeZone: "America/New_York", year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date());
   const addDays = (iso, n) => { const t = new Date(iso + "T12:00:00Z"); t.setUTCDate(t.getUTCDate() + n); return t.toISOString().slice(0, 10); };
   const mondayOf = iso => addDays(iso, -((new Date(iso + "T12:00:00Z").getUTCDay() + 6) % 7));
-  function weekTally(from, to) { // dates from..to inclusive, finished days only
-    const t = {};
-    const days = (HIST && HIST.days) || {};
-    for (let k = from; k <= to; k = addDays(k, 1)) {
-      const day = days[k]; if (!day || !day.final) continue;
-      for (const [code, st] of Object.entries(day.stores || {})) {
-        const x = t[code] = t[code] || { code, name: st.name, crowns: 0, wins: 0, secs: 0, cars: 0 };
-        if (st.avg && st.cars) { x.secs += st.avg * st.cars; x.cars += st.cars; }
-        x.wins += (day.wins || {})[code] || 0;
-        if (day.crown === code) x.crowns++;
-      }
+  function addDay(t, day) { // day = { wins, crown, stores: { code: { name, avg, cars } } }
+    const st = Object.entries(day.stores || {}).filter(([, x]) => x.avg && x.cars > 0);
+    const fast = st.slice().sort((a, b) => a[1].avg - b[1].avg)[0];
+    for (const [code, x] of st) {
+      const r = t[code] = t[code] || { code, name: x.name, pts: 0, crowns: 0, wins: 0, fast: 0, secs: 0, cars: 0 };
+      r.name = x.name; r.secs += x.avg * x.cars; r.cars += x.cars;
+      const w = (day.wins || {})[code] || 0; r.wins += w; r.pts += w * PTS.win;
+      if (day.crown === code) { r.crowns++; r.pts += PTS.crown; }
+      if (fast && fast[0] === code) { r.fast++; r.pts += PTS.fast; }
     }
-    return Object.values(t).filter(x => x.crowns || x.wins).sort((a, b) => (b.crowns - a.crowns) || (b.wins - a.wins) || ((a.cars ? a.secs / a.cars : 9e9) - (b.cars ? b.secs / b.cars : 9e9)));
+  }
+  function weekTally(from, to, withLive) { // finished days from..to inclusive, plus today's live standings if asked
+    const t = {}, days = (HIST && HIST.days) || {};
+    for (let k = from; k <= to; k = addDays(k, 1)) { const day = days[k]; if (day && day.final) addDay(t, day); }
+    if (withLive && LIVE) addDay(t, LIVE);
+    const avg = x => x.cars ? x.secs / x.cars : 9e9;
+    return Object.values(t).filter(x => x.pts).sort((a, b) => (b.pts - a.pts) || (b.crowns - a.crowns) || (b.wins - a.wins) || (avg(a) - avg(b)));
   }
   const chip = document.createElement("div"); chip.className = "wkchip";
   const bec = document.getElementById("bec"); if (bec) bec.before(chip);
   function drawWeek() {
     const today = etDate(), mon = mondayOf(today);
-    const thisWk = weekTally(mon, addDays(today, -1)).filter(x => x.crowns);
-    const lastWk = weekTally(addDays(mon, -7), addDays(mon, -1));
-    const champ = lastWk[0] && lastWk[0].crowns ? lastWk[0] : null;
+    const wk = weekTally(mon, addDays(today, -1), true);
+    const lastWk = weekTally(addDays(mon, -7), addDays(mon, -1), false);
+    const champ = lastWk[0] || null, lead = wk[0];
+    const chase = wk.slice(1, champ ? 3 : 4);
+    window.__goat = lead ? { name: short(lead.name), pts: lead.pts, next: chase.map(x => ({ name: short(x.name), pts: x.pts })) } : null;
     chip.innerHTML =
-      `<div class="ln"><span class="k">Week leader</span>` +
-      (thisWk.length ? `<span class="v">${esc(short(thisWk[0].name))}<i><span class="gg">🐐</span>×${thisWk[0].crowns}</i></span>` : `<span class="v dim">First crown tonight</span>`) + `</div>` +
-      `<div class="ln"><span class="k">🏆 Last week</span>` +
-      (champ ? `<span class="v">${esc(short(champ.name))}<i><span class="gg">🐐</span>×${champ.crowns}</i></span>` : `<span class="v dim">Crowned Sun night</span>`) + `</div>`;
+      `<div class="ln"><span class="k">Goat race</span>` +
+      (lead ? `<span class="v">${esc(short(lead.name))}<i><span class="gg">🐐</span>${lead.pts} pts</i></span>` : `<span class="v dim">Points start today</span>`) + `</div>` +
+      (chase.length ? `<div class="ln"><span class="k">Chasing</span><span class="v ch">${chase.map(x => `${esc(short(x.name))} ${x.pts}`).join(" · ")}</span></div>` : "") +
+      (champ ? `<div class="ln"><span class="k">🏆 Last week</span><span class="v">${esc(short(champ.name))}<i><span class="gg">🐐</span></i></span></div>` : "");
   }
 
   const base = render;
   render = function (d) {
     base(d);
-    try { const wins = drawSide(d); patchRows(d, wins); drawWeek(); } catch (e) { console.warn("dayparts", e); }
+    try {
+      const wins = drawSide(d); patchRows(d, wins);
+      const w = {}; for (const k in wins) if (k !== "__crown") w[k] = wins[k];
+      LIVE = { wins: w, crown: wins.__crown, stores: Object.fromEntries(d.stores.filter(s => s.todayAvg && s.todayCars > 0).map(s => [s.code, { name: s.name, avg: s.todayAvg, cars: s.todayCars }])) };
+      drawWeek();
+    } catch (e) { console.warn("dayparts", e); }
   };
   fetch("/api/live", { cache: "no-store" }).then(r => r.json()).then(d => render(d)).catch(() => {});
 })();
@@ -365,7 +392,10 @@ setInterval(async()=>{try{const s=await sig();if(!s)return;if(base===null)base=s
       if (left > 0 && left <= 180) out.push(`⏱ ${DP[c]} race ends in <b>${Math.floor(left / 60) ? Math.floor(left / 60) + " hr " : ""}${left % 60} min</b> — every car counts`);
     }
     const all = [...stores].sort((a, b) => a.todayAvg - b.todayAvg);
-    if (all[0]) out.push(`👑 <b>${esc(short(all[0].name))}</b> is #1 today at ${fmt(all[0].todayAvg)}`);
+    if (all[0]) out.push(`🏁 <b>${esc(short(all[0].name))}</b> is fastest all day at ${fmt(all[0].todayAvg)}`);
+    const g = window.__goat;
+    if (g) out.push(g.next[0] && g.next[0].pts === g.pts ? `🐐 <b>${esc(g.name)}</b> and <b>${esc(g.next[0].name)}</b> are tied for the goat lead at ${g.pts} pts` : `🐐 <b>${esc(g.name)}</b> leads the goat race with ${g.pts} pts` + (g.next[0] ? ` · ${esc(g.next[0].name)} has ${g.next[0].pts}` : ""));
+    out.push(`🐐 Goat points: <b>Daypart win 1</b> · <b>Crown 2</b> · <b>Fastest all day 2</b>`);
     const goal = d.goalSeconds, under = stores.filter(s => s.todayAvg <= goal).length;
     if (goal) out.push(`🎯 <b>${under} of ${stores.length}</b> stores are at or under the ${fmt(goal)} goal today`);
     if (window.__dpMoves && window.__dpMoves.length) out.push(...window.__dpMoves.map(x => x.up ? `📈 <b>${esc(short(x.name))}</b> just climbed to #${x.to}` : `📉 ${esc(short(x.name))} slipped to #${x.to}`));
