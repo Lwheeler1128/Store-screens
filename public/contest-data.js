@@ -82,6 +82,32 @@ window.CONTEST = {
         ["Singleton E.", "Shelby Ray", 6, 882, 265], ["Hamilton D.", "Shelby Ray", 5, 698, 328],
         ["Greene D.", "Shelby Ray", 4, 403, 330]],
       comp: {"Nolan J.": [39, 58, 130, 82], "Chisom T.": [51, 62, 134, 83], "Dunn C.": [65, 61, 174, 83], "Galloway C.": [83, 66, 202, 89], "Cooper D.": [110, 76, 256, 109], "Schmidt C.": [122, 82, 299, 114], "Thomas C.": [14, 52, 62, 78], "Wall M.": [42, 59, 81, 84], "Lashway Z.": [51, 62, 79, 81], "Long R.": [59, 69, 97, 93], "Simmons A.": [63, 68, 126, 103], "Smith J.": [60, 69, 98, 98], "Witko A.": [20, 59, 87, 109], "Parker M.": [36, 65, 101, 114], "Hopper R.": [34, 62, 118, 110], "Singleton E.": [40, 58, 82, 79], "Hamilton D.": [38, 64, 94, 95], "Greene D.": [38, 58, 121, 94]}
+    },
+    { label: "Week 4", dates: "Nov 16 – Nov 22",
+      stores: [
+        ["Moncks Corner #25901", 378, 2340],
+        ["Dorchester #35403", 427, 1989],
+        ["Shelby Ray #35402", 331, 1557],
+        ["Tanger #55801", 304, 1502],
+        ["University #35401", 297, 1911]],
+      // Doubles (owner call, Week 4): a day-side daypart (Open/Lunch/Afternoon) + a night-side daypart (Dinner/Late) credited the same date counts as a double,
+      // even when the report gives that day's Day half to someone else. Thomas C. Sun 11/22 (Afternoon + Dinner + Late), Schmidt C. Tue 11/17.
+      // "Shift Leader" is now scored manager-tier at University (Alvarez J., Wright Q. on the scorecard); Martin D. ran all 5 shifts as Shift Leader at Moncks.
+      managers: [
+        ["Dunn C.", "Moncks Corner", 5, 962, 310], ["Chisom T.", "Moncks Corner", 5, 1029, 343],
+        ["Galloway C.", "Moncks Corner", 6, 1421, 374], ["Nolan J.", "Moncks Corner", 3, 541, 387],
+        ["Schmidt C.", "Moncks Corner", 3, 531, 409, 1], ["Cooper D.", "Moncks Corner", 5, 831, 467],
+        ["Martin D.", "Moncks Corner", 5, 1037, 485],
+        ["Lashway Z.", "University", 5, 657, 251], ["Thomas C.", "University", 3, 441, 254, 1],
+        ["Wall M.", "University", 4, 724, 299], ["Alvarez J.", "University", 5, 810, 328],
+        ["Wright Q.", "University", 4, 539, 370],
+        ["Smith J.", "Dorchester", 5, 873, 404], ["Long R.", "Dorchester", 5, 868, 418],
+        ["Simmons A.", "Dorchester", 5, 566, 469],
+        ["Witko A.", "Tanger", 5, 740, 271], ["Parker M.", "Tanger", 5, 657, 305],
+        ["Hopper R.", "Tanger", 5, 592, 329],
+        ["Singleton E.", "Shelby Ray", 5, 688, 319], ["Hamilton D.", "Shelby Ray", 6, 887, 337],
+        ["Greene D.", "Shelby Ray", 4, 441, 367]],
+      comp: {"Dunn C.": [44, 58, 125, 80], "Chisom T.": [52, 60, 142, 81], "Galloway C.": [60, 62, 163, 84], "Nolan J.": [70, 64, 171, 86], "Schmidt C.": [51, 63, 153, 91], "Cooper D.": [79, 64, 188, 92], "Martin D.": [58, 59, 155, 82], "Lashway Z.": [31, 60, 65, 83], "Thomas C.": [27, 60, 75, 84], "Wall M.": [48, 65, 86, 87], "Alvarez J.": [66, 66, 99, 87], "Wright Q.": [82, 70, 121, 91], "Smith J.": [79, 72, 118, 100], "Long R.": [83, 77, 129, 107], "Simmons A.": [80, 73, 145, 119], "Witko A.": [29, 62, 87, 98], "Parker M.": [31, 64, 85, 108], "Hopper R.": [39, 66, 100, 111], "Singleton E.": [44, 64, 102, 90], "Hamilton D.": [44, 70, 108, 104], "Greene D.": [32, 66, 122, 117]}
     }
   ],
   // Off the board entirely: Wesner K. (DM), Cobin A. (MIT), Hulsey L. (not running shifts), Blake B. (gone from #35403), Hogan A. (Tanger, in training)
