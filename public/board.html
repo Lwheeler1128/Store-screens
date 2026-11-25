@@ -215,14 +215,14 @@ setInterval(async()=>{try{const s=await sig();if(!s)return;if(base===null)base=s
 
   function drawSide(d) {
     const N = isLateNightDay() ? 6 : 5, hrs = n => (N === 6 && n === 5 ? "8p–10p" : HRS[n]);
-    const c0 = cur(d), c = c0 >= N && etHour() >= 23 ? N + 1 : c0, wins = {}; // after 11 PM the last race is final
+    drawSide.w = {}; const c0 = cur(d), c = c0 >= N && etHour() >= 23 ? N + 1 : c0, wins = {}; // after 11 PM the last race is final
     const race = n => d.stores.map(s => ({ s, p: (s.dayparts || []).find(x => x.dp === n) }))
       .filter(x => x.p && x.p.t && x.p.cars >= MIN_CARS).sort((a, b) => (Math.round(a.p.t) - Math.round(b.p.t)) || (b.p.cars - a.p.cars)) // tie: more cars wins;
     let html = `<div class="dph"><b>Daypart <span>Races</span></b></div><!--crown-->`;
     for (let n = 1; n <= N; n++) {
       const r = race(n);
       if (n < c && r[0]) {
-        wins[r[0].s.code] = (wins[r[0].s.code] || 0) + 1;
+        wins[r[0].s.code] = (wins[r[0].s.code] || 0) + 1; drawSide.w[n] = r[0].s.code;
         const gs = r[1] ? Math.round(r[1].p.t) - Math.round(r[0].p.t) : null, gap = gs === null ? "" : gs === 0 ? " · tie, more cars" : ` by ${gs}s`;
         html += `<div class="dpc done"><div class="nm">${DP[n]}<small>Won${gap}</small></div><div class="w">${esc(short(r[0].s.name))}</div><div class="t">${fmt(r[0].p.t)}</div></div>`;
       } else if (n === c) {
@@ -275,7 +275,7 @@ setInterval(async()=>{try{const s=await sig();if(!s)return;if(base===null)base=s
 
   // ---- Weekly goat: points Mon–Sun (Eastern). Each day: daypart win 1, crown 2, fastest all day 2.
   // Past days come from /showdown-history.json (recorded on the server); today counts live, so the race moves during the day.
-  const PTS = { win: 1, crown: 2, fast: 2 };
+  const PTS = { win: 1, peak: 2, crown: 2, fast: 2 }, PEAK = { 2: 1, 4: 1 }; // Lunch (2) and Dinner (4) are peak: a win there is worth 2
   let HIST = null, LIVE = null;
   const loadHist = () => fetch("/showdown-history.json", { cache: "no-store" }).then(r => r.ok ? r.json() : null).then(h => { HIST = h; }).catch(() => {});
   loadHist().then(() => { try { drawWeek(); } catch (e) {} }); setInterval(loadHist, 5 * 60 * 1000);
@@ -288,7 +288,9 @@ setInterval(async()=>{try{const s=await sig();if(!s)return;if(base===null)base=s
     for (const [code, x] of st) {
       const r = t[code] = t[code] || { code, name: x.name, pts: 0, crowns: 0, wins: 0, fast: 0, secs: 0, cars: 0 };
       r.name = x.name; r.secs += x.avg * x.cars; r.cars += x.cars;
-      const w = (day.wins || {})[code] || 0; r.wins += w; r.pts += w * PTS.win;
+      const w = (day.wins || {})[code] || 0; r.wins += w;
+      if (day.winners) { for (const n in day.winners) { const wc = day.winners[n]; if (((wc && wc.code) || wc) === code) r.pts += PEAK[n] ? PTS.peak : PTS.win; } }
+      else r.pts += w * PTS.win;
       if (day.crown === code) { r.crowns++; r.pts += PTS.crown; }
       if (fast && fast[0] === code) { r.fast++; r.pts += PTS.fast; }
     }
@@ -322,7 +324,7 @@ setInterval(async()=>{try{const s=await sig();if(!s)return;if(base===null)base=s
     try {
       const wins = drawSide(d); patchRows(d, wins);
       const w = {}; for (const k in wins) if (k !== "__crown") w[k] = wins[k];
-      LIVE = { wins: w, crown: wins.__crown, stores: Object.fromEntries(d.stores.filter(s => s.todayAvg && s.todayCars > 0).map(s => [s.code, { name: s.name, avg: s.todayAvg, cars: s.todayCars }])) };
+      LIVE = { wins: w, winners: drawSide.w, crown: wins.__crown, stores: Object.fromEntries(d.stores.filter(s => s.todayAvg && s.todayCars > 0).map(s => [s.code, { name: s.name, avg: s.todayAvg, cars: s.todayCars }])) };
       drawWeek();
     } catch (e) { console.warn("dayparts", e); }
   };
@@ -395,7 +397,7 @@ setInterval(async()=>{try{const s=await sig();if(!s)return;if(base===null)base=s
     if (all[0]) out.push(`🏁 <b>${esc(short(all[0].name))}</b> is fastest all day at ${fmt(all[0].todayAvg)}`);
     const g = window.__goat;
     if (g) out.push(g.next[0] && g.next[0].pts === g.pts ? `🐐 <b>${esc(g.name)}</b> and <b>${esc(g.next[0].name)}</b> are tied for the goat lead at ${g.pts} pts` : `🐐 <b>${esc(g.name)}</b> leads the goat race with ${g.pts} pts` + (g.next[0] ? ` · ${esc(g.next[0].name)} has ${g.next[0].pts}` : ""));
-    out.push(`🐐 Goat points: <b>Daypart win 1</b> · <b>Crown 2</b> · <b>Fastest all day 2</b>`);
+    out.push(`🐐 Goat points: <b>Lunch or Dinner win 2</b> · <b>Other daypart win 1</b> · <b>Crown 2</b> · <b>Fastest all day 2</b>`);
     const goal = d.goalSeconds, under = stores.filter(s => s.todayAvg <= goal).length;
     if (goal) out.push(`🎯 <b>${under} of ${stores.length}</b> stores are at or under the ${fmt(goal)} goal today`);
     if (window.__dpMoves && window.__dpMoves.length) out.push(...window.__dpMoves.map(x => x.up ? `📈 <b>${esc(short(x.name))}</b> just climbed to #${x.to}` : `📉 ${esc(short(x.name))} slipped to #${x.to}`));
