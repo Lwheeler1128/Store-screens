@@ -55,6 +55,15 @@
   .spot .who small{font-size:1cqw;color:#A8B6CF}
   .spot .n{font-family:"Barlow Condensed",sans-serif;font-weight:800;font-size:2.4cqw}
   .spot.open .who b{color:#A8B6CF;font-size:1.7cqw}
+  /* Last contest winners */
+  .last{border:.12cqw solid rgba(246,178,33,.35);background:linear-gradient(90deg,rgba(246,178,33,.12),rgba(246,178,33,.03));border-radius:1cqw;padding:.8cqw 1.3cqw;display:flex;flex-direction:column;gap:.5cqw}
+  .last .lh{font-size:.95cqw;letter-spacing:.14em;text-transform:uppercase;font-weight:700;color:#F6B221}
+  .last .lw{display:grid;grid-template-columns:auto 1fr auto;align-items:baseline;gap:1cqw}
+  .last .lw .amt{font-family:"Barlow Condensed",sans-serif;font-weight:800;font-size:1.5cqw;color:#F6B221;min-width:3.6cqw}
+  .last .lw.w2 .amt{color:#C9D3E3}
+  .last .lw b{font-family:"Barlow Condensed",sans-serif;font-weight:700;font-size:1.7cqw;color:#fff}
+  .last .lw small{font-size:1cqw;color:#8FA0BC;margin-left:.5cqw}
+  .last .lw .n{font-family:"Barlow Condensed",sans-serif;font-weight:800;font-size:1.6cqw;color:#fff}
   .rules{background:rgba(255,255,255,.04);border:.12cqw solid rgba(255,255,255,.1);border-radius:1cqw;padding:1cqw 1.3cqw;display:flex;flex-direction:column;gap:.7cqw;flex:1;min-height:0}
   .rule{display:grid;grid-template-columns:2.4cqw 1fr;gap:.8cqw;align-items:start;font-size:1.25cqw;line-height:1.3;color:#C9D3E4}
   .rule .ic{font-family:"Barlow Condensed",sans-serif;font-weight:800;font-size:1.6cqw;color:#F6B221;text-align:center}
@@ -81,6 +90,11 @@
     <div class="side">
       <div class="sec" style="margin-bottom:0"><span>Prize spots</span></div>
       <div id="spots" style="display:flex;flex-direction:column;gap:.8cqw"></div>
+      <div class="last">
+        <div class="lh">🏆 Last contest winners · Oct 26 – Nov 22</div>
+        <div class="lw w1"><span class="amt">$200</span><span><b>Christina F.</b><small>University</small></span><span class="n">40</span></div>
+        <div class="lw w2"><span class="amt">$100</span><span><b>Robert T.</b><small>Dorchester</small></span><span class="n">28</span></div>
+      </div>
       <div class="rules">
         <div class="rule"><span class="ic">10</span><span><b>Get at least 10 celebrations</b> to qualify for a prize.</span></div>
         <div class="rule"><span class="ic">★</span><span><b>Most celebrations wins.</b> Every SMG Celebration Alert that names you counts, at any SC store.</span></div>
@@ -96,10 +110,10 @@
 <script>
 // ===== CONTEST SETTINGS =====
 const CONTEST = {
-  start: "2026-10-26",            // first visit date that counts
-  end:   "2026-11-22",            // last visit date that counts (end of day)
+  start: "2026-11-23",            // first visit date that counts
+  end:   "2026-12-27",            // last visit date that counts (end of day)
   minToQualify: 10,
-  finalOn: "2026-11-25",          // winners locked in (gives late SMG alerts for Nov 22 visits time to arrive)
+  finalOn: "2026-12-30",          // winners locked in (gives late SMG alerts for Nov 22 visits time to arrive)
   prizes: ["$200", "$100"],
   show: 10,                       // rows on the leaderboard
   stores: { "25901": "Moncks Corner", "35401": "University", "35402": "Shelby", "35403": "Dorchester", "55801": "Tanger" },
