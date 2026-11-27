@@ -25,8 +25,12 @@ function nowET() {
   const stores = (d.stores || []).filter(s => s.code);
   const m = /Daypart\s+(\d)/.exec((stores.find(s => s.daypart) || {}).daypart || "");
   const wd = new Date().toLocaleDateString("en-US", { timeZone: "America/New_York", weekday: "short" });
-  const N = /^(Fri|Sat)/.test(wd) ? 6 : 5; // Late Night (daypart 6) is only raced Friday and Saturday
-  const c0 = m ? +m[1] : 0, final = hour >= 23, c = final ? N + 1 : c0;
+  // Holiday hours (Eastern): closed days aren't recorded; on short days the last race ends at closing and the day is final then.
+  const HOLIDAYS = { "2026-11-26": { closed: true }, "2026-12-24": { close: 15 }, "2026-12-25": { closed: true }, "2026-12-31": { close: 18 }, "2027-01-01": { close: 20 } };
+  const H = HOLIDAYS[date] || null;
+  if (H && H.closed) return;
+  const N = H && H.close ? [0, 11, 14, 17, 20, 22].filter(s => s < H.close).length : /^(Fri|Sat)/.test(wd) ? 6 : 5; // Late Night (daypart 6) is only raced Friday and Saturday
+  const c0 = m ? +m[1] : 0, final = hour >= (H && H.close ? H.close : 23), c = final ? N + 1 : c0;
 
   const winners = {}, wins = {};
   for (let n = 1; n <= N; n++) {
